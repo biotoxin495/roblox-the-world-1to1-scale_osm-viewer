@@ -1,0 +1,23 @@
+{
+ "luau-lsp.sourcemap.enabled": true,
+  "luau-lsp.sourcemap.autogenerate": false,
+  "luau-lsp.sourcemap.includeNonScripts": true,
+
+  "luau-lsp.studioPlugin.enabled": true,
+  "luau-lsp.studioPlugin.port": 3668,
+
+  "luau-lsp.platform.type": "roblox",
+
+  "files.associations": {
+    "*.lua": "luau",
+    "*.luau": "luau",
+    "*.server.luau": "luau",
+    "*.client.luau": "luau",
+    "*.local.luau": "luau",
+    "*.module.luau": "luau"
+  },
+
+  "[luau]": {
+    "editor.defaultFormatter": "JohnnyMorganz.stylua"
+  }
+}
