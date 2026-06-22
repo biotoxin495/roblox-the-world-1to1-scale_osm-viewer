@@ -138,7 +138,7 @@ end
 local function requestRateLimit(): Middleware.MiddlewareFn
 	return Middleware.RateLimit({
 		Window = 10,
-		MaxCalls = 12,
+		MaxCalls = 120,
 		Reason = "You are requesting OSM data too quickly.",
 	})
 end

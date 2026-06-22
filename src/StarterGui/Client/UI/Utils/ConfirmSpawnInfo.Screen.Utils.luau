@@ -777,9 +777,16 @@ local function drawChunkLoadingLabel(
 		animationZoomScale,
 		zoomAnchor
 	)
-	if not position or position.X < -70 or position.Y < -20 or position.X > parent.AbsoluteSize.X + 70 or position.Y > parent.AbsoluteSize.Y + 20 then
+	if not position then
 		return
 	end
+
+	local horizontalMargin = math.min(52, parent.AbsoluteSize.X * 0.5)
+	local verticalMargin = math.min(13, parent.AbsoluteSize.Y * 0.5)
+	position = Vector2.new(
+		math.clamp(position.X, horizontalMargin, parent.AbsoluteSize.X - horizontalMargin),
+		math.clamp(position.Y, verticalMargin, parent.AbsoluteSize.Y - verticalMargin)
+	)
 
 	local label = Instance.new("TextLabel")
 	label.Name = "ChunkLoading"
