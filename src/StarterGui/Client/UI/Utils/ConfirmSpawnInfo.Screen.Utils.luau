@@ -19,6 +19,15 @@ type RoadLabelCandidate = {
 	Length: number,
 }
 
+export type LayerVisibility = {
+	Roads: boolean,
+	Buildings: boolean,
+	Water: boolean,
+	Landuse: boolean,
+	Trees: boolean,
+	Pois: boolean,
+}
+
 export type MapRenderer = {
 	ClipFrame: GuiObject,
 	Layer: Frame,
@@ -36,10 +45,13 @@ export type MapRenderer = {
 	CameraZoomScale: number,
 	CameraZoomAnchor: Vector2?,
 	RenderQueued: boolean,
+	LayerVisibility: LayerVisibility,
 	Render: (self: MapRenderer) -> (),
+	SetLayerVisibility: (self: MapRenderer, layerVisibility: LayerVisibility) -> (),
 	SetCamera: (self: MapRenderer, center: Vector2, zoom: number, worldSize: Vector2, zoomScale: number, zoomAnchor: 
 Vector2?) -> (),
 	AddChunk: (self: MapRenderer, chunkX: number, chunkZ: number, data: any) -> (),
+	RemoveChunk: (self: MapRenderer, chunkX: number, chunkZ: number) -> (),
 	SetChunkLoading: (self: MapRenderer, chunkX: number, chunkZ: number, isLoading: boolean) -> (),
 	GetVisibleChunkCoordinates: (self: MapRenderer, maxDistance: number) -> { { X: number, Z: number } },
 	Destroy: (self: MapRenderer) -> (),
@@ -1097,6 +1109,14 @@ function ConfirmSpawnInfoUtils.Create(clipFrame: GuiObject, data: any): MapRende
 		CameraZoomScale = 1,
 		CameraZoomAnchor = nil,
 		RenderQueued = false,
+		LayerVisibility = {
+			Roads = true,
+			Buildings = true,
+			Water = true,
+			Landuse = true,
+			Trees = true,
+			Pois = true,
+		},
 	}, ConfirmSpawnInfoUtils) :: any
 
 	self.ResizeConnection = clipFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
@@ -1106,6 +1126,14 @@ function ConfirmSpawnInfoUtils.Create(clipFrame: GuiObject, data: any): MapRende
 	return self
 end
 
+function ConfirmSpawnInfoUtils.SetLayerVisibility(self: MapRenderer, layerVisibility: LayerVisibility)
+	if self.Destroyed then
+		return
+	end
+	self.LayerVisibility = layerVisibility
+	self:Render()
+end
+
 function ConfirmSpawnInfoUtils.AddChunk(self: MapRenderer, chunkX: number, chunkZ: number, data: any)
 	if self.Destroyed then
 		return
@@ -1113,6 +1141,19 @@ function ConfirmSpawnInfoUtils.AddChunk(self: MapRenderer, chunkX: number, chunk
 
 	local chunkKey = getChunkKey(chunkX, chunkZ)
 	self.Chunks[chunkKey] = data
+	self.LoadingChunks[chunkKey] = nil
+	self:Render()
+end
+
+function ConfirmSpawnInfoUtils.RemoveChunk(self: MapRenderer, chunkX: number, chunkZ: number)
+	if self.Destroyed then
+		return
+	end
+	local chunkKey = getChunkKey(chunkX, chunkZ)
+	if chunkKey == self.InitialChunkKey then
+		return
+	end
+	self.Chunks[chunkKey] = nil
 	self.LoadingChunks[chunkKey] = nil
 	self:Render()
 end
@@ -1277,6 +1318,24 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 	local canvasOffset = canvas.AbsolutePosition - layer.AbsolutePosition
 	local zoomAnchor = if self.CameraZoomAnchor then self.CameraZoomAnchor - canvasOffset else nil
 	local zIndex = canvas.ZIndex + 1
+	local function isChunkVisible(data: any): boolean
+		local chunkMinX, chunkMinZ, chunkMaxX, chunkMaxZ = getChunkBounds(data)
+		local corners = {
+			projectCoordinates(chunkMinX, chunkMinZ, minX, minZ, scaleX, scaleZ, viewportSize, cameraOffset, zoomFactor, animationZoomScale, zoomAnchor),
+			projectCoordinates(chunkMinX, chunkMaxZ, minX, minZ, scaleX, scaleZ, viewportSize, cameraOffset, zoomFactor, animationZoomScale, zoomAnchor),
+			projectCoordinates(chunkMaxX, chunkMinZ, minX, minZ, scaleX, scaleZ, viewportSize, cameraOffset, zoomFactor, animationZoomScale, zoomAnchor),
+			projectCoordinates(chunkMaxX, chunkMaxZ, minX, minZ, scaleX, scaleZ, viewportSize, cameraOffset, zoomFactor, animationZoomScale, zoomAnchor),
+		}
+		local visibleMinX, visibleMinY = math.huge, math.huge
+		local visibleMaxX, visibleMaxY = -math.huge, -math.huge
+		for _, corner in ipairs(corners) do
+			visibleMinX = math.min(visibleMinX, corner.X)
+			visibleMinY = math.min(visibleMinY, corner.Y)
+			visibleMaxX = math.max(visibleMaxX, corner.X)
+			visibleMaxY = math.max(visibleMaxY, corner.Y)
+		end
+		return visibleMaxX >= 0 and visibleMinX <= size.X and visibleMaxY >= 0 and visibleMinY <= size.Y
+	end
 
 	local roadLabelsByName = {} :: { [string]: RoadLabelCandidate }
 	for _, chunkData in pairs(self.Chunks) do
@@ -1284,9 +1343,12 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 		if type(data) ~= "table" then
 			continue
 		end
+		if not isChunkVisible(data) then
+			continue
+		end
 
 		-- Areas first, then roads, matching normal cartographic layer order.
-		drawAreaCollection(
+		if self.LayerVisibility.Water then drawAreaCollection(
 			canvas,
 			data.water,
 			minX,
@@ -1302,8 +1364,8 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			WATER_FILL,
 			zIndex,
 			nil
-		)
-		drawAreaCollection(
+		) end
+		if self.LayerVisibility.Landuse then drawAreaCollection(
 			canvas,
 			data.landuse,
 			minX,
@@ -1319,8 +1381,8 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			LANDUSE_OUTLINE,
 			zIndex + 2,
 			resolveLanduseColours
-		)
-		drawTreeCollection(
+		) end
+		if self.LayerVisibility.Trees then drawTreeCollection(
 			canvas,
 			data.trees,
 			minX,
@@ -1333,8 +1395,8 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			animationZoomScale,
 			zoomAnchor,
 			zIndex + 4
-		)
-		drawAreaCollection(
+		) end
+		if self.LayerVisibility.Buildings then drawAreaCollection(
 			canvas,
 			data.buildings,
 			minX,
@@ -1350,9 +1412,9 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			BUILDING_OUTLINE,
 			zIndex + 6,
 			nil
-		)
+		) end
 
-		if type(data.roads) == "table" then
+		if self.LayerVisibility.Roads and type(data.roads) == "table" then
 			for _, road in ipairs(data.roads) do
 				local width = tonumber(road.width) or 3
 				local roadThickness = math.max(1, width * math.min(scaleX, scaleZ) * zoomFactor * animationZoomScale)
@@ -1422,7 +1484,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			end
 			end
 
-		drawPois(
+		if self.LayerVisibility.Pois then drawPois(
 			canvas,
 			data.pois,
 			minX,
@@ -1435,11 +1497,13 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			animationZoomScale,
 			zoomAnchor,
 			zIndex + 11
-		)
+		) end
 	end
 
-	for _, candidate in pairs(roadLabelsByName) do
-		drawRoadLabel(canvas, candidate, zIndex + 10)
+	if self.LayerVisibility.Roads then
+		for _, candidate in pairs(roadLabelsByName) do
+			drawRoadLabel(canvas, candidate, zIndex + 10)
+		end
 	end
 
 	-- Draw a boundary for every streamed chunk. The spawn marker remains tied
@@ -1447,6 +1511,9 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 	for chunkKey, chunkData in pairs(self.Chunks) do
 		local data = getMapData(chunkData)
 		if type(data) ~= "table" then
+			continue
+		end
+		if not isChunkVisible(data) then
 			continue
 		end
 

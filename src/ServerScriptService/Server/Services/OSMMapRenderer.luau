@@ -1,20 +1,20 @@
 --!strict
 
 --[[
-	Turns decoded OSM map chunks into server-owned, physical Roblox geometry.
+	Owns server-side map generation requests. The backend remains server-only,
+	but the resulting data is rendered into each requesting client's local
+	Workspace so players can select independent locations in the same server.
 
-	The API's X/Z coordinates are already local world coordinates.  This module
-	deliberately keeps them as X/Z (rather than mirroring Z as the UI renderer
-	does for screen space), so a point from the payload maps directly to the
-	corresponding point in Workspace.
-
-	Render replaces the whole current map. AddChunk is intended for chunk
-	streaming and replaces only the chunk with matching metadata x/z values.
+	The legacy physical geometry helpers remain available for server tooling,
+	but startup no longer calls them or creates a shared Workspace map.
 ]]
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local OsmApiReturnedData = require(game.ReplicatedStorage.App.OsmApiReturnedData)
+local OSMMapNet = require(ReplicatedStorage.App.Shared.Network.OSMMapNet)
+local OSMApiInterface = require(script.Parent.OSMApiInterface)
 
 type MapPoint = Vector2
 
@@ -31,6 +31,9 @@ export type RenderOptions = {
 local OSMMapRenderer = {
 	Name = "OSMMapRenderer",
 	Priority = 50,
+	-- When true, confirmed spawns receive the bundled OSM response instead of
+	-- calling the backend. Keep this enabled only while inspecting renderer data.
+	UseDebugData = false,
 	Root = nil :: Folder?,
 	ChunkModels = {} :: { [string]: Model },
 	WorldOffset = Vector3.zero,
@@ -50,6 +53,31 @@ local BUILDING_EDGE_THICKNESS = 0.16
 local AREA_EDGE_THICKNESS = 0.08
 local TRIANGULATION_EPSILON = 0.00001
 local OPEN_WATERWAY_CLOSURE_RATIO = 0.15
+local TREE_GROUND_Y = WATER_HEIGHT + LANDUSE_HEIGHT + 0.01
+
+local LANDUSE_DEFAULT_COLOUR = Color3.fromRGB(124, 151, 102)
+local LANDUSE_DEFAULT_MATERIAL = Enum.Material.Grass
+
+local LANDUSE_STYLES: { [string]: { Colour: Color3, Material: Enum.Material } } = {
+	forest = { Colour = Color3.fromRGB(61, 109, 66), Material = Enum.Material.Grass },
+	wood = { Colour = Color3.fromRGB(61, 109, 66), Material = Enum.Material.Grass },
+	grass = { Colour = Color3.fromRGB(108, 161, 89), Material = Enum.Material.Grass },
+	meadow = { Colour = Color3.fromRGB(122, 172, 93), Material = Enum.Material.Grass },
+	park = { Colour = Color3.fromRGB(105, 153, 86), Material = Enum.Material.Grass },
+	recreation_ground = { Colour = Color3.fromRGB(99, 157, 82), Material = Enum.Material.Grass },
+	village_green = { Colour = Color3.fromRGB(104, 160, 88), Material = Enum.Material.Grass },
+	garden = { Colour = Color3.fromRGB(116, 166, 91), Material = Enum.Material.Grass },
+	cemetery = { Colour = Color3.fromRGB(100, 142, 93), Material = Enum.Material.Grass },
+	orchard = { Colour = Color3.fromRGB(119, 151, 72), Material = Enum.Material.Grass },
+	farmland = { Colour = Color3.fromRGB(164, 151, 100), Material = Enum.Material.Ground },
+	farmyard = { Colour = Color3.fromRGB(151, 136, 98), Material = Enum.Material.Ground },
+	allotments = { Colour = Color3.fromRGB(142, 157, 92), Material = Enum.Material.Grass },
+	scrub = { Colour = Color3.fromRGB(117, 137, 79), Material = Enum.Material.Grass },
+	heath = { Colour = Color3.fromRGB(132, 121, 88), Material = Enum.Material.Grass },
+	wetland = { Colour = Color3.fromRGB(88, 130, 106), Material = Enum.Material.Grass },
+}
+
+local treeTemplateWarningIssued = false
 
 local WATERWAY_WIDTHS: { [string]: number } = {
 	stream = 2,
@@ -74,6 +102,15 @@ local ROAD_COLOURS: { [string]: Color3 } = {
 	cycleway = Color3.fromRGB(108, 143, 157),
 	sidewalk = Color3.fromRGB(174, 166, 151),
 	steps = Color3.fromRGB(174, 166, 151),
+}
+local RAILWAY_COLOUR = Color3.fromRGB(78, 61, 52)
+local RAILWAY_CLASSES = {
+	rail = true,
+	railway = true,
+	light_rail = true,
+	tram = true,
+	subway = true,
+	narrow_gauge = true,
 }
 
 -- Every road surface gets a stable, tiny vertical offset. Vehicle roads sit
@@ -155,6 +192,25 @@ local function readRoadPoint(point: any): Vector3?
 	return Vector3.new(x, y, z)
 end
 
+local function readTreePoint(point: any): Vector3?
+	if type(point) ~= "table" then
+		return nil
+	end
+
+	local x = finiteNumber(point[1])
+	local y = finiteNumber(point[2]) or 0
+	local z = finiteNumber(point[3])
+	if z == nil then
+		-- Tree rows may be returned as compact [x, z] coordinates.
+		z = finiteNumber(point[2])
+		y = 0
+	end
+	if x == nil or z == nil then
+		return nil
+	end
+	return Vector3.new(x, y, z)
+end
+
 local function readAreaPoint(point: any): MapPoint?
 	if type(point) ~= "table" then
 		return nil
@@ -168,7 +224,8 @@ local function readAreaPoint(point: any): MapPoint?
 end
 
 local function toWorld(point: Vector3, offset: Vector3, scale: number): Vector3
-	return offset + point * scale
+	-- OSM's north-positive Z maps to Roblox's north-facing -Z direction.
+	return offset + Vector3.new(point.X, point.Y, -point.Z) * scale
 end
 
 local function getOrCreateRoot(parent: Instance): Folder
@@ -266,6 +323,15 @@ local function roadLayerOffset(roadClass: any, surface: any): number
 	local classOffset = ROAD_CLASS_Y_OFFSETS[className] or 0
 	local surfaceOffset = ROAD_SURFACE_Y_OFFSETS[surfaceName] or 0
 	return classOffset + surfaceOffset
+end
+
+local function isRailway(road: any): boolean
+	if type(road) ~= "table" then
+		return false
+	end
+	return RAILWAY_CLASSES[if type(road.class) == "string" then road.class else ""] == true
+		or RAILWAY_CLASSES[if type(road.kind) == "string" then road.kind else ""] == true
+		or type(road.railway) == "string"
 end
 
 local function readAreaPoints(points: any): { MapPoint }
@@ -524,7 +590,7 @@ local function createRectanglePrism(
 	end
 
 	local center = (polygon[1] + polygon[2] + polygon[3] + polygon[4]) * 0.25
-	local horizontalAxis = Vector3.new(firstEdge.X, 0, firstEdge.Y).Unit
+	local horizontalAxis = Vector3.new(firstEdge.X, 0, -firstEdge.Y).Unit
 	local verticalAxis = horizontalAxis:Cross(Vector3.yAxis)
 	local part = makePart(
 		parent,
@@ -699,6 +765,15 @@ local function renderWaterway(
 	end
 end
 
+local function landuseStyle(feature: any): (Color3, Enum.Material)
+	local kind = if type(feature) == "table" and type(feature.kind) == "string" then string.lower(feature.kind) else ""
+	local style = LANDUSE_STYLES[kind]
+	if style then
+		return style.Colour, style.Material
+	end
+	return LANDUSE_DEFAULT_COLOUR, LANDUSE_DEFAULT_MATERIAL
+end
+
 local function renderAreas(
 	parent: Instance,
 	features: any,
@@ -710,7 +785,8 @@ local function renderAreas(
 	canCollide: boolean,
 	offset: Vector3,
 	scale: number,
-	renderOpenWaterways: boolean
+	renderOpenWaterways: boolean,
+	styleForFeature: ((any) -> (Color3, Enum.Material))?
 )
 	if type(features) ~= "table" then
 		return
@@ -718,10 +794,16 @@ local function renderAreas(
 
 	for _, feature in ipairs(features) do
 		if type(feature) == "table" and type(feature.polygons) == "table" then
+			local featureColour = colour
+			local featureMaterial = material
+			if styleForFeature then
+				featureColour, featureMaterial = styleForFeature(feature)
+			end
+
 			for _, rawPolygon in ipairs(feature.polygons) do
 				local points = readAreaPoints(rawPolygon)
 				if renderOpenWaterways and isOpenWaterway(points) then
-					renderWaterway(parent, points, feature.kind, offset, scale, colour, material)
+					renderWaterway(parent, points, feature.kind, offset, scale, featureColour, featureMaterial)
 				else
 					local polygon = normalisePolygon(rawPolygon)
 					createPolygonPrism(
@@ -732,8 +814,8 @@ local function renderAreas(
 						height,
 						offset,
 						scale,
-						colour,
-						material,
+						featureColour,
+						featureMaterial,
 						canCollide
 					)
 					-- This outline makes the exact filled footprint easier to read at
@@ -747,10 +829,98 @@ local function renderAreas(
 						AREA_EDGE_THICKNESS,
 						offset,
 						scale,
-						colour:Lerp(Color3.new(0, 0, 0), 0.16),
-						material,
+						featureColour:Lerp(Color3.new(0, 0, 0), 0.16),
+						featureMaterial,
 						false
 					)
+				end
+			end
+		end
+	end
+end
+
+local function getTreeTemplate(): Model?
+	local exampleModels = ReplicatedStorage:FindFirstChild("ExampleModels")
+	local treeTemplate = if exampleModels then exampleModels:FindFirstChild("Tree") else nil
+	if treeTemplate and treeTemplate:IsA("Model") then
+		return treeTemplate
+	end
+
+	if not treeTemplateWarningIssued then
+		treeTemplateWarningIssued = true
+		warn("OSMMapRenderer could not find ReplicatedStorage.ExampleModels.Tree as a Model; skipping tree rendering.")
+	end
+	return nil
+end
+
+local function treeRowPoints(tree: any): any
+	if type(tree) ~= "table" then
+		return nil
+	end
+	if type(tree.points) == "table" then
+		return tree.points
+	end
+	if type(tree.positions) == "table" then
+		return tree.positions
+	end
+	if type(tree.path) == "table" then
+		return tree.path
+	end
+	return nil
+end
+
+local function placeTree(
+	parent: Instance,
+	template: Model,
+	position: Vector3,
+	tree: any,
+	offset: Vector3,
+	scale: number
+)
+	local clone: Model = template:Clone()
+	clone.Name = "Tree"
+
+	for _, descendant in ipairs(clone:GetDescendants()) do
+		if descendant:IsA("BasePart") then
+			descendant.Anchored = true
+		end
+	end
+
+	local worldPosition = toWorld(position, offset, scale)
+		+ Vector3.new(0, (TREE_GROUND_Y * scale) + ((clone.PrimaryPart and clone.PrimaryPart.Size.Y or 0) / 2), 0)
+	clone:PivotTo(CFrame.new(worldPosition))
+	if type(tree) == "table" and type(tree.id) == "string" then
+		clone:SetAttribute("OsmId", tree.id)
+	end
+	clone.Parent = parent
+end
+
+local function renderTrees(parent: Instance, trees: any, offset: Vector3, scale: number)
+	if type(trees) ~= "table" or next(trees) == nil then
+		return
+	end
+
+	local template = getTreeTemplate()
+	if not template then
+		return
+	end
+
+	for _, tree in ipairs(trees) do
+		if type(tree) ~= "table" then
+			continue
+		end
+
+		local position = readTreePoint(tree.position)
+		if position then
+			placeTree(parent, template, position, tree, offset, scale)
+		end
+
+		local rowPoints = treeRowPoints(tree)
+		if type(rowPoints) == "table" then
+			for _, rawPoint in ipairs(rowPoints) do
+				local rowPosition = readTreePoint(rawPoint)
+				if rowPosition then
+					placeTree(parent, template, rowPosition, tree, offset, scale)
 				end
 			end
 		end
@@ -791,9 +961,10 @@ local function renderRoads(parent: Instance, roads: any, offset: Vector3, scale:
 		end
 
 		local width = math.max(finiteNumber(road.width) or 3, 0.75) * scale
-		local colour = ROAD_COLOURS[road.class] or ROAD_COLOURS.residential
-		local material = materialForSurface(road.surface)
-		local layerOffset = roadLayerOffset(road.class, road.surface)
+		local railway = isRailway(road)
+		local colour = if railway then RAILWAY_COLOUR else ROAD_COLOURS[road.class] or ROAD_COLOURS.residential
+		local material = if railway then Enum.Material.Metal else materialForSurface(road.surface)
+		local layerOffset = roadLayerOffset(road.class, road.surface) + (if railway then 0.0016 else 0)
 		local previous: Vector3? = nil
 		for _, rawPoint in ipairs(road.points) do
 			local point = readRoadPoint(rawPoint)
@@ -979,8 +1150,8 @@ local function clearLegacyWaterDebugPoints()
 end
 
 function OSMMapRenderer:Init()
-	clearLegacyWaterDebugPoints()
-	getOrCreateRoot(Workspace)
+	-- Intentionally empty. This service no longer creates a shared Workspace
+	-- map; confirmed clients own their own local rendered map instances.
 end
 
 function OSMMapRenderer:AddChunk(data: any, options: RenderOptions?): Model?
@@ -1016,6 +1187,7 @@ function OSMMapRenderer:AddChunk(data: any, options: RenderOptions?): Model?
 
 	local water = makeLayer(chunk, "Water")
 	local landuse = makeLayer(chunk, "Landuse")
+	local trees = makeLayer(chunk, "Trees")
 	local buildings = makeLayer(chunk, "Buildings")
 	local roads = makeLayer(chunk, "Roads")
 	local pois = makeLayer(chunk, "Pois")
@@ -1033,7 +1205,8 @@ function OSMMapRenderer:AddChunk(data: any, options: RenderOptions?): Model?
 		false,
 		offset,
 		scale,
-		true
+		true,
+		nil
 	)
 	renderAreas(
 		landuse,
@@ -1041,13 +1214,15 @@ function OSMMapRenderer:AddChunk(data: any, options: RenderOptions?): Model?
 		"Landuse",
 		WATER_HEIGHT,
 		LANDUSE_HEIGHT,
-		Color3.fromRGB(105, 153, 86),
-		Enum.Material.Grass,
+		LANDUSE_DEFAULT_COLOUR,
+		LANDUSE_DEFAULT_MATERIAL,
 		false,
 		offset,
 		scale,
-		false
+		false,
+		landuseStyle
 	)
+	renderTrees(trees, mapData.trees, offset, scale)
 	renderBuildings(buildings, mapData.buildings, offset, scale)
 	renderRoads(roads, mapData.roads, offset, scale)
 	renderPois(pois, mapData.pois, offset, scale)
@@ -1092,12 +1267,46 @@ function OSMMapRenderer:Destroy()
 end
 
 function OSMMapRenderer:Start()
-	-- Keep the bundled decoded response as an immediately visible integration
-	-- check. Game code can replace it with the user's initial response via
-	-- OSMMapRenderer:Render(response) and stream adjacent chunks with AddChunk.
-	self:Render(OsmApiReturnedData, {
-		DebugReferences = true,
-	})
+	-- The server owns backend access and validation. World geometry is generated
+	-- by the requesting client so different players can select different areas
+	-- without replacing a shared Workspace map.
+	OSMMapNet.Server.BindGenerate(function(_, request)
+		if self.UseDebugData then
+			return {
+				Ok = true,
+				Data = OsmApiReturnedData,
+			}
+		end
+
+		local ok, value = OSMApiInterface.Initial(request.Latitude, request.Longitude, {
+			ChunkSize = 256,
+			Detail = "full",
+			Layers = { "roads", "buildings", "water", "landuse", "trees", "pois" },
+		}):await()
+
+		if ok then
+			return {
+				Ok = true,
+				Data = value,
+			}
+		end
+
+		local errorValue = value :: { [string]: unknown }
+		return {
+			Ok = false,
+			Error = {
+				Kind = if type(errorValue) == "table" and type(errorValue.Kind) == "string"
+					then errorValue.Kind
+					else "Unknown",
+				Message = if type(errorValue) == "table" and type(errorValue.Message) == "string"
+					then errorValue.Message
+					else tostring(value),
+				StatusCode = if type(errorValue) == "table" and type(errorValue.StatusCode) == "number"
+					then errorValue.StatusCode
+					else nil,
+			},
+		}
+	end)
 end
 
 return OSMMapRenderer

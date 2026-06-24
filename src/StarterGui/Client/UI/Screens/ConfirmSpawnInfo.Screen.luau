@@ -4,6 +4,7 @@ local GuiButtonEffects = require(script.Parent.Parent.Parent.ClientPackages.GuiB
 local UIRoot = require(script.Parent.Parent.UIRoot)
 local UIController = require(script.Parent.Parent.Parent.Controllers.UIController)
 local ClientOSMApiInterface = require(script.Parent.Parent.Parent.Controllers.ClientOSMApiInterface)
+local ClientOSMMapInterface = require(script.Parent.Parent.Parent.Controllers.ClientOSMMapInterface)
 local PickSpawnUtils = require(script.Parent.Parent.Utils["PickSpawn.Screen.Utils"])
 local ConfirmSpawnUtils = require(script.Parent.Parent.Utils["ConfirmSpawnInfo.Screen.Utils"])
 local OsmApiReturnedDataUtils = require(script.Parent.Parent.Utils["OsmApiReturnedData.Utils"])
@@ -18,6 +19,7 @@ local mapController: PickSpawnUtils.MapController? = nil
 local mapViewChangedConnection: any = nil
 local interactionSupport: Frame? = nil
 local mapLoadGeneration = 0
+local isGeneratingMap = false
 
 local MAX_CHUNK_DISTANCE = 10
 local MAX_CONCURRENT_CHUNK_REQUESTS = 6
@@ -199,7 +201,7 @@ function ConfirmSpawnInfo:StartFunctions(osmApiReturnedData)
 	local confirmSpawnInfoScreen = UIRoot.GetScreens():WaitForChild("ConfirmSpawnInfo")
 	local clipFrame = confirmSpawnInfoScreen:WaitForChild("ClipFrame") :: GuiObject
 
-	local locationData = osmApiReturnedData.location
+	local locationData = if type(osmApiReturnedData.location) == "table" then osmApiReturnedData.location else {}
 	local osmSummary = OsmApiReturnedDataUtils.Process(osmApiReturnedData)
 	confirmSpawnInfoScreen:SetAttribute("RoadsCount", osmSummary.Counts.Roads)
 	confirmSpawnInfoScreen:SetAttribute("BuildingsCount", osmSummary.Counts.Buildings)
@@ -375,15 +377,54 @@ function ConfirmSpawnInfo:StartFunctions(osmApiReturnedData)
 	leftSide.MainInfo.PlaceSubname.Text = buildAddressText(locationData.address)
 
 	local spawnButton = confirmSpawnInfoScreen.SpawnButton
+	spawnButton.Active = true
 	table.insert(
 		connections,
 		spawnButton.Activated:Connect(function()
-			if UIController:IsPopupOpen() then
+			if UIController:IsPopupOpen() or isGeneratingMap then
 				return
 			end
 
-			print("Spawn button clicked") -- IGNORE
-			-- Handle spawn button click here
+			local latitude = type(locationData) == "table" and tonumber(locationData.lat) or nil
+			local longitude = type(locationData) == "table" and tonumber(locationData.lon) or nil
+			if type(latitude) ~= "number" or type(longitude) ~= "number" then
+				warn("Cannot generate an OSM map without valid spawn coordinates.")
+				return
+			end
+
+			isGeneratingMap = true
+			spawnButton.Active = false
+			local requestGeneration = mapLoadGeneration
+			ClientOSMMapInterface:Generate(latitude, longitude)
+				:andThen(function(response)
+					if requestGeneration ~= mapLoadGeneration then
+						return
+					end
+
+					if not response.Ok or type(response.Data) ~= "table" then
+						local message = response.Error and response.Error.Message or "OSM map generation failed."
+						warn(string.format("OSM map generation failed: %s", message))
+						return
+					end
+
+					UIController:OpenScreen("IngameHUD", {
+						PlaceName = locationData.name or "Unknown Location",
+						Latitude = latitude,
+						Longitude = longitude,
+						MapData = response.Data,
+					})
+				end)
+				:catch(function(errorValue)
+					if requestGeneration == mapLoadGeneration then
+						warn(string.format("OSM map generation request failed: %s", tostring(errorValue)))
+					end
+				end)
+				:finally(function()
+					if requestGeneration == mapLoadGeneration then
+						isGeneratingMap = false
+						spawnButton.Active = true
+					end
+				end)
 		end)
 	)
 	GuiButtonEffects:SetupFromTemplate(spawnButton, "GreenButton")
@@ -416,6 +457,7 @@ end
 
 function ConfirmSpawnInfo:StopFunctions()
 	destroyMap()
+	isGeneratingMap = false
 	for _, connection in ipairs(connections) do
 		connection:Disconnect()
 	end

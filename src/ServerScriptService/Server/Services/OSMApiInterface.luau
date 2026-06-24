@@ -80,12 +80,7 @@ local inFlightRequests: { [string]: any } = {}
 
 local OSMApiInterface = {}
 
-local function makeError(
-	kind: ErrorKind,
-	message: string,
-	statusCode: number?,
-	body: string?
-): RequestError
+local function makeError(kind: ErrorKind, message: string, statusCode: number?, body: string?): RequestError
 	return {
 		Kind = kind,
 		Message = message,
@@ -200,17 +195,26 @@ local function executeRequest(url: string)
 		end
 
 		if not response.Success then
-			return Promise.reject(makeError(
-				"Http",
-				string.format("OSM API returned HTTP %d: %s", response.StatusCode, response.StatusMessage),
-				response.StatusCode,
-				response.Body
-			))
+			return Promise.reject(
+				makeError(
+					"Http",
+					string.format("OSM API returned HTTP %d: %s", response.StatusCode, response.StatusMessage),
+					response.StatusCode,
+					response.Body
+				)
+			)
 		end
 
 		local decodedOk, decoded = pcall(HttpService.JSONDecode, HttpService, response.Body)
 		if not decodedOk then
-			return Promise.reject(makeError("Decode", "OSM API returned invalid JSON: " .. tostring(decoded), response.StatusCode, response.Body))
+			return Promise.reject(
+				makeError(
+					"Decode",
+					"OSM API returned invalid JSON: " .. tostring(decoded),
+					response.StatusCode,
+					response.Body
+				)
+			)
 		end
 
 		return decoded
@@ -276,20 +280,22 @@ local function requestJson(path: string, query: Query)
 	local request = executeWithRetry(url, 1)
 	inFlightRequests[url] = request
 
-	request:andThen(function(value)
-		evictCacheIfNeeded()
-		local cachedAt = os.clock()
-		responseCache[url] = {
-			Value = value,
-			ExpiresAt = cachedAt + configuration.CacheTtl,
-			LastAccessedAt = cachedAt,
-		}
-	end, function()
-		-- The caller receives the original rejection. Handling it here prevents
-		-- this cache-observer chain from creating an unhandled rejection warning.
-	end):finally(function()
-		inFlightRequests[url] = nil
-	end)
+	request
+		:andThen(function(value)
+			evictCacheIfNeeded()
+			local cachedAt = os.clock()
+			responseCache[url] = {
+				Value = value,
+				ExpiresAt = cachedAt + configuration.CacheTtl,
+				LastAccessedAt = cachedAt,
+			}
+		end, function()
+			-- The caller receives the original rejection. Handling it here prevents
+			-- this cache-observer chain from creating an unhandled rejection warning.
+		end)
+		:finally(function()
+			inFlightRequests[url] = nil
+		end)
 
 	return request
 end
@@ -300,7 +306,7 @@ local function getMapQuery(latitude: number, longitude: number, options: MapLoad
 	return {
 		lat = latitude,
 		lon = longitude,
-		chunkSize = options.ChunkSize or 256,
+		chunkSize = options.ChunkSize or 512,
 		detail = options.Detail or "full",
 		layers = table.concat(layers, ","),
 		debug = options.Debug,
@@ -350,12 +356,18 @@ function OSMApiInterface.Configure(options: Configuration)
 	end
 
 	if options.CacheTtl ~= nil then
-		assert(isFiniteNumber(options.CacheTtl) and options.CacheTtl >= 0, "CacheTtl must be a non-negative finite number.")
+		assert(
+			isFiniteNumber(options.CacheTtl) and options.CacheTtl >= 0,
+			"CacheTtl must be a non-negative finite number."
+		)
 		configuration.CacheTtl = options.CacheTtl
 	end
 
 	if options.MaxCacheEntries ~= nil then
-		assert(validatePositiveInteger(options.MaxCacheEntries, "MaxCacheEntries") == nil, "MaxCacheEntries must be a positive integer.")
+		assert(
+			validatePositiveInteger(options.MaxCacheEntries, "MaxCacheEntries") == nil,
+			"MaxCacheEntries must be a positive integer."
+		)
 		configuration.MaxCacheEntries = options.MaxCacheEntries
 	end
 
