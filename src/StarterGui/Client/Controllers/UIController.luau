@@ -6,7 +6,7 @@ local UIController = {}
 UIController.Name = "UIController"
 UIController.Priority = 20
 
-local DEFAULT_SCREEN = "IngameHUD"
+local DEFAULT_SCREEN = "ConfirmSpawnInfo"
 local currentScreen: string? = nil
 local currentPopup: string? = nil
 

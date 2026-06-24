@@ -50,8 +50,16 @@ local BUILDING_FILL = Color3.fromRGB(208, 190, 169)
 local BUILDING_OUTLINE = Color3.fromRGB(177, 157, 136)
 local WATER_FILL = Color3.fromRGB(157, 203, 225)
 local LANDUSE_FILL = Color3.fromRGB(203, 220, 187)
+local LANDUSE_OUTLINE = Color3.fromRGB(184, 201, 169)
+local FOREST_FILL = Color3.fromRGB(154, 187, 132)
+local FOREST_OUTLINE = Color3.fromRGB(128, 159, 109)
+local ORCHARD_FILL = Color3.fromRGB(176, 205, 139)
+local ORCHARD_OUTLINE = Color3.fromRGB(143, 175, 111)
 local ROAD_OUTLINE = Color3.fromRGB(192, 187, 177)
 local POI_COLOUR = Color3.fromRGB(202, 78, 72)
+local TREE_FILL = Color3.fromRGB(108, 156, 86)
+local TREE_OUTLINE = Color3.fromRGB(69, 104, 57)
+local TREE_ROW_COLOUR = Color3.fromRGB(122, 167, 99)
 local SPAWN_MARKER_COLOUR = Color3.fromRGB(77, 181, 111)
 local BOUNDARY_MARKER_COLOUR = Color3.fromRGB(247, 194, 64)
 local ROAD_COLOURS = {
@@ -123,6 +131,55 @@ number)
 	segment.Size = UDim2.fromOffset(length, thickness)
 	segment.ZIndex = zIndex
 	segment.Parent = parent
+end
+
+local function finiteNumber(value: any): number?
+	local numberValue = tonumber(value)
+	if numberValue and numberValue == numberValue and numberValue ~= math.huge and numberValue ~= -math.huge then
+		return numberValue
+	end
+	return nil
+end
+
+local function readPointCoordinates(point: any, isRoad: boolean): (number?, number?)
+	if type(point) ~= "table" then
+		return nil, nil
+	end
+
+	local x = finiteNumber(point[1])
+	local preferredZ = if isRoad then finiteNumber(point[3]) else finiteNumber(point[2])
+	local fallbackZ = if isRoad then finiteNumber(point[2]) else finiteNumber(point[3])
+	local z = preferredZ or fallbackZ
+	if not x or not z then
+		return nil, nil
+	end
+
+	return x, z
+end
+
+local function projectCoordinates(
+	x: number,
+	z: number,
+	minX: number,
+	minZ: number,
+	scaleX: number,
+	scaleZ: number,
+	viewportSize: Vector2,
+	cameraOffset: Vector2,
+	zoomFactor: number,
+	animationZoomScale: number,
+	zoomAnchor: Vector2?
+): Point
+	-- This view's vertical coordinate is opposite to screen space. Horizontal
+	-- coordinates already match screen space, so only mirror the vertical axis.
+	local mapPosition = Vector2.new((x - minX) * scaleX, viewportSize.Y - (z - minZ) * scaleZ)
+	local position = viewportSize / 2 + (mapPosition - viewportSize / 2) * zoomFactor - cameraOffset
+	if animationZoomScale ~= 1 then
+		local anchor = zoomAnchor or viewportSize / 2
+		position = anchor + (position - anchor) * animationZoomScale
+	end
+
+	return position
 end
 
 local function getChunkBounds(data: any): (number, number, number, number)
@@ -206,27 +263,24 @@ local function projectPoint(
 	animationZoomScale: number,
 	zoomAnchor: Vector2?
 ): Point?
-	if type(point) ~= "table" then
-		return nil
-	end
-
-	local x = tonumber(point[1])
-	local coordinateIndex = if isRoad then 3 else 2
-	local z = tonumber(point[coordinateIndex])
+	local x, z = readPointCoordinates(point, isRoad)
 	if not x or not z then
 		return nil
 	end
 
-	-- This view's vertical coordinate is opposite to screen space. Horizontal
-	-- coordinates already match screen space, so only mirror the vertical axis.
-	local mapPosition = Vector2.new((x - minX) * scaleX, viewportSize.Y - (z - minZ) * scaleZ)
-	local position = viewportSize / 2 + (mapPosition - viewportSize / 2) * zoomFactor - cameraOffset
-	if animationZoomScale ~= 1 then
-		local anchor = zoomAnchor or viewportSize / 2
-		position = anchor + (position - anchor) * animationZoomScale
-	end
-
-	return position
+	return projectCoordinates(
+		x,
+		z,
+		minX,
+		minZ,
+		scaleX,
+		scaleZ,
+		viewportSize,
+		cameraOffset,
+		zoomFactor,
+		animationZoomScale,
+		zoomAnchor
+	)
 end
 
 local function drawPath(
@@ -485,13 +539,20 @@ local function drawAreaCollection(
 	zoomAnchor: Vector2?,
 	fillColour: Color3,
 	outlineColour: Color3,
-	zIndex: number
+	zIndex: number,
+	resolveColours: ((any) -> (Color3, Color3))?
 )
 	if type(features) ~= "table" then
 		return
 	end
 
 	for _, feature in ipairs(features) do
+		local featureFillColour = fillColour
+		local featureOutlineColour = outlineColour
+		if resolveColours then
+			featureFillColour, featureOutlineColour = resolveColours(feature)
+		end
+
 		local polygons = feature.polygons
 		if not polygons and feature.footprint then
 			polygons = { feature.footprint }
@@ -510,7 +571,7 @@ local function drawAreaCollection(
 					zoomFactor,
 					animationZoomScale,
 					zoomAnchor,
-					fillColour,
+					featureFillColour,
 					zIndex
 				)
 				drawPath(
@@ -527,10 +588,212 @@ local function drawAreaCollection(
 					animationZoomScale,
 					zoomAnchor,
 					1,
-					outlineColour,
+					featureOutlineColour,
 					zIndex + 1,
 					true
 				)
+			end
+		end
+	end
+end
+
+local function resolveLanduseColours(feature: any): (Color3, Color3)
+	local kind = if type(feature) == "table" and type(feature.kind) == "string" then string.lower(feature.kind) else ""
+	if kind == "forest" or kind == "wood" then
+		return FOREST_FILL, FOREST_OUTLINE
+	end
+	if kind == "orchard" then
+		return ORCHARD_FILL, ORCHARD_OUTLINE
+	end
+	return LANDUSE_FILL, LANDUSE_OUTLINE
+end
+
+local function createCircularMarker(
+	parent: GuiObject,
+	name: string,
+	position: Point,
+	diameter: number,
+	fillColour: Color3,
+	outlineColour: Color3,
+	zIndex: number
+)
+	local outer = Instance.new("Frame")
+	outer.Name = name
+	outer.AnchorPoint = Vector2.new(0.5, 0.5)
+	outer.BackgroundColor3 = outlineColour
+	outer.BorderSizePixel = 0
+	outer.Position = UDim2.fromOffset(position.X, position.Y)
+	outer.Size = UDim2.fromOffset(diameter, diameter)
+	outer.ZIndex = zIndex
+	outer.Parent = parent
+
+	local outerCorner = Instance.new("UICorner")
+	outerCorner.CornerRadius = UDim.new(1, 0)
+	outerCorner.Parent = outer
+
+	local inner = Instance.new("Frame")
+	inner.Name = "Fill"
+	inner.AnchorPoint = Vector2.new(0.5, 0.5)
+	inner.BackgroundColor3 = fillColour
+	inner.BorderSizePixel = 0
+	inner.Position = UDim2.fromScale(0.5, 0.5)
+	inner.Size = UDim2.fromOffset(math.max(2, diameter - 2), math.max(2, diameter - 2))
+	inner.ZIndex = zIndex + 1
+	inner.Parent = outer
+
+	local innerCorner = Instance.new("UICorner")
+	innerCorner.CornerRadius = UDim.new(1, 0)
+	innerCorner.Parent = inner
+end
+
+local function getTreeMarkerDiameter(
+	tree: any,
+	scaleX: number,
+	scaleZ: number,
+	zoomFactor: number,
+	animationZoomScale: number
+): number
+	local crownDiameter = if type(tree) == "table" then finiteNumber(tree.crownDiameter) else nil
+	if crownDiameter and crownDiameter > 0 then
+		return math.clamp(crownDiameter * math.min(scaleX, scaleZ) * zoomFactor * animationZoomScale, 4, 14)
+	end
+
+	return math.clamp(5 * math.sqrt(math.max(zoomFactor * animationZoomScale, 0.35)), 4, 10)
+end
+
+local function getTreeRowPoints(tree: any): any
+	if type(tree) ~= "table" then
+		return nil
+	end
+
+	if type(tree.points) == "table" then
+		return tree.points
+	end
+	if type(tree.positions) == "table" then
+		return tree.positions
+	end
+	if type(tree.path) == "table" then
+		return tree.path
+	end
+
+	return nil
+end
+
+local function drawTreeCollection(
+	parent: GuiObject,
+	trees: any,
+	minX: number,
+	minZ: number,
+	scaleX: number,
+	scaleZ: number,
+	viewportSize: Vector2,
+	cameraOffset: Vector2,
+	zoomFactor: number,
+	animationZoomScale: number,
+	zoomAnchor: Vector2?,
+	zIndex: number
+)
+	if type(trees) ~= "table" then
+		return
+	end
+
+	local rowThickness = math.clamp(1.5 * math.sqrt(math.max(zoomFactor * animationZoomScale, 0.5)), 1, 5)
+	for _, tree in ipairs(trees) do
+		if type(tree) ~= "table" then
+			continue
+		end
+
+		local position = projectPoint(
+			tree.position,
+			true,
+			minX,
+			minZ,
+			scaleX,
+			scaleZ,
+			viewportSize,
+			cameraOffset,
+			zoomFactor,
+			animationZoomScale,
+			zoomAnchor
+		)
+		if position then
+			local diameter = getTreeMarkerDiameter(tree, scaleX, scaleZ, zoomFactor, animationZoomScale)
+			if
+				position.X >= -diameter
+				and position.Y >= -diameter
+				and position.X <= viewportSize.X + diameter
+				and position.Y <= viewportSize.Y + diameter
+			then
+				createCircularMarker(parent, "Tree", position, diameter, TREE_FILL, TREE_OUTLINE, zIndex)
+			end
+			continue
+		end
+
+		local rowPoints = getTreeRowPoints(tree)
+		if type(rowPoints) ~= "table" or #rowPoints == 0 then
+			continue
+		end
+
+		drawPath(
+			parent,
+			rowPoints,
+			true,
+			minX,
+			minZ,
+			scaleX,
+			scaleZ,
+			viewportSize,
+			cameraOffset,
+			zoomFactor,
+			animationZoomScale,
+			zoomAnchor,
+			rowThickness + 1,
+			TREE_OUTLINE,
+			zIndex,
+			false
+		)
+		drawPath(
+			parent,
+			rowPoints,
+			true,
+			minX,
+			minZ,
+			scaleX,
+			scaleZ,
+			viewportSize,
+			cameraOffset,
+			zoomFactor,
+			animationZoomScale,
+			zoomAnchor,
+			rowThickness,
+			TREE_ROW_COLOUR,
+			zIndex + 1,
+			false
+		)
+
+		for _, rowPoint in ipairs(rowPoints) do
+			local rowPosition = projectPoint(
+				rowPoint,
+				true,
+				minX,
+				minZ,
+				scaleX,
+				scaleZ,
+				viewportSize,
+				cameraOffset,
+				zoomFactor,
+				animationZoomScale,
+				zoomAnchor
+			)
+			local rowMarkerDiameter = math.max(4, rowThickness + 3)
+			if
+				rowPosition
+				and rowPosition.X >= -rowMarkerDiameter
+				and rowPosition.Y >= -rowMarkerDiameter
+				and rowPosition.X <= viewportSize.X + rowMarkerDiameter
+				and rowPosition.Y <= viewportSize.Y + rowMarkerDiameter
+			then
+				createCircularMarker(parent, "TreeRowPoint", rowPosition, rowMarkerDiameter, TREE_FILL, TREE_OUTLINE, zIndex + 2)
 			end
 		end
 	end
@@ -1037,7 +1300,8 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			zoomAnchor,
 			WATER_FILL,
 			WATER_FILL,
-			zIndex
+			zIndex,
+			nil
 		)
 		drawAreaCollection(
 			canvas,
@@ -1052,8 +1316,23 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			animationZoomScale,
 			zoomAnchor,
 			LANDUSE_FILL,
-			LANDUSE_FILL,
-			zIndex + 2
+			LANDUSE_OUTLINE,
+			zIndex + 2,
+			resolveLanduseColours
+		)
+		drawTreeCollection(
+			canvas,
+			data.trees,
+			minX,
+			minZ,
+			scaleX,
+			scaleZ,
+			viewportSize,
+			cameraOffset,
+			zoomFactor,
+			animationZoomScale,
+			zoomAnchor,
+			zIndex + 4
 		)
 		drawAreaCollection(
 			canvas,
@@ -1069,7 +1348,8 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			zoomAnchor,
 			BUILDING_FILL,
 			BUILDING_OUTLINE,
-			zIndex + 4
+			zIndex + 6,
+			nil
 		)
 
 		if type(data.roads) == "table" then
@@ -1092,7 +1372,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 					zoomAnchor,
 					roadThickness + 1.5,
 					ROAD_OUTLINE,
-					zIndex + 6,
+					zIndex + 8,
 					false
 				)
 				drawPath(
@@ -1110,7 +1390,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 					zoomAnchor,
 					roadThickness,
 					roadColour,
-					zIndex + 7,
+					zIndex + 9,
 					false
 				)
 
@@ -1154,12 +1434,12 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			zoomFactor,
 			animationZoomScale,
 			zoomAnchor,
-			zIndex + 9
+			zIndex + 11
 		)
 	end
 
 	for _, candidate in pairs(roadLabelsByName) do
-		drawRoadLabel(canvas, candidate, zIndex + 8)
+		drawRoadLabel(canvas, candidate, zIndex + 10)
 	end
 
 	-- Draw a boundary for every streamed chunk. The spawn marker remains tied

@@ -1,5367 +1,6867 @@
 local returnedData = [[
 
 {
+  "version": 1,
+  "status": "ok",
+  "source": "openstreetmap",
+  "attribution": "© OpenStreetMap contributors",
   "origin": {
-    "lat": 57.53968686230254,
-    "lon": 25.423750568544
+    "lat": 56.9500238,
+    "lon": 24.0999654
   },
   "chunk": {
-    "version": 1,
-    "status": "ok",
-    "source": "openstreetmap",
-    "attribution": "© OpenStreetMap contributors",
-    "origin": {
-      "lat": 57.53968686230254,
-      "lon": 25.423750568544
-    },
-    "chunk": {
-      "x": 0,
-      "z": 0,
-      "size": 256,
-      "minX": -128,
-      "minZ": -128,
-      "maxX": 128,
-      "maxZ": 128
-    },
-    "stats": {
-      "roads": 124,
-      "buildings": 12,
-      "water": 3,
-      "landuse": 0,
-      "pois": 10,
-      "cache": "miss"
-    },
-    "roads": [
-      {
-        "id": "way/5198732",
-        "class": "tertiary",
-        "width": 7,
-        "surface": "asphalt",
-        "name": "Raiņa iela",
-        "points": [
-          [
-            25.7,
-            0,
-            227.4
-          ],
-          [
-            54.4,
-            0,
-            116.6
-          ],
-          [
-            69.6,
-            0,
-            62
-          ],
-          [
-            75.5,
-            0,
-            45.9
-          ]
-        ]
-      },
-      {
-        "id": "way/37389179",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Lāčplēša iela",
-        "points": [
-          [
-            111.5,
-            0,
-            -68.1
-          ],
-          [
-            84.8,
-            0,
-            0.8
-          ]
-        ]
-      },
-      {
-        "id": "way/39188313",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            104.6,
-            0,
-            -68.5
-          ],
-          [
-            49.7,
-            0,
-            -121.4
-          ]
-        ]
-      },
-      {
-        "id": "way/41576884",
-        "class": "residential",
-        "width": 5,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -123,
-            0,
-            -84.4
-          ],
-          [
-            -106.3,
-            0,
-            -82
-          ],
-          [
-            -64.7,
-            0,
-            -68
-          ]
-        ]
-      },
-      {
-        "id": "way/41576885",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -95.7,
-            0,
-            -78.6
-          ],
-          [
-            -89.6,
-            0,
-            -93.6
-          ],
-          [
-            -58.9,
-            0,
-            -83.6
-          ],
-          [
-            -64.7,
-            0,
-            -68
-          ]
-        ]
-      },
-      {
-        "id": "way/41661278",
-        "class": "residential",
-        "width": 5,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            15,
-            0,
-            -44
-          ],
-          [
-            10.1,
-            0,
-            -42.8
-          ],
-          [
-            -2.5,
-            0,
-            -44.9
-          ],
-          [
-            -50.5,
-            0,
-            -62.7
-          ]
-        ]
-      },
-      {
-        "id": "way/48634763",
-        "class": "residential",
-        "width": 5,
-        "surface": "paving_stones",
-        "name": "Katrīnas iela",
-        "points": [
-          [
-            15,
-            0,
-            -44
-          ],
-          [
-            59.4,
-            0,
-            -152.2
-          ]
-        ]
-      },
-      {
-        "id": "way/51180152",
-        "class": "steps",
-        "width": 5,
-        "surface": "concrete",
-        "name": null,
-        "points": [
-          [
-            -85.9,
-            0,
-            25.2
-          ],
-          [
-            -88.7,
-            0,
-            9.7
-          ]
-        ]
-      },
-      {
-        "id": "way/67306213",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            47.5,
-            0,
-            -122.6
-          ],
-          [
-            36.6,
-            0,
-            -119.5
-          ],
-          [
-            31.4,
-            0,
-            -108.6
-          ]
-        ]
-      },
-      {
-        "id": "way/68741598",
-        "class": "steps",
-        "width": 5,
-        "surface": "concrete",
-        "name": null,
-        "points": [
-          [
-            -21.1,
-            0,
-            -2.9
-          ],
-          [
-            -29.5,
-            0,
-            -8.3
-          ],
-          [
-            -40.4,
-            0,
-            -13.2
-          ],
-          [
-            -46.8,
-            0,
-            -27.4
-          ]
-        ]
-      },
-      {
-        "id": "way/69607359",
-        "class": "service",
-        "width": 3,
-        "surface": "asphalt",
-        "name": null,
-        "points": [
-          [
-            51.6,
-            0,
-            127.6
-          ],
-          [
-            -17.3,
-            0,
-            111
-          ],
-          [
-            -50.6,
-            0,
-            117.4
-          ],
-          [
-            -99.8,
-            0,
-            128.8
-          ],
-          [
-            -120.4,
-            0,
-            212.8
-          ]
-        ]
-      },
-      {
-        "id": "way/530884087",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            105.3,
-            0,
-            153.4
-          ],
-          [
-            115.6,
-            0,
-            145.3
-          ],
-          [
-            114,
-            0,
-            131.6
-          ],
-          [
-            132.4,
-            0,
-            116.4
-          ]
-        ]
-      },
-      {
-        "id": "way/530893386",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Ziloņu iela",
-        "points": [
-          [
-            -88.7,
-            0,
-            9.7
-          ],
-          [
-            -33.1,
-            0,
-            5.2
-          ],
-          [
-            -27.4,
-            0,
-            3.9
-          ],
-          [
-            -16.5,
-            0,
-            -8
-          ],
-          [
-            0.4,
-            0,
-            -10
-          ],
-          [
-            19.7,
-            0,
-            -10.7
-          ],
-          [
-            42.7,
-            0,
-            -1.4
-          ]
-        ]
-      },
-      {
-        "id": "way/789797170",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -138.6,
-            0,
-            -120.9
-          ],
-          [
-            -128,
-            0,
-            -122.2
-          ],
-          [
-            -106.3,
-            0,
-            -135.6
-          ]
-        ]
-      },
-      {
-        "id": "way/789797172",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Ziloņu iela",
-        "points": [
-          [
-            -91.5,
-            0,
-            -66
-          ],
-          [
-            -102.3,
-            0,
-            -66
-          ],
-          [
-            -108.1,
-            0,
-            -64.1
-          ],
-          [
-            -111.3,
-            0,
-            -60.3
-          ],
-          [
-            -117.6,
-            0,
-            -47.3
-          ]
-        ]
-      },
-      {
-        "id": "way/789797173",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Lāčplēša iela",
-        "points": [
-          [
-            81.4,
-            0,
-            9.2
-          ],
-          [
-            77.4,
-            0,
-            20.6
-          ],
-          [
-            74.7,
-            0,
-            34.9
-          ],
-          [
-            75.5,
-            0,
-            45.9
-          ]
-        ]
-      },
-      {
-        "id": "way/794343093",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Ziloņu iela",
-        "points": [
-          [
-            -125.2,
-            0,
-            -74.4
-          ],
-          [
-            -119.7,
-            0,
-            -60.2
-          ],
-          [
-            -117.6,
-            0,
-            -47.3
-          ]
-        ]
-      },
-      {
-        "id": "way/794343098",
-        "class": "residential",
-        "width": 5,
-        "surface": "asphalt",
-        "name": "Bruņinieku iela",
-        "points": [
-          [
-            118.9,
-            0,
-            -125.3
-          ],
-          [
-            130.7,
-            0,
-            -120.3
-          ]
-        ]
-      },
-      {
-        "id": "way/794681308",
-        "class": "residential",
-        "width": 5,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -172.8,
-            0,
-            -74.3
-          ],
-          [
-            -123,
-            0,
-            -84.4
-          ]
-        ]
-      },
-      {
-        "id": "way/794681309",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Rīgas iela",
-        "points": [
-          [
-            59.4,
-            0,
-            -152.2
-          ],
-          [
-            109.1,
-            0,
-            -131.6
-          ],
-          [
-            115.6,
-            0,
-            -127.4
-          ]
-        ]
-      },
-      {
-        "id": "way/794727210",
-        "class": "residential",
-        "width": 5,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -50.5,
-            0,
-            -62.7
-          ],
-          [
-            -64.7,
-            0,
-            -68
-          ]
-        ]
-      },
-      {
-        "id": "way/980811869",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -91.8,
-            0,
-            -104.4
-          ],
-          [
-            -104.2,
-            0,
-            -100
-          ],
-          [
-            -121.5,
-            0,
-            -95.2
-          ],
-          [
-            -129.5,
-            0,
-            -88.7
-          ]
-        ]
-      },
-      {
-        "id": "way/980811870",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -84.2,
-            0,
-            -105.5
-          ],
-          [
-            -74,
-            0,
-            -104.5
-          ],
-          [
-            -40,
-            0,
-            -97.1
-          ]
-        ]
-      },
-      {
-        "id": "way/980811871",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -93.2,
-            0,
-            -110.1
-          ],
-          [
-            -92.7,
-            0,
-            -112.4
-          ],
-          [
-            -93.2,
-            0,
-            -116.4
-          ],
-          [
-            -96.7,
-            0,
-            -128.5
-          ],
-          [
-            -100.6,
-            0,
-            -133.7
-          ]
-        ]
-      },
-      {
-        "id": "way/980811874",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -128,
-            0,
-            -122.2
-          ],
-          [
-            -132.4,
-            0,
-            -152.8
-          ]
-        ]
-      },
-      {
-        "id": "way/980811880",
-        "class": "steps",
-        "width": 5,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            57.8,
-            0,
-            47.6
-          ],
-          [
-            62.4,
-            0,
-            56.2
-          ]
-        ]
-      },
-      {
-        "id": "way/980811881",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            62.4,
-            0,
-            56.2
-          ],
-          [
-            51.6,
-            0,
-            58.1
-          ]
-        ]
-      },
-      {
-        "id": "way/980811882",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            62.4,
-            0,
-            56.2
-          ],
-          [
-            65.6,
-            0,
-            57.6
-          ]
-        ]
-      },
-      {
-        "id": "way/980811891",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            123.6,
-            0,
-            -89.9
-          ],
-          [
-            134.4,
-            0,
-            -84.8
-          ],
-          [
-            151.1,
-            0,
-            -78.3
-          ],
-          [
-            159.5,
-            0,
-            -76.4
-          ],
-          [
-            163.4,
-            0,
-            -80.5
-          ],
-          [
-            174.6,
-            0,
-            -105.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1017651476",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Ziloņu iela",
-        "points": [
-          [
-            -117.6,
-            0,
-            -47.3
-          ],
-          [
-            -129,
-            0,
-            2.3
-          ],
-          [
-            -128.8,
-            0,
-            9.2
-          ],
-          [
-            -124.9,
-            0,
-            12.6
-          ]
-        ]
-      },
-      {
-        "id": "way/1097045616",
-        "class": "footway",
-        "width": 2,
-        "surface": "asphalt",
-        "name": null,
-        "points": [
-          [
-            65.6,
-            0,
-            57.6
-          ],
-          [
-            77.1,
-            0,
-            70.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1097045617",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            77.1,
-            0,
-            70.2
-          ],
-          [
-            64.5,
-            0,
-            110.8
-          ],
-          [
-            46.5,
-            0,
-            173.3
-          ],
-          [
-            20.6,
-            0,
-            270.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1097045625",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -247.9,
-            0,
-            131.3
-          ],
-          [
-            -214.5,
-            0,
-            141.4
-          ],
-          [
-            -180.2,
-            0,
-            139.8
-          ],
-          [
-            -146.8,
-            0,
-            129.4
-          ],
-          [
-            -65,
-            0,
-            94.6
-          ],
-          [
-            -45.4,
-            0,
-            67.6
-          ],
-          [
-            -36.5,
-            0,
-            63.6
-          ],
-          [
-            -18.4,
-            0,
-            61.2
-          ],
-          [
-            24.6,
-            0,
-            61.4
-          ],
-          [
-            51.6,
-            0,
-            58.1
-          ]
-        ]
-      },
-      {
-        "id": "way/1097045626",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -85.9,
-            0,
-            25.2
-          ],
-          [
-            -104.3,
-            0,
-            34.6
-          ],
-          [
-            -131.9,
-            0,
-            60.5
-          ],
-          [
-            -143.3,
-            0,
-            67.7
-          ],
-          [
-            -158.9,
-            0,
-            74
-          ],
-          [
-            -176,
-            0,
-            76.8
-          ],
-          [
-            -236.2,
-            0,
-            79
-          ],
-          [
-            -269.6,
-            0,
-            85.3
-          ],
-          [
-            -304.1,
-            0,
-            109.1
-          ],
-          [
-            -317.9,
-            0,
-            120.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1097045630",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -106.3,
-            0,
-            112.2
-          ],
-          [
-            -102.2,
-            0,
-            116.7
-          ],
-          [
-            -65.4,
-            0,
-            101.6
-          ],
-          [
-            -40.3,
-            0,
-            72.9
-          ],
-          [
-            -5.1,
-            0,
-            61.3
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678034",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            221.4,
-            0,
-            220.5
-          ],
-          [
-            170,
-            0,
-            165.3
-          ],
-          [
-            77.1,
-            0,
-            70.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678035",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            77.9,
-            0,
-            1
-          ],
-          [
-            104.6,
-            0,
-            -68.5
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678038",
-        "class": "footway",
-        "width": 2,
-        "surface": "asphalt",
-        "name": null,
-        "points": [
-          [
-            76.2,
-            0,
-            6.5
-          ],
-          [
-            87,
-            0,
-            9.5
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678039",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            104.6,
-            0,
-            -68.5
-          ],
-          [
-            115.1,
-            0,
-            -64.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678040",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            87,
-            0,
-            9.5
-          ],
-          [
-            80.2,
-            0,
-            29.9
-          ],
-          [
-            79.9,
-            0,
-            41.8
-          ],
-          [
-            82.9,
-            0,
-            53.7
-          ],
-          [
-            96.1,
-            0,
-            68.9
-          ],
-          [
-            107.4,
-            0,
-            80.2
-          ],
-          [
-            118.5,
-            0,
-            84.4
-          ],
-          [
-            145.4,
-            0,
-            117.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678176",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            130,
-            0,
-            -112.6
-          ],
-          [
-            129.5,
-            0,
-            -105.1
-          ],
-          [
-            120.8,
-            0,
-            -80.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678177",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            129.5,
-            0,
-            -105.1
-          ],
-          [
-            118.6,
-            0,
-            -106.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1097678178",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            118.6,
-            0,
-            -106.2
-          ],
-          [
-            114.8,
-            0,
-            -106.1
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801567",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            58.8,
-            0,
-            -142.6
-          ],
-          [
-            49.7,
-            0,
-            -121.4
-          ],
-          [
-            22.1,
-            0,
-            -48.4
-          ],
-          [
-            17.6,
-            0,
-            -42.1
-          ],
-          [
-            11.3,
-            0,
-            -39.8
-          ],
-          [
-            -4.3,
-            0,
-            -42.1
-          ],
-          [
-            -21.5,
-            0,
-            -41.1
-          ],
-          [
-            -54.5,
-            0,
-            -54
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801568",
-        "class": "steps",
-        "width": 5,
-        "surface": "concrete",
-        "name": null,
-        "points": [
-          [
-            -49.5,
-            0,
-            -40.2
-          ],
-          [
-            -44.3,
-            0,
-            -37.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801569",
-        "class": "footway",
-        "width": 2,
-        "surface": "unhewn_cobblestone",
-        "name": null,
-        "points": [
-          [
-            -44.3,
-            0,
-            -37.9
-          ],
-          [
-            -37.4,
-            0,
-            -33.2
-          ],
-          [
-            -30.2,
-            0,
-            -32.4
-          ],
-          [
-            -23.8,
-            0,
-            -35.8
-          ],
-          [
-            -20.6,
-            0,
-            -41.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801572",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            44.2,
-            0,
-            -131.2
-          ],
-          [
-            41.8,
-            0,
-            -123.8
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801573",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            41.8,
-            0,
-            -123.8
-          ],
-          [
-            35.8,
-            0,
-            -107
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801574",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            35.8,
-            0,
-            -107
-          ],
-          [
-            16.8,
-            0,
-            -60
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801575",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            24.4,
-            0,
-            -54.5
-          ],
-          [
-            -15.3,
-            0,
-            -69.1
-          ],
-          [
-            -21.9,
-            0,
-            -52
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801577",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            16.8,
-            0,
-            -60
-          ],
-          [
-            14.5,
-            0,
-            -54.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801578",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            14.5,
-            0,
-            -54.4
-          ],
-          [
-            12.5,
-            0,
-            -51.5
-          ],
-          [
-            9,
-            0,
-            -49.7
-          ],
-          [
-            3.2,
-            0,
-            -49.5
-          ],
-          [
-            -1.7,
-            0,
-            -50.4
-          ],
-          [
-            -19.8,
-            0,
-            -57.6
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801579",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -38.6,
-            0,
-            -58.2
-          ],
-          [
-            -29.5,
-            0,
-            -82.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801580",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Bastiona iela",
-        "points": [
-          [
-            -23.3,
-            0,
-            -134.7
-          ],
-          [
-            -50.3,
-            0,
-            -65.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801581",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -50.3,
-            0,
-            -65.4
-          ],
-          [
-            -52.5,
-            0,
-            -59.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801584",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -52.5,
-            0,
-            -59.7
-          ],
-          [
-            -54.5,
-            0,
-            -54
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801585",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -54.5,
-            0,
-            -54
-          ],
-          [
-            -56.4,
-            0,
-            -47.7
-          ],
-          [
-            -53,
-            0,
-            -39.3
-          ],
-          [
-            -59.2,
-            0,
-            -24.8
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801586",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -53,
-            0,
-            -39.3
-          ],
-          [
-            -49.5,
-            0,
-            -40.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801587",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -46.8,
-            0,
-            -27.4
-          ],
-          [
-            -53,
-            0,
-            -39.3
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801588",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -75.4,
-            0,
-            -72.1
-          ],
-          [
-            -80.3,
-            0,
-            -54.7
-          ],
-          [
-            -88.6,
-            0,
-            -53
-          ],
-          [
-            -96.5,
-            0,
-            -47.9
-          ],
-          [
-            -104.5,
-            0,
-            -20.6
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801589",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -80.3,
-            0,
-            -54.7
-          ],
-          [
-            -77.7,
-            0,
-            -48
-          ],
-          [
-            -72.6,
-            0,
-            -44.3
-          ],
-          [
-            -59.2,
-            0,
-            -44
-          ],
-          [
-            -49.9,
-            0,
-            -45.1
-          ],
-          [
-            -46.3,
-            0,
-            -47.7
-          ],
-          [
-            -41.8,
-            0,
-            -59.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801591",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -91.5,
-            0,
-            -66
-          ],
-          [
-            -80.2,
-            0,
-            -63
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801592",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -80.2,
-            0,
-            -63
-          ],
-          [
-            -74.6,
-            0,
-            -61.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801593",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -74.6,
-            0,
-            -61.2
-          ],
-          [
-            -54.5,
-            0,
-            -54
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801595",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -127.5,
-            0,
-            -80.2
-          ],
-          [
-            -129,
-            0,
-            -86.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801597",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -45.1,
-            0,
-            -78.7
-          ],
-          [
-            -58.9,
-            0,
-            -83.6
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801598",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -91.5,
-            0,
-            -66
-          ],
-          [
-            -96.3,
-            0,
-            -69.1
-          ],
-          [
-            -111.5,
-            0,
-            -73.9
-          ],
-          [
-            -125.2,
-            0,
-            -74.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801599",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -127.5,
-            0,
-            -80.2
-          ],
-          [
-            -170.9,
-            0,
-            -71.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801608",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            49.7,
-            0,
-            -121.4
-          ],
-          [
-            42.3,
-            0,
-            -125.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1100864064",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            114.9,
-            0,
-            -77.2
-          ],
-          [
-            174,
-            0,
-            -53.9
-          ],
-          [
-            172.2,
-            0,
-            -48.4
-          ],
-          [
-            180.1,
-            0,
-            -45.3
-          ],
-          [
-            179.4,
-            0,
-            -33.8
-          ],
-          [
-            174.9,
-            0,
-            -23.2
-          ],
-          [
-            172,
-            0,
-            -19.3
-          ],
-          [
-            146.8,
-            0,
-            4.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1100864065",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            120.8,
-            0,
-            -80.4
-          ],
-          [
-            117.7,
-            0,
-            -71.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1100864066",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            117.7,
-            0,
-            -71.4
-          ],
-          [
-            87,
-            0,
-            9.5
-          ]
-        ]
-      },
-      {
-        "id": "way/1100864067",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            116.6,
-            0,
-            -68.7
-          ],
-          [
-            125.7,
-            0,
-            -67.1
-          ],
-          [
-            172.2,
-            0,
-            -48.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1100864069",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            176.2,
-            0,
-            -56.8
-          ],
-          [
-            158,
-            0,
-            -64.1
-          ],
-          [
-            159.7,
-            0,
-            -69.8
-          ],
-          [
-            157.5,
-            0,
-            -70.8
-          ],
-          [
-            133,
-            0,
-            -80.4
-          ],
-          [
-            131,
-            0,
-            -77.2
-          ],
-          [
-            127.8,
-            0,
-            -76.2
-          ],
-          [
-            123.8,
-            0,
-            -78
-          ],
-          [
-            120.8,
-            0,
-            -80.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1102364035",
-        "class": "service",
-        "width": 3,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            101.4,
-            0,
-            -42.1
-          ],
-          [
-            68.2,
-            0,
-            -53.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1102364036",
-        "class": "path",
-        "width": 1.5,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            17.6,
-            0,
-            -42.1
-          ],
-          [
-            43.1,
-            0,
-            -49.1
-          ],
-          [
-            62.9,
-            0,
-            -53.7
-          ],
-          [
-            68.2,
-            0,
-            -53.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1106021544",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -85.9,
-            0,
-            25.2
-          ],
-          [
-            -62.9,
-            0,
-            17.8
-          ],
-          [
-            -57.1,
-            0,
-            16.6
-          ]
-        ]
-      },
-      {
-        "id": "way/1107703681",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            42.3,
-            0,
-            -125.2
-          ],
-          [
-            -17.2,
-            0,
-            -149.8
-          ]
-        ]
-      },
-      {
-        "id": "way/1107703682",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -10.6,
-            0,
-            -167.8
-          ],
-          [
-            -13.6,
-            0,
-            -164.4
-          ],
-          [
-            -19.5,
-            0,
-            -146.9
-          ],
-          [
-            -40,
-            0,
-            -97.1
-          ]
-        ]
-      },
-      {
-        "id": "way/1111580463",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -65.4,
-            0,
-            101.6
-          ],
-          [
-            -17.3,
-            0,
-            111
-          ]
-        ]
-      },
-      {
-        "id": "way/1111580469",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -57.4,
-            0,
-            174.7
-          ],
-          [
-            -56.3,
-            0,
-            169.3
-          ],
-          [
-            -59.8,
-            0,
-            168.6
-          ],
-          [
-            -52.3,
-            0,
-            140.8
-          ],
-          [
-            -42.4,
-            0,
-            127.3
-          ],
-          [
-            -34.7,
-            0,
-            114.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1111580477",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -58.4,
-            0,
-            119.2
-          ],
-          [
-            -42.9,
-            0,
-            128
-          ]
-        ]
-      },
-      {
-        "id": "way/1111580478",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -37.6,
-            0,
-            119.2
-          ],
-          [
-            -30,
-            0,
-            119.4
-          ],
-          [
-            -32.7,
-            0,
-            129
-          ]
-        ]
-      },
-      {
-        "id": "way/1111580479",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            17.7,
-            0,
-            119.5
-          ],
-          [
-            16.5,
-            0,
-            123.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1111580481",
-        "class": "steps",
-        "width": 5,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            23.3,
-            0,
-            130
-          ],
-          [
-            24.2,
-            0,
-            125.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1111580482",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            24.2,
-            0,
-            125.9
-          ],
-          [
-            25.3,
-            0,
-            121.3
-          ]
-        ]
-      },
-      {
-        "id": "way/1117214298",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Rīgas iela",
-        "points": [
-          [
-            115.6,
-            0,
-            -127.4
-          ],
-          [
-            118.9,
-            0,
-            -125.3
-          ]
-        ]
-      },
-      {
-        "id": "way/1117214299",
-        "class": "service",
-        "width": 3,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            115.6,
-            0,
-            -127.4
-          ],
-          [
-            136.4,
-            0,
-            -179.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172515",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            104.5,
-            0,
-            -125.3
-          ],
-          [
-            106,
-            0,
-            -128.8
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172528",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -40,
-            0,
-            -97.1
-          ],
-          [
-            -38.1,
-            0,
-            -96.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172529",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -95.1,
-            0,
-            -103.2
-          ],
-          [
-            -97.7,
-            0,
-            -105.1
-          ],
-          [
-            -98,
-            0,
-            -107.2
-          ],
-          [
-            -97.1,
-            0,
-            -109.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172530",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -84.2,
-            0,
-            -105.5
-          ],
-          [
-            -91.8,
-            0,
-            -104.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172531",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -97.1,
-            0,
-            -109.2
-          ],
-          [
-            -94.2,
-            0,
-            -110.3
-          ],
-          [
-            -92.2,
-            0,
-            -109.5
-          ],
-          [
-            -91,
-            0,
-            -107.6
-          ],
-          [
-            -91.8,
-            0,
-            -104.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172532",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -234.8,
-            0,
-            -147
-          ],
-          [
-            -226.3,
-            0,
-            -145.4
-          ],
-          [
-            -189.9,
-            0,
-            -146.2
-          ],
-          [
-            -163.9,
-            0,
-            -150.1
-          ],
-          [
-            -163.4,
-            0,
-            -148
-          ],
-          [
-            -141.4,
-            0,
-            -154.6
-          ],
-          [
-            -95.3,
-            0,
-            -171.3
-          ],
-          [
-            -95.6,
-            0,
-            -172.1
-          ],
-          [
-            -80.1,
-            0,
-            -176
-          ],
-          [
-            -72.9,
-            0,
-            -175.2
-          ],
-          [
-            -66.6,
-            0,
-            -171.3
-          ],
-          [
-            -60.7,
-            0,
-            -165.9
-          ],
-          [
-            -55.4,
-            0,
-            -163.1
-          ],
-          [
-            -46.7,
-            0,
-            -162.5
-          ],
-          [
-            -39.7,
-            0,
-            -165.2
-          ],
-          [
-            -34.1,
-            0,
-            -169.7
-          ],
-          [
-            -28.3,
-            0,
-            -171.5
-          ],
-          [
-            -14.4,
-            0,
-            -170
-          ],
-          [
-            -15.3,
-            0,
-            -164
-          ],
-          [
-            -16.7,
-            0,
-            -167.1
-          ],
-          [
-            -26.9,
-            0,
-            -168.2
-          ],
-          [
-            -31.2,
-            0,
-            -166.6
-          ],
-          [
-            -40.9,
-            0,
-            -160.5
-          ],
-          [
-            -45.6,
-            0,
-            -158.9
-          ],
-          [
-            -49.4,
-            0,
-            -158.7
-          ],
-          [
-            -51.7,
-            0,
-            -156.1
-          ],
-          [
-            -51.2,
-            0,
-            -152.7
-          ],
-          [
-            -52.3,
-            0,
-            -148.5
-          ],
-          [
-            -54.9,
-            0,
-            -144.7
-          ],
-          [
-            -53.6,
-            0,
-            -143.6
-          ],
-          [
-            -48.1,
-            0,
-            -141.1
-          ],
-          [
-            -31,
-            0,
-            -139
-          ],
-          [
-            -26.9,
-            0,
-            -139.8
-          ],
-          [
-            -23.5,
-            0,
-            -142.1
-          ],
-          [
-            -29,
-            0,
-            -129.6
-          ],
-          [
-            -29.2,
-            0,
-            -132
-          ],
-          [
-            -33.1,
-            0,
-            -135.6
-          ],
-          [
-            -56.7,
-            0,
-            -139.2
-          ],
-          [
-            -70.3,
-            0,
-            -142.1
-          ],
-          [
-            -79.9,
-            0,
-            -146.1
-          ],
-          [
-            -94.9,
-            0,
-            -146.4
-          ],
-          [
-            -95.4,
-            0,
-            -150.5
-          ],
-          [
-            -84.7,
-            0,
-            -151.2
-          ],
-          [
-            -71.8,
-            0,
-            -149.1
-          ],
-          [
-            -70.5,
-            0,
-            -150.9
-          ],
-          [
-            -70.6,
-            0,
-            -156
-          ],
-          [
-            -65.4,
-            0,
-            -163.4
-          ],
-          [
-            -68.1,
-            0,
-            -167.4
-          ],
-          [
-            -74.1,
-            0,
-            -171.6
-          ],
-          [
-            -89.7,
-            0,
-            -170.3
-          ],
-          [
-            -126.1,
-            0,
-            -156.8
-          ],
-          [
-            -125.3,
-            0,
-            -153.7
-          ],
-          [
-            -110.6,
-            0,
-            -150.9
-          ],
-          [
-            -101.7,
-            0,
-            -150.3
-          ],
-          [
-            -104.9,
-            0,
-            -142.5
-          ],
-          [
-            -105.7,
-            0,
-            -145.1
-          ],
-          [
-            -109.4,
-            0,
-            -146.5
-          ],
-          [
-            -127.5,
-            0,
-            -150
-          ],
-          [
-            -130,
-            0,
-            -149.7
-          ],
-          [
-            -130.7,
-            0,
-            -147.6
-          ],
-          [
-            -127.7,
-            0,
-            -129.7
-          ],
-          [
-            -126.1,
-            0,
-            -128.1
-          ],
-          [
-            -142.3,
-            0,
-            -125.7
-          ],
-          [
-            -145,
-            0,
-            -137.1
-          ],
-          [
-            -141.9,
-            0,
-            -138.5
-          ],
-          [
-            -139.5,
-            0,
-            -136.1
-          ],
-          [
-            -131.4,
-            0,
-            -137.8
-          ],
-          [
-            -133.7,
-            0,
-            -150.7
-          ],
-          [
-            -139.6,
-            0,
-            -151.7
-          ],
-          [
-            -153.7,
-            0,
-            -147.3
-          ],
-          [
-            -153.5,
-            0,
-            -145.2
-          ],
-          [
-            -157.7,
-            0,
-            -143.4
-          ],
-          [
-            -161.2,
-            0,
-            -143.9
-          ],
-          [
-            -160.1,
-            0,
-            -136.6
-          ],
-          [
-            -162.7,
-            0,
-            -136.9
-          ],
-          [
-            -163.7,
-            0,
-            -143.1
-          ],
-          [
-            -164.7,
-            0,
-            -144
-          ],
-          [
-            -166.6,
-            0,
-            -143.9
-          ],
-          [
-            -168.1,
-            0,
-            -142.6
-          ],
-          [
-            -167.3,
-            0,
-            -136.3
-          ],
-          [
-            -169.6,
-            0,
-            -135.5
-          ],
-          [
-            -170.8,
-            0,
-            -143.1
-          ],
-          [
-            -183.6,
-            0,
-            -141
-          ],
-          [
-            -197.7,
-            0,
-            -140.7
-          ],
-          [
-            -197.7,
-            0,
-            -138.1
-          ],
-          [
-            -205.6,
-            0,
-            -137.9
-          ],
-          [
-            -205.5,
-            0,
-            -135.7
-          ],
-          [
-            -204.2,
-            0,
-            -133.7
-          ],
-          [
-            -210.2,
-            0,
-            -130.6
-          ],
-          [
-            -213.8,
-            0,
-            -132.1
-          ],
-          [
-            -213.1,
-            0,
-            -134.9
-          ],
-          [
-            -218.1,
-            0,
-            -136.1
-          ],
-          [
-            -217.9,
-            0,
-            -139.3
-          ],
-          [
-            -219.3,
-            0,
-            -141.9
-          ],
-          [
-            -232.9,
-            0,
-            -143.7
-          ],
-          [
-            -238.7,
-            0,
-            -141.6
-          ],
-          [
-            -246.9,
-            0,
-            -143.1
-          ],
-          [
-            -251.4,
-            0,
-            -146.3
-          ],
-          [
-            -250.7,
-            0,
-            -150
-          ],
-          [
-            -234.8,
-            0,
-            -147
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172535",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -142.3,
-            0,
-            -125.7
-          ],
-          [
-            -140,
-            0,
-            -113.6
-          ],
-          [
-            -141,
-            0,
-            -111
-          ],
-          [
-            -141.6,
-            0,
-            -110.8
-          ],
-          [
-            -137.7,
-            0,
-            -85.3
-          ],
-          [
-            -118.9,
-            0,
-            -87.7
-          ],
-          [
-            -119.9,
-            0,
-            -94.8
-          ],
-          [
-            -99,
-            0,
-            -98.5
-          ],
-          [
-            -91,
-            0,
-            -102.1
-          ],
-          [
-            -86.1,
-            0,
-            -101.2
-          ],
-          [
-            -85.2,
-            0,
-            -103.9
-          ],
-          [
-            -81.6,
-            0,
-            -104.7
-          ],
-          [
-            -45.3,
-            0,
-            -95.6
-          ],
-          [
-            -42.8,
-            0,
-            -93.3
-          ],
-          [
-            -39.6,
-            0,
-            -101.3
-          ],
-          [
-            -47.5,
-            0,
-            -99.8
-          ],
-          [
-            -73.1,
-            0,
-            -106.2
-          ],
-          [
-            -84.1,
-            0,
-            -107.7
-          ],
-          [
-            -88.4,
-            0,
-            -107.1
-          ],
-          [
-            -89.3,
-            0,
-            -108.8
-          ],
-          [
-            -88.5,
-            0,
-            -109.8
-          ],
-          [
-            -90.3,
-            0,
-            -114.4
-          ],
-          [
-            -91.3,
-            0,
-            -114.4
-          ],
-          [
-            -93.5,
-            0,
-            -124.9
-          ],
-          [
-            -98.2,
-            0,
-            -133.7
-          ],
-          [
-            -99.7,
-            0,
-            -139.7
-          ],
-          [
-            -98,
-            0,
-            -144.1
-          ],
-          [
-            -94.9,
-            0,
-            -146.4
-          ],
-          [
-            -95.4,
-            0,
-            -150.5
-          ],
-          [
-            -101.7,
-            0,
-            -150.3
-          ],
-          [
-            -104.9,
-            0,
-            -142.5
-          ],
-          [
-            -108.1,
-            0,
-            -139
-          ],
-          [
-            -108.7,
-            0,
-            -136.2
-          ],
-          [
-            -105.7,
-            0,
-            -131.5
-          ],
-          [
-            -100.2,
-            0,
-            -130.6
-          ],
-          [
-            -97.8,
-            0,
-            -127.1
-          ],
-          [
-            -94,
-            0,
-            -114.1
-          ],
-          [
-            -99.9,
-            0,
-            -107.3
-          ],
-          [
-            -101.9,
-            0,
-            -102.1
-          ],
-          [
-            -121.8,
-            0,
-            -99.1
-          ],
-          [
-            -125.1,
-            0,
-            -117.2
-          ],
-          [
-            -126.1,
-            0,
-            -128.1
-          ],
-          [
-            -142.3,
-            0,
-            -125.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172536",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -125,
-            0,
-            -121.2
-          ],
-          [
-            -117.2,
-            0,
-            -126.4
-          ],
-          [
-            -108.3,
-            0,
-            -131.1
-          ],
-          [
-            -105.7,
-            0,
-            -131.5
-          ],
-          [
-            -108.7,
-            0,
-            -136.2
-          ],
-          [
-            -122.9,
-            0,
-            -128.3
-          ],
-          [
-            -126.1,
-            0,
-            -128.1
-          ],
-          [
-            -125,
-            0,
-            -121.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172539",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -29.5,
-            0,
-            -82.4
-          ],
-          [
-            -42.2,
-            0,
-            -86.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172540",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -53.9,
-            0,
-            -66.9
-          ],
-          [
-            -47.7,
-            0,
-            -64.3
-          ],
-          [
-            -39.3,
-            0,
-            -84.7
-          ],
-          [
-            -37,
-            0,
-            -84.6
-          ],
-          [
-            -36.2,
-            0,
-            -86.6
-          ],
-          [
-            -37.8,
-            0,
-            -87.1
-          ],
-          [
-            -28.9,
-            0,
-            -107.6
-          ],
-          [
-            -27.2,
-            0,
-            -107.1
-          ],
-          [
-            -21.7,
-            0,
-            -121
-          ],
-          [
-            -24.1,
-            0,
-            -121.8
-          ],
-          [
-            -12.9,
-            0,
-            -149.3
-          ],
-          [
-            -13.8,
-            0,
-            -149.6
-          ],
-          [
-            -8.1,
-            0,
-            -163.6
-          ],
-          [
-            48.3,
-            0,
-            -144.7
-          ],
-          [
-            49.7,
-            0,
-            -148.3
-          ],
-          [
-            34.7,
-            0,
-            -154
-          ],
-          [
-            5.5,
-            0,
-            -162.5
-          ],
-          [
-            -4.1,
-            0,
-            -167.8
-          ],
-          [
-            -14.4,
-            0,
-            -170
-          ],
-          [
-            -16.3,
-            0,
-            -160.9
-          ],
-          [
-            -29,
-            0,
-            -129.6
-          ],
-          [
-            -45.4,
-            0,
-            -85.3
-          ],
-          [
-            -48.1,
-            0,
-            -81.5
-          ],
-          [
-            -51.2,
-            0,
-            -82.2
-          ],
-          [
-            -51.3,
-            0,
-            -79.9
-          ],
-          [
-            -48.6,
-            0,
-            -79
-          ],
-          [
-            -48.6,
-            0,
-            -77.5
-          ],
-          [
-            -52.8,
-            0,
-            -67.1
-          ],
-          [
-            -53.9,
-            0,
-            -66.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172543",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            50.8,
-            0,
-            -117.3
-          ],
-          [
-            52,
-            0,
-            -121.6
-          ],
-          [
-            104.2,
-            0,
-            -72.6
-          ],
-          [
-            100.7,
-            0,
-            -65.3
-          ],
-          [
-            95.6,
-            0,
-            -67.4
-          ],
-          [
-            97.6,
-            0,
-            -73.5
-          ],
-          [
-            50.8,
-            0,
-            -117.3
-          ]
-        ]
-      },
-      {
-        "id": "way/1123016708",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Ziloņu iela",
-        "points": [
-          [
-            -124.9,
-            0,
-            12.6
-          ],
-          [
-            -88.7,
-            0,
-            9.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1123016710",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            65.6,
-            0,
-            57.6
-          ],
-          [
-            66.8,
-            0,
-            52.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1123016739",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            104.6,
-            0,
-            -68.5
-          ],
-          [
-            111.7,
-            0,
-            -87.9
-          ],
-          [
-            115.6,
-            0,
-            -101.6
-          ],
-          [
-            113.9,
-            0,
-            -110.8
-          ],
-          [
-            104.5,
-            0,
-            -125.3
-          ],
-          [
-            58.8,
-            0,
-            -142.6
-          ]
-        ]
-      },
-      {
-        "id": "way/1124285418",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            66.8,
-            0,
-            52.4
-          ],
-          [
-            67.7,
-            0,
-            34.6
-          ],
-          [
-            68.9,
-            0,
-            26.5
-          ],
-          [
-            77.9,
-            0,
-            1
-          ]
-        ]
-      },
-      {
-        "id": "way/1184463855",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Lāčplēša iela",
-        "points": [
-          [
-            118.9,
-            0,
-            -125.3
-          ],
-          [
-            123.2,
-            0,
-            -115.7
-          ],
-          [
-            123.2,
-            0,
-            -105.8
-          ],
-          [
-            121.1,
-            0,
-            -94.5
-          ],
-          [
-            114.9,
-            0,
-            -77.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1184463856",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Lāčplēša iela",
-        "points": [
-          [
-            84.8,
-            0,
-            0.8
-          ],
-          [
-            81.4,
-            0,
-            9.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1189321349",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Ziloņu iela",
-        "points": [
-          [
-            -127.5,
-            0,
-            -80.2
-          ],
-          [
-            -125.2,
-            0,
-            -74.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1195573881",
-        "class": "cycleway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -57.1,
-            0,
-            16.6
-          ],
-          [
-            -35.9,
-            0,
-            11.2
-          ],
-          [
-            -33.1,
-            0,
-            5.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1492797414",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Lāčplēša iela",
-        "points": [
-          [
-            114.9,
-            0,
-            -77.2
-          ],
-          [
-            111.5,
-            0,
-            -68.1
-          ]
-        ]
-      },
-      {
-        "id": "way/1492797415",
-        "class": "primary",
-        "width": 10,
-        "surface": "asphalt",
-        "name": "Tērbatas iela",
-        "points": [
-          [
-            142.7,
-            0,
-            127.4
-          ],
-          [
-            84.7,
-            0,
-            65
-          ],
-          [
-            78.6,
-            0,
-            56.3
-          ],
-          [
-            75.5,
-            0,
-            45.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1524328622",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            48.2,
-            0,
-            122.7
-          ],
-          [
-            65.6,
-            0,
-            57.6
-          ]
-        ]
-      },
-      {
-        "id": "way/1524328623",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            46.5,
-            0,
-            128.7
-          ],
-          [
-            48.2,
-            0,
-            122.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393905",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -26.5,
-            0,
-            12.2
-          ],
-          [
-            -27.6,
-            0,
-            1
-          ],
-          [
-            -26.6,
-            0,
-            -2.6
-          ],
-          [
-            -28.9,
-            0,
-            -6.3
-          ],
-          [
-            -23.1,
-            0,
-            -14.2
-          ],
-          [
-            -15,
-            0,
-            -15.1
-          ],
-          [
-            -10.8,
-            0,
-            -14.3
-          ],
-          [
-            -8.9,
-            0,
-            -11.6
-          ],
-          [
-            18.5,
-            0,
-            -14.2
-          ],
-          [
-            45.4,
-            0,
-            -2.8
-          ],
-          [
-            49.2,
-            0,
-            -5.8
-          ],
-          [
-            55.5,
-            0,
-            -16.5
-          ],
-          [
-            78.1,
-            0,
-            -15.6
-          ],
-          [
-            82.6,
-            0,
-            -19.3
-          ],
-          [
-            84.2,
-            0,
-            -19.5
-          ],
-          [
-            77,
-            0,
-            4.1
-          ],
-          [
-            74.7,
-            0,
-            9.3
-          ],
-          [
-            66.8,
-            0,
-            4.1
-          ],
-          [
-            51.1,
-            0,
-            2.4
-          ],
-          [
-            44.4,
-            0,
-            3
-          ],
-          [
-            42.6,
-            0,
-            5.6
-          ],
-          [
-            37.9,
-            0,
-            4.8
-          ],
-          [
-            33.4,
-            0,
-            -1.8
-          ],
-          [
-            24.1,
-            0,
-            -5.7
-          ],
-          [
-            16.6,
-            0,
-            -7.1
-          ],
-          [
-            -11.9,
-            0,
-            -4
-          ],
-          [
-            -10.7,
-            0,
-            11.2
-          ],
-          [
-            -26.5,
-            0,
-            12.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393906",
-        "class": "path",
-        "width": 1.5,
-        "surface": "wood",
-        "name": null,
-        "points": [
-          [
-            24.1,
-            0,
-            5.6
-          ],
-          [
-            33.5,
-            0,
-            10.6
-          ],
-          [
-            41.3,
-            0,
-            11.6
-          ],
-          [
-            41.4,
-            0,
-            5.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393907",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            41.4,
-            0,
-            5.4
-          ],
-          [
-            41.7,
-            0,
-            0.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393908",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -10.8,
-            0,
-            9.7
-          ],
-          [
-            24.1,
-            0,
-            5.6
-          ],
-          [
-            36.9,
-            0,
-            2.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393909",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -25.5,
-            0,
-            10.8
-          ],
-          [
-            -26.3,
-            0,
-            2.8
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393910",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            -17.2,
-            0,
-            10.2
-          ],
-          [
-            -21.1,
-            0,
-            -2.9
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393911",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -35.9,
-            0,
-            11.2
-          ],
-          [
-            -10.8,
-            0,
-            9.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393912",
-        "class": "footway",
-        "width": 2,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -6.8,
-            0,
-            -9.2
-          ],
-          [
-            2.3,
-            0,
-            -3
-          ],
-          [
-            18.9,
-            0,
-            6.2
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393913",
-        "class": "pedestrian",
-        "width": 4,
-        "surface": "paving_stones",
-        "name": "Ziloņu iela",
-        "points": [
-          [
-            42.7,
-            0,
-            -1.4
-          ],
-          [
-            64.2,
-            0,
-            0.5
-          ],
-          [
-            82.6,
-            0,
-            5.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393914",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            36.9,
-            0,
-            2.9
-          ],
-          [
-            41.7,
-            0,
-            0.4
-          ],
-          [
-            42.7,
-            0,
-            -1.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393915",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            51.7,
-            0,
-            -0.6
-          ],
-          [
-            56.5,
-            0,
-            -12.9
-          ],
-          [
-            64.1,
-            0,
-            -12.9
-          ],
-          [
-            81.8,
-            0,
-            -9.1
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393916",
-        "class": "footway",
-        "width": 2,
-        "surface": "paving_stones",
-        "name": null,
-        "points": [
-          [
-            66.4,
-            0,
-            1.1
-          ],
-          [
-            70.1,
-            0,
-            -11.8
-          ],
-          [
-            78,
-            0,
-            -15.2
-          ],
-          [
-            86.4,
-            0,
-            -21
-          ]
-        ]
-      },
-      {
-        "id": "way/1524393928",
-        "class": "rest_area",
-        "width": 5,
-        "surface": null,
-        "name": null,
-        "points": [
-          [
-            -34.5,
-            0,
-            1.5
-          ],
-          [
-            -36.4,
-            0,
-            1
-          ],
-          [
-            -37.9,
-            0,
-            -1.3
-          ],
-          [
-            -39.2,
-            0,
-            -4.3
-          ],
-          [
-            -37.8,
-            0,
-            -5.8
-          ],
-          [
-            -33.9,
-            0,
-            -6.3
-          ],
-          [
-            -29.3,
-            0,
-            -5.1
-          ],
-          [
-            -26.6,
-            0,
-            -2.6
-          ],
-          [
-            -27.6,
-            0,
-            1
-          ],
-          [
-            -34.5,
-            0,
-            1.5
-          ]
-        ]
-      }
-    ],
-    "buildings": [
-      {
-        "id": "way/67233885",
-        "kind": "yes",
-        "height": 9,
-        "levels": null,
-        "name": "Valleta",
-        "footprint": [
-          [
-            -5.5,
-            -142.7
-          ],
-          [
-            34.8,
-            -127
-          ],
-          [
-            28.2,
-            -110
-          ],
-          [
-            34.7,
-            -107.5
-          ],
-          [
-            17.9,
-            -64.6
-          ],
-          [
-            -31.7,
-            -83.9
-          ],
-          [
-            -23.6,
-            -104.7
-          ],
-          [
-            -27.5,
-            -106.3
-          ],
-          [
-            -21.7,
-            -121
-          ],
-          [
-            -18.4,
-            -119.7
-          ],
-          [
-            -15.1,
-            -128.3
-          ],
-          [
-            -11.7,
-            -126.9
-          ]
-        ]
-      },
-      {
-        "id": "way/67306215",
-        "kind": "hospital",
-        "height": 9,
-        "levels": null,
-        "name": "24",
-        "footprint": [
-          [
-            -87.9,
-            -47.8
-          ],
-          [
-            -99.3,
-            -18.4
-          ],
-          [
-            -85.9,
-            -13.5
-          ],
-          [
-            -82.4,
-            -23.2
-          ],
-          [
-            -73.4,
-            -19.8
-          ],
-          [
-            -75.7,
-            -12
-          ],
-          [
-            -66.9,
-            -9
-          ],
-          [
-            -56.7,
-            -35.7
-          ],
-          [
-            -65.1,
-            -39.1
-          ],
-          [
-            -66.6,
-            -36.1
-          ],
-          [
-            -80.4,
-            -41
-          ],
-          [
-            -79.3,
-            -44.4
-          ]
-        ]
-      },
-      {
-        "id": "way/67306225",
-        "kind": "yes",
-        "height": 9,
-        "levels": null,
-        "name": "1",
-        "footprint": [
-          [
-            53.5,
-            -57.6
-          ],
-          [
-            61.5,
-            -54.5
-          ],
-          [
-            67.6,
-            -70.2
-          ],
-          [
-            86.4,
-            -63
-          ],
-          [
-            82.2,
-            -52.4
-          ],
-          [
-            93.8,
-            -47.8
-          ],
-          [
-            100.7,
-            -65.3
-          ],
-          [
-            67.8,
-            -78.5
-          ],
-          [
-            65.1,
-            -71.6
-          ],
-          [
-            60,
-            -73.9
-          ],
-          [
-            54.9,
-            -61.1
-          ]
-        ]
-      },
-      {
-        "id": "way/67306232",
-        "kind": "public",
-        "height": 9,
-        "levels": null,
-        "name": "Valmieras teātris",
-        "footprint": [
-          [
-            114.9,
-            -47.3
-          ],
-          [
-            112.4,
-            -33
-          ],
-          [
-            105.8,
-            -34.1
-          ],
-          [
-            102.9,
-            -16.5
-          ],
-          [
-            109.2,
-            -15.5
-          ],
-          [
-            105.9,
-            2.1
-          ],
-          [
-            112.3,
-            3.3
-          ],
-          [
-            112.9,
-            0.4
-          ],
-          [
-            123.8,
-            -0.7
-          ],
-          [
-            122.6,
-            3.6
-          ],
-          [
-            124.2,
-            11
-          ],
-          [
-            129.8,
-            12.1
-          ],
-          [
-            133.8,
-            10.8
-          ],
-          [
-            137.2,
-            7.3
-          ],
-          [
-            138,
-            3
-          ],
-          [
-            136.5,
-            -2.3
-          ],
-          [
-            147.7,
-            -0.4
-          ],
-          [
-            149.2,
-            -9.4
-          ],
-          [
-            154,
-            -8.5
-          ],
-          [
-            157.4,
-            -27.6
-          ],
-          [
-            154.5,
-            -28
-          ],
-          [
-            156.5,
-            -39.9
-          ],
-          [
-            158.8,
-            -45.7
-          ],
-          [
-            164.3,
-            -43.4
-          ],
-          [
-            167.3,
-            -45.1
-          ],
-          [
-            168.5,
-            -49.4
-          ],
-          [
-            127.3,
-            -65.7
-          ],
-          [
-            122.1,
-            -53.9
-          ],
-          [
-            137.2,
-            -47.6
-          ],
-          [
-            135.9,
-            -41.9
-          ],
-          [
-            121,
-            -44.2
-          ],
-          [
-            121,
-            -46.5
-          ]
-        ]
-      },
-      {
-        "id": "way/67306233",
-        "kind": "yes",
-        "height": 9,
-        "levels": null,
-        "name": null,
-        "footprint": [
-          [
-            -104.4,
-            -42.4
-          ],
-          [
-            -109.8,
-            -44.6
-          ],
-          [
-            -113.2,
-            -36.1
-          ],
-          [
-            -107.8,
-            -34
-          ]
-        ]
-      },
-      {
-        "id": "way/67477365",
-        "kind": "retail",
-        "height": 12,
-        "levels": null,
-        "name": null,
-        "footprint": [
-          [
-            119.6,
-            84.4
-          ],
-          [
-            126,
-            92.9
-          ],
-          [
-            164,
-            64.2
-          ],
-          [
-            157.5,
-            55.7
-          ]
-        ]
-      },
-      {
-        "id": "way/69607342",
-        "kind": "school",
-        "height": 9,
-        "levels": null,
-        "name": "3",
-        "footprint": [
-          [
-            -58.3,
-            167.4
-          ],
-          [
-            -22.3,
-            176.6
-          ],
-          [
-            -15.7,
-            150.8
-          ],
-          [
-            -20,
-            149.7
-          ],
-          [
-            -16.2,
-            134.6
-          ],
-          [
-            -13.9,
-            135.2
-          ],
-          [
-            -12.4,
-            129.3
-          ],
-          [
-            0.8,
-            132.6
-          ],
-          [
-            -6.4,
-            161
-          ],
-          [
-            11.7,
-            165.6
-          ],
-          [
-            20.5,
-            131.2
-          ],
-          [
-            16.8,
-            130.3
-          ],
-          [
-            18.5,
-            123.7
-          ],
-          [
-            -19.8,
-            114
-          ],
-          [
-            -24.1,
-            131.2
-          ],
-          [
-            -38.9,
-            127.4
-          ],
-          [
-            -43.1,
-            143.8
-          ],
-          [
-            -51.8,
-            141.6
-          ]
-        ]
-      },
-      {
-        "id": "way/69616229",
-        "kind": "retail",
-        "height": 12,
-        "levels": null,
-        "name": null,
-        "footprint": [
-          [
-            112.9,
-            143.6
-          ],
-          [
-            101.1,
-            127.6
-          ],
-          [
-            91.9,
-            134.4
-          ],
-          [
-            103.8,
-            150.4
-          ]
-        ]
-      },
-      {
-        "id": "way/1098801576",
-        "kind": "transformer_tower",
-        "height": 9,
-        "levels": null,
-        "name": "22",
-        "footprint": [
-          [
-            -12.7,
-            -55.3
-          ],
-          [
-            -9.9,
-            -62.7
-          ],
-          [
-            0.9,
-            -58.6
-          ],
-          [
-            -1.9,
-            -51.1
-          ]
-        ]
-      },
-      {
-        "id": "way/1110755856",
-        "kind": "service",
-        "height": 9,
-        "levels": null,
-        "name": null,
-        "footprint": [
-          [
-            -21.9,
-            -74.8
-          ],
-          [
-            -20.7,
-            -78
-          ],
-          [
-            -17.3,
-            -76.7
-          ],
-          [
-            -18.4,
-            -73.5
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172541",
-        "kind": "roof",
-        "height": 9,
-        "levels": null,
-        "name": "4",
-        "footprint": [
-          [
-            -31.4,
-            -84.6
-          ],
-          [
-            -37.8,
-            -87.1
-          ],
-          [
-            -28.9,
-            -107.6
-          ],
-          [
-            -23.6,
-            -104.7
-          ]
-        ]
-      },
-      {
-        "id": "way/1120172542",
-        "kind": "roof",
-        "height": 9,
-        "levels": null,
-        "name": "4",
-        "footprint": [
-          [
-            -18.4,
-            -119.7
-          ],
-          [
-            -15.1,
-            -128.3
-          ],
-          [
-            -11.7,
-            -126.9
-          ],
-          [
-            -5.5,
-            -142.7
-          ],
-          [
-            28.3,
-            -129.5
-          ],
-          [
-            29.4,
-            -131.4
-          ],
-          [
-            -12.9,
-            -149.3
-          ],
-          [
-            -24.1,
-            -121.8
-          ]
-        ]
-      }
-    ],
-    "water": [
-      {
-        "id": "way/45300002",
-        "kind": "reservoir",
-        "polygons": [
-          [
-            [
-              -308.7,
-              119.5
-            ],
-            [
-              -316.9,
-              126.2
-            ],
-            [
-              -315.1,
-              131.4
-            ],
-            [
-              -291.9,
-              136.1
-            ],
-            [
-              -284.6,
-              129.2
-            ],
-            [
-              -256.2,
-              115.8
-            ],
-            [
-              -240.8,
-              118.1
-            ],
-            [
-              -223.6,
-              125
-            ],
-            [
-              -180.9,
-              126.4
-            ],
-            [
-              -159.7,
-              122.2
-            ],
-            [
-              -145.5,
-              114.6
-            ],
-            [
-              -131,
-              109.8
-            ],
-            [
-              -115.6,
-              99.5
-            ],
-            [
-              -88.1,
-              92
-            ],
-            [
-              -65.2,
-              78.9
-            ],
-            [
-              -52.2,
-              60.2
-            ],
-            [
-              -27.4,
-              54.2
-            ],
-            [
-              -7.4,
-              53.6
-            ],
-            [
-              3.2,
-              55
-            ],
-            [
-              15.8,
-              53.7
-            ],
-            [
-              53.3,
-              45.9
-            ],
-            [
-              63.6,
-              20.9
-            ],
-            [
-              61,
-              13.3
-            ],
-            [
-              47.2,
-              9
-            ],
-            [
-              27.2,
-              8.9
-            ],
-            [
-              4.6,
-              14.9
-            ],
-            [
-              -55,
-              22.1
-            ],
-            [
-              -90.8,
-              37.5
-            ],
-            [
-              -120.8,
-              60.7
-            ],
-            [
-              -149.4,
-              78.3
-            ],
-            [
-              -194.3,
-              87.5
-            ],
-            [
-              -220.5,
-              86.1
-            ],
-            [
-              -238.7,
-              90.3
-            ],
-            [
-              -257.7,
-              89.7
-            ],
-            [
-              -283,
-              101.7
-            ],
-            [
-              -295.1,
-              109.3
-            ]
-          ]
-        ]
-      },
-      {
-        "id": "way/70656283",
-        "kind": "stream",
-        "polygons": [
-          [
-            [
-              86,
-              30.1
-            ],
-            [
-              102.2,
-              38.5
-            ],
-            [
-              110.8,
-              47.1
-            ],
-            [
-              121.9,
-              52.6
-            ],
-            [
-              130.4,
-              53.3
-            ],
-            [
-              140.9,
-              47.5
-            ],
-            [
-              181.1,
-              4.7
-            ],
-            [
-              206,
-              1.3
-            ],
-            [
-              221.1,
-              8.3
-            ],
-            [
-              270.2,
-              23.3
-            ],
-            [
-              277.5,
-              23.2
-            ],
-            [
-              287.1,
-              29.2
-            ],
-            [
-              293.2,
-              27
-            ],
-            [
-              299,
-              31.8
-            ],
-            [
-              301.5,
-              41.4
-            ],
-            [
-              311.5,
-              44.3
-            ],
-            [
-              327.2,
-              32.6
-            ],
-            [
-              339.4,
-              31
-            ],
-            [
-              346.1,
-              25.2
-            ],
-            [
-              356.7,
-              27.6
-            ],
-            [
-              363.1,
-              25.1
-            ],
-            [
-              366,
-              19.1
-            ],
-            [
-              375,
-              11.5
-            ],
-            [
-              375.9,
-              5.4
-            ],
-            [
-              373.9,
-              0.1
-            ],
-            [
-              377.3,
-              -6.2
-            ],
-            [
-              382.8,
-              -6.9
-            ],
-            [
-              387.6,
-              -3.6
-            ],
-            [
-              389.5,
-              -8.5
-            ],
-            [
-              392.3,
-              -34.6
-            ],
-            [
-              390.3,
-              -36.4
-            ],
-            [
-              387.3,
-              -33.5
-            ],
-            [
-              384.6,
-              -36.4
-            ],
-            [
-              383.5,
-              -48.9
-            ],
-            [
-              387,
-              -51.2
-            ],
-            [
-              396.8,
-              -52.2
-            ],
-            [
-              400,
-              -54.8
-            ],
-            [
-              398.4,
-              -60.2
-            ],
-            [
-              382.4,
-              -68.6
-            ],
-            [
-              380.6,
-              -77.3
-            ],
-            [
-              374.4,
-              -80.5
-            ],
-            [
-              374.8,
-              -84.3
-            ],
-            [
-              382.8,
-              -84.9
-            ],
-            [
-              381.9,
-              -91.3
-            ],
-            [
-              386.2,
-              -98.4
-            ],
-            [
-              377,
-              -105.9
-            ],
-            [
-              375,
-              -111.7
-            ],
-            [
-              378,
-              -115.2
-            ],
-            [
-              385.9,
-              -112.4
-            ],
-            [
-              396.9,
-              -113.8
-            ],
-            [
-              408.9,
-              -125.7
-            ],
-            [
-              411.2,
-              -133
-            ],
-            [
-              420.9,
-              -144.6
-            ],
-            [
-              423,
-              -151.4
-            ],
-            [
-              419.8,
-              -154.7
-            ],
-            [
-              419.3,
-              -159.4
-            ],
-            [
-              405.7,
-              -164.8
-            ],
-            [
-              401.9,
-              -171.9
-            ],
-            [
-              373.8,
-              -200.5
-            ]
-          ]
-        ]
-      },
-      {
-        "id": "way/482553642",
-        "kind": "river",
-        "polygons": [
-          [
-            [
-              -301.4,
-              132.8
-            ],
-            [
-              -296.5,
-              123.5
-            ],
-            [
-              -276.5,
-              112.6
-            ],
-            [
-              -262.2,
-              107.8
-            ],
-            [
-              -158.9,
-              100.2
-            ],
-            [
-              -101.9,
-              72.2
-            ],
-            [
-              -67.9,
-              47
-            ],
-            [
-              -36.2,
-              31.2
-            ],
-            [
-              9.6,
-              19.5
-            ],
-            [
-              63.6,
-              20.9
-            ]
-          ]
-        ]
-      }
-    ],
-    "landuse": [],
-    "pois": [
-      {
-        "id": "node/8983418830",
-        "kind": "artwork",
-        "name": "Krodera ābele",
-        "position": [
-          72.7,
+    "x": 0,
+    "z": 0,
+    "size": 256,
+    "minX": -128,
+    "minZ": -128,
+    "maxX": 128,
+    "maxZ": 128
+  },
+  "stats": {
+    "roads": 85,
+    "buildings": 21,
+    "water": 2,
+    "landuse": 26,
+    "trees": 73,
+    "pois": 7,
+    "cache": "miss"
+  },
+  "roads": [
+    {
+      "id": "way/4950960",
+      "class": "residential",
+      "width": 9,
+      "surface": "asphalt",
+      "name": "Poļu gāte",
+      "points": [
+        [
+          33.2,
           0,
-          -1.2
+          -21.3
         ],
-        "priority": 98
-      },
-      {
-        "id": "node/9072899267",
-        "kind": "artwork",
-        "name": "Gaismas strūklaka",
-        "position": [
-          -119.5,
+        [
+          43.6,
           0,
-          -127
+          -15.4
+        ]
+      ]
+    },
+    {
+      "id": "way/26413472",
+      "class": "living_street",
+      "width": 4,
+      "surface": "sett",
+      "name": "Miesnieku iela",
+      "points": [
+        [
+          224.2,
+          0,
+          -0.7
         ],
-        "priority": 98
-      },
-      {
-        "id": "node/13894242708",
-        "kind": "information",
-        "name": null,
-        "position": [
-          38.8,
+        [
+          200.5,
+          0,
+          -25.7
+        ],
+        [
+          176.9,
+          0,
+          -47.6
+        ],
+        [
+          123.9,
+          0,
+          -93.7
+        ]
+      ]
+    },
+    {
+      "id": "way/26561164",
+      "class": "residential",
+      "width": 5,
+      "surface": "sett",
+      "name": "11. novembra krastmala",
+      "points": [
+        [
+          163,
+          0,
+          -178.8
+        ],
+        [
+          59.9,
+          0,
+          -6.2
+        ]
+      ]
+    },
+    {
+      "id": "way/26561228",
+      "class": "living_street",
+      "width": 4,
+      "surface": "sett",
+      "name": "Anglikāņu iela",
+      "points": [
+        [
+          152,
+          0,
+          19.4
+        ],
+        [
+          138.4,
+          0,
+          -0.3
+        ],
+        [
+          132.4,
+          0,
+          -6.6
+        ],
+        [
+          93.6,
+          0,
+          -30.2
+        ]
+      ]
+    },
+    {
+      "id": "way/26561255",
+      "class": "steps",
+      "width": 5,
+      "surface": "concrete",
+      "name": null,
+      "points": [
+        [
+          95,
+          0,
+          -42.8
+        ],
+        [
+          92.9,
+          0,
+          -44.1
+        ]
+      ]
+    },
+    {
+      "id": "way/29974581",
+      "class": "living_street",
+      "width": 8,
+      "surface": "sett",
+      "name": "Pils iela",
+      "points": [
+        [
+          229.2,
+          0,
+          -2.2
+        ],
+        [
+          152,
+          0,
+          19.4
+        ],
+        [
+          125.5,
+          0,
+          31.8
+        ]
+      ]
+    },
+    {
+      "id": "way/38917036",
+      "class": "living_street",
+      "width": 4,
+      "surface": "sett",
+      "name": "Pils iela",
+      "points": [
+        [
+          125.5,
+          0,
+          31.8
+        ],
+        [
+          110.6,
+          0,
+          77.8
+        ],
+        [
+          101.9,
+          0,
+          91.6
+        ]
+      ]
+    },
+    {
+      "id": "way/39346851",
+      "class": "living_street",
+      "width": 4,
+      "surface": "sett",
+      "name": "Mazā Pils iela",
+      "points": [
+        [
+          136.8,
+          0,
+          83.8
+        ],
+        [
+          110.6,
+          0,
+          77.8
+        ]
+      ]
+    },
+    {
+      "id": "way/39348069",
+      "class": "pedestrian",
+      "width": 4,
+      "surface": "asphalt",
+      "name": "Daugavas gāte",
+      "points": [
+        [
+          94.7,
+          0,
+          65
+        ],
+        [
+          81.3,
+          0,
+          64.1
+        ],
+        [
+          49.2,
+          0,
+          46.8
+        ],
+        [
+          18.8,
+          0,
+          28.8
+        ]
+      ]
+    },
+    {
+      "id": "way/44954751",
+      "class": "living_street",
+      "width": 4,
+      "surface": "asphalt",
+      "name": "Pils laukums",
+      "points": [
+        [
+          101.9,
+          0,
+          91.6
+        ],
+        [
+          75,
+          0,
+          146.1
+        ],
+        [
+          60.3,
+          0,
+          173.8
+        ]
+      ]
+    },
+    {
+      "id": "way/81142345",
+      "class": "residential",
+      "width": 5,
+      "surface": "sett",
+      "name": "Miesnieku iela",
+      "points": [
+        [
+          123.9,
+          0,
+          -93.7
+        ],
+        [
+          115.9,
+          0,
+          -100.6
+        ]
+      ]
+    },
+    {
+      "id": "way/114254061",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          -82.6,
+          0,
+          162.2
+        ],
+        [
+          -65.1,
+          0,
+          111.7
+        ],
+        [
+          -51.7,
+          0,
+          77.1
+        ],
+        [
+          -14.9,
+          0,
+          -8.4
+        ],
+        [
+          -7.8,
+          0,
+          -23.3
+        ],
+        [
+          -6.8,
+          0,
+          -24.7
+        ],
+        [
+          -1.3,
+          0,
+          -26.6
+        ],
+        [
+          -0.3,
+          0,
+          -27.8
+        ],
+        [
+          10.5,
+          0,
+          -50.1
+        ],
+        [
+          8.4,
+          0,
+          -56.5
+        ],
+        [
+          9,
+          0,
+          -57.9
+        ],
+        [
+          39.5,
+          0,
+          -114.1
+        ],
+        [
+          69.8,
+          0,
+          -167.6
+        ],
+        [
+          93.2,
+          0,
+          -204.4
+        ]
+      ]
+    },
+    {
+      "id": "way/135346983",
+      "class": "living_street",
+      "width": 6,
+      "surface": "sett",
+      "name": "Poļu gāte",
+      "points": [
+        [
+          59.9,
+          0,
+          -6.2
+        ],
+        [
+          117.2,
+          0,
+          26.2
+        ],
+        [
+          125.5,
+          0,
+          31.8
+        ]
+      ]
+    },
+    {
+      "id": "way/135466076",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          75.5,
+          0,
+          164.1
+        ],
+        [
+          106.4,
+          0,
+          96.4
+        ],
+        [
+          108.8,
+          0,
+          93.8
+        ],
+        [
+          112.1,
+          0,
+          92.7
+        ],
+        [
+          134.5,
+          0,
+          98.7
+        ],
+        [
+          138,
+          0,
+          104.3
+        ],
+        [
+          141.8,
+          0,
+          180.7
+        ],
+        [
+          75.5,
+          0,
+          164.1
+        ]
+      ]
+    },
+    {
+      "id": "way/135466077",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          -51.8,
+          0,
+          249.8
+        ],
+        [
+          -46.4,
+          0,
+          225.1
+        ],
+        [
+          -37.8,
+          0,
+          219.4
+        ],
+        [
+          -27.3,
+          0,
+          180
+        ],
+        [
+          -26.3,
+          0,
+          117.9
+        ],
+        [
+          -22.9,
+          0,
+          102.9
+        ],
+        [
+          -20.3,
+          0,
+          95.8
+        ],
+        [
+          -13.6,
+          0,
+          82.9
+        ],
+        [
+          -7.1,
+          0,
+          73.2
+        ],
+        [
+          18.8,
+          0,
+          28.8
+        ],
+        [
+          40.4,
+          0,
+          -9.9
+        ],
+        [
+          43.3,
+          0,
+          -10.2
+        ],
+        [
+          61.8,
+          0,
+          0.8
+        ]
+      ]
+    },
+    {
+      "id": "way/135466078",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          64.4,
+          0,
+          -3.7
+        ],
+        [
+          38.1,
+          0,
+          40.2
+        ],
+        [
+          37.4,
+          0,
+          43.1
+        ]
+      ]
+    },
+    {
+      "id": "way/157821296",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          3,
+          0,
+          -34.1
+        ],
+        [
+          9.3,
+          0,
+          -31.2
+        ]
+      ]
+    },
+    {
+      "id": "way/169683884",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          -2.2,
+          0,
+          -34.1
+        ],
+        [
+          4.7,
+          0,
+          -48.9
+        ]
+      ]
+    },
+    {
+      "id": "way/169683889",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          -5.2,
+          0,
+          -35.7
+        ],
+        [
+          1.8,
+          0,
+          -50.3
+        ]
+      ]
+    },
+    {
+      "id": "way/169683890",
+      "class": "steps",
+      "width": 5,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          12.4,
+          0,
+          -29.7
+        ],
+        [
+          9.3,
+          0,
+          -31.2
+        ]
+      ]
+    },
+    {
+      "id": "way/169683892",
+      "class": "steps",
+      "width": 5,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          9.1,
+          0,
+          -46.8
+        ],
+        [
+          1.8,
+          0,
+          -50.3
+        ]
+      ]
+    },
+    {
+      "id": "way/169683893",
+      "class": "steps",
+      "width": 5,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          1.9,
+          0,
+          -31.8
+        ],
+        [
+          -5.2,
+          0,
+          -35.7
+        ]
+      ]
+    },
+    {
+      "id": "way/169683894",
+      "class": "service",
+      "width": 3,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          -34.7,
+          0,
+          103.2
+        ],
+        [
+          -37.2,
+          0,
+          122.2
+        ],
+        [
+          -44.4,
+          0,
+          161.2
+        ]
+      ]
+    },
+    {
+      "id": "way/169683895",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          40.4,
+          0,
+          -9.9
+        ],
+        [
+          48.8,
+          0,
+          -22.8
+        ],
+        [
+          140.5,
+          0,
+          -184.3
+        ],
+        [
+          142.8,
+          0,
+          -185.5
+        ],
+        [
+          145.2,
+          0,
+          -183.6
+        ],
+        [
+          149.2,
+          0,
+          -189.9
+        ]
+      ]
+    },
+    {
+      "id": "way/169683896",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          12.4,
+          0,
+          -29.7
+        ],
+        [
+          14.4,
+          0,
+          -28.7
+        ],
+        [
+          19.9,
+          0,
+          -38.5
+        ],
+        [
+          48.8,
+          0,
+          -22.8
+        ]
+      ]
+    },
+    {
+      "id": "way/169689425",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          12.8,
+          0,
+          136.2
+        ],
+        [
+          12.3,
+          0,
+          137.2
+        ],
+        [
+          -16.2,
+          0,
+          125.3
+        ],
+        [
+          -5.2,
+          0,
+          84.4
+        ],
+        [
+          8.7,
+          0,
+          86.5
+        ]
+      ]
+    },
+    {
+      "id": "way/169689426",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          -16.9,
+          0,
+          93.9
+        ],
+        [
+          -20.3,
+          0,
+          102.8
+        ],
+        [
+          -23.4,
+          0,
+          117.3
+        ],
+        [
+          -23.7,
+          0,
+          132.6
+        ],
+        [
+          -22.1,
+          0,
+          135.6
+        ],
+        [
+          -6,
+          0,
+          147.7
+        ],
+        [
+          7.6,
+          0,
+          154.3
+        ]
+      ]
+    },
+    {
+      "id": "way/169689435",
+      "class": "steps",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          37.4,
+          0,
+          48.6
+        ],
+        [
+          37.8,
+          0,
+          51.1
+        ]
+      ]
+    },
+    {
+      "id": "way/169689436",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          -15,
+          0,
+          90.3
+        ],
+        [
+          -16.9,
+          0,
+          93.9
+        ]
+      ]
+    },
+    {
+      "id": "way/169689438",
+      "class": "steps",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          37.4,
+          0,
+          43.1
+        ],
+        [
+          39.8,
+          0,
+          44.5
+        ]
+      ]
+    },
+    {
+      "id": "way/169689440",
+      "class": "steps",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          37.4,
+          0,
+          48.6
+        ],
+        [
+          35,
+          0,
+          49.4
+        ]
+      ]
+    },
+    {
+      "id": "way/169689441",
+      "class": "steps",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          26,
+          0,
+          123.7
+        ],
+        [
+          26.6,
+          0,
+          122.5
+        ]
+      ]
+    },
+    {
+      "id": "way/169689444",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          17,
+          0,
+          128.2
+        ],
+        [
+          15.5,
+          0,
+          125.8
+        ],
+        [
+          -2.8,
+          0,
+          118
+        ],
+        [
+          1,
+          0,
+          108.2
+        ],
+        [
+          5.9,
+          0,
+          107
+        ],
+        [
+          7.1,
+          0,
+          105.3
+        ],
+        [
+          10.1,
+          0,
+          105.8
+        ],
+        [
+          13.5,
+          0,
+          104.9
+        ],
+        [
+          16,
+          0,
+          102.8
+        ],
+        [
+          19,
+          0,
+          102.3
+        ],
+        [
+          22.9,
+          0,
+          103.4
+        ],
+        [
+          32.6,
+          0,
+          110.4
+        ],
+        [
+          38.6,
+          0,
+          113.3
+        ],
+        [
+          54.8,
+          0,
+          123.5
+        ],
+        [
+          56.4,
+          0,
+          127.9
+        ],
+        [
+          52.9,
+          0,
+          134.5
+        ],
+        [
+          48.2,
+          0,
+          136.3
+        ],
+        [
+          46.3,
+          0,
+          140.4
+        ],
+        [
+          26.1,
+          0,
+          131.8
+        ],
+        [
+          28.2,
+          0,
+          127.1
+        ]
+      ]
+    },
+    {
+      "id": "way/169689445",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          24.2,
+          0,
+          127.7
+        ],
+        [
+          26,
+          0,
+          123.7
+        ]
+      ]
+    },
+    {
+      "id": "way/169689447",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          15.5,
+          0,
+          125.8
+        ],
+        [
+          14.9,
+          0,
+          123.4
+        ],
+        [
+          16.4,
+          0,
+          120.7
+        ]
+      ]
+    },
+    {
+      "id": "way/169689448",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          37.9,
+          0,
+          52.5
+        ],
+        [
+          33.3,
+          0,
+          50.1
+        ],
+        [
+          35,
+          0,
+          49.4
+        ]
+      ]
+    },
+    {
+      "id": "way/169689449",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          39.8,
+          0,
+          44.5
+        ],
+        [
+          37.4,
+          0,
+          48.6
+        ]
+      ]
+    },
+    {
+      "id": "way/169689450",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          42.9,
+          0,
+          99.7
+        ],
+        [
+          56.6,
+          0,
+          79.2
+        ]
+      ]
+    },
+    {
+      "id": "way/169689451",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          55.6,
+          0,
+          80.7
+        ],
+        [
+          48.6,
+          0,
+          75.9
+        ],
+        [
+          38.9,
+          0,
+          91.2
+        ]
+      ]
+    },
+    {
+      "id": "way/169689452",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          69.9,
+          0,
+          84.3
+        ],
+        [
+          47.4,
+          0,
+          70.9
+        ],
+        [
+          33.3,
+          0,
+          93.1
+        ]
+      ]
+    },
+    {
+      "id": "way/169689455",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          47.9,
+          0,
+          92.7
+        ],
+        [
+          37.9,
+          0,
+          86.1
+        ]
+      ]
+    },
+    {
+      "id": "way/169689456",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          66,
+          0,
+          62.9
+        ],
+        [
+          58.7,
+          0,
+          73.4
+        ],
+        [
+          56.6,
+          0,
+          79.2
+        ]
+      ]
+    },
+    {
+      "id": "way/169689459",
+      "class": "service",
+      "width": 3,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          53.9,
+          0,
+          135
+        ],
+        [
+          28.2,
+          0,
+          127.1
+        ],
+        [
+          14.9,
+          0,
+          119.8
+        ],
+        [
+          12.5,
+          0,
+          116.3
+        ]
+      ]
+    },
+    {
+      "id": "way/169689460",
+      "class": "service",
+      "width": 3,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          12.5,
+          0,
+          116.3
+        ],
+        [
+          14.6,
+          0,
+          111.9
+        ],
+        [
+          18.1,
+          0,
+          110
+        ],
+        [
+          25.2,
+          0,
+          112.2
+        ],
+        [
+          30.3,
+          0,
+          115.3
+        ],
+        [
+          39.4,
+          0,
+          124.8
+        ],
+        [
+          46.7,
+          0,
+          131.1
+        ],
+        [
+          52.9,
+          0,
+          134.5
+        ]
+      ]
+    },
+    {
+      "id": "way/169689480",
+      "class": "primary",
+      "width": 10,
+      "surface": "asphalt",
+      "name": "11. novembra krastmala",
+      "points": [
+        [
+          -34.7,
+          0,
+          103.2
+        ],
+        [
+          -45.5,
+          0,
+          132.2
+        ],
+        [
+          -56.4,
+          0,
+          167.8
+        ]
+      ]
+    },
+    {
+      "id": "way/172640998",
+      "class": "primary",
+      "width": 10,
+      "surface": "asphalt",
+      "name": "11. novembra krastmala",
+      "points": [
+        [
+          140.5,
+          0,
+          -206.6
+        ],
+        [
+          126.7,
+          0,
+          -186.6
+        ],
+        [
+          -14.2,
+          0,
+          61.1
+        ],
+        [
+          -25.9,
+          0,
+          82.8
+        ],
+        [
+          -34.7,
+          0,
+          103.2
+        ]
+      ]
+    },
+    {
+      "id": "way/223782879",
+      "class": "primary",
+      "width": 10,
+      "surface": "asphalt",
+      "name": "11. novembra krastmala",
+      "points": [
+        [
+          -68.9,
+          0,
+          164.2
+        ],
+        [
+          -63.2,
+          0,
+          145.1
+        ],
+        [
+          -52,
+          0,
+          117.6
+        ],
+        [
+          -45,
+          0,
+          102
+        ],
+        [
+          -33.2,
+          0,
+          79.7
+        ],
+        [
+          29.6,
+          0,
+          -33.3
+        ],
+        [
+          69.1,
+          0,
+          -102.7
+        ],
+        [
+          132.9,
+          0,
+          -211.2
+        ],
+        [
+          182.5,
+          0,
+          -299.9
+        ]
+      ]
+    },
+    {
+      "id": "way/232822081",
+      "class": "footway",
+      "width": 2,
+      "surface": "sett",
+      "name": null,
+      "points": [
+        [
+          95,
+          0,
+          -42.8
+        ],
+        [
+          99.4,
+          0,
+          -40.3
+        ],
+        [
+          93.6,
+          0,
+          -30.2
+        ],
+        [
+          88.9,
+          0,
+          -30.7
+        ],
+        [
+          84.6,
+          0,
+          -23.6
+        ]
+      ]
+    },
+    {
+      "id": "way/232822088",
+      "class": "footway",
+      "width": 2,
+      "surface": "sett",
+      "name": null,
+      "points": [
+        [
+          83.4,
+          0,
+          -15.5
+        ],
+        [
+          85,
+          0,
+          -12.8
+        ],
+        [
+          83.9,
           0,
           -10.8
         ],
-        "priority": 92
-      },
-      {
-        "id": "way/139433071",
-        "kind": "hospital",
-        "name": "Valmieras veselības centrs",
-        "position": [
-          -81.8,
+        [
+          79.6,
           0,
-          -27.9
+          -13.3
         ],
-        "priority": 75
-      },
-      {
-        "id": "node/826165767",
-        "kind": "restaurant",
-        "name": "Rātes Vārti",
-        "position": [
-          97.3,
+        [
+          80.7,
           0,
-          -57.7
+          -15.1
         ],
-        "priority": 65
-      },
-      {
-        "id": "node/813001107",
-        "kind": "cafe",
-        "name": "Bastions",
-        "position": [
-          -64.3,
+        [
+          83.4,
+          0,
+          -15.5
+        ],
+        [
+          84.1,
+          0,
+          -16.7
+        ]
+      ]
+    },
+    {
+      "id": "way/232822090",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          74,
+          0,
+          -29.6
+        ],
+        [
+          82,
+          0,
+          -25
+        ]
+      ]
+    },
+    {
+      "id": "way/300930402",
+      "class": "cycleway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          -559.3,
+          0,
+          13.4
+        ],
+        [
+          -466.5,
+          0,
+          45.9
+        ],
+        [
+          -465.6,
+          0,
+          43.8
+        ],
+        [
+          -461.4,
+          0,
+          43.9
+        ],
+        [
+          -458.4,
+          0,
+          46.4
+        ],
+        [
+          -458.7,
+          0,
+          48.7
+        ],
+        [
+          -31,
+          0,
+          200.4
+        ],
+        [
+          -23.5,
+          0,
+          204.2
+        ],
+        [
+          68,
+          0,
+          236.8
+        ]
+      ]
+    },
+    {
+      "id": "way/311545259",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          114.3,
+          0,
+          -86.2
+        ],
+        [
+          92.9,
+          0,
+          -100.5
+        ]
+      ]
+    },
+    {
+      "id": "way/311545260",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          88.1,
+          0,
+          -53.5
+        ],
+        [
+          71,
+          0,
+          -62
+        ]
+      ]
+    },
+    {
+      "id": "way/311545261",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          129,
+          0,
+          -110.8
+        ],
+        [
+          106.7,
+          0,
+          -124.7
+        ]
+      ]
+    },
+    {
+      "id": "way/313804277",
+      "class": "service",
+      "width": 3,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          69.4,
+          0,
+          57.7
+        ],
+        [
+          66,
+          0,
+          62.9
+        ]
+      ]
+    },
+    {
+      "id": "way/356521800",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          92.9,
+          0,
+          -44.1
+        ],
+        [
+          85.2,
+          0,
+          -48.5
+        ]
+      ]
+    },
+    {
+      "id": "way/356521810",
+      "class": "steps",
+      "width": 5,
+      "surface": "concrete",
+      "name": null,
+      "points": [
+        [
+          84.6,
+          0,
+          -23.6
+        ],
+        [
+          82,
+          0,
+          -25
+        ]
+      ]
+    },
+    {
+      "id": "way/606469001",
+      "class": "steps",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          103.7,
+          0,
+          -35.2
+        ],
+        [
+          102.1,
+          0,
+          -35.3
+        ]
+      ]
+    },
+    {
+      "id": "way/606469002",
+      "class": "steps",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          103.8,
+          0,
+          -37.9
+        ],
+        [
+          102.3,
+          0,
+          -38.7
+        ]
+      ]
+    },
+    {
+      "id": "way/606469003",
+      "class": "steps",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          105.1,
+          0,
+          -39.5
+        ],
+        [
+          104.3,
+          0,
+          -40.9
+        ]
+      ]
+    },
+    {
+      "id": "way/606469004",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          99.4,
+          0,
+          -40.3
+        ],
+        [
+          101.9,
+          0,
+          -44.5
+        ],
+        [
+          104.3,
+          0,
+          -40.9
+        ]
+      ]
+    },
+    {
+      "id": "way/606469005",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          102.3,
+          0,
+          -38.7
+        ],
+        [
+          99.4,
+          0,
+          -40.3
+        ]
+      ]
+    },
+    {
+      "id": "way/606469006",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          102.1,
+          0,
+          -35.3
+        ],
+        [
+          96.7,
+          0,
+          -35.7
+        ]
+      ]
+    },
+    {
+      "id": "way/823823700",
+      "class": "steps",
+      "width": 5,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          -2.7,
+          0,
+          -43.5
+        ],
+        [
+          5.6,
+          0,
+          -39.4
+        ]
+      ]
+    },
+    {
+      "id": "way/1105843486",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          19.9,
+          0,
+          -38.5
+        ],
+        [
+          18.9,
+          0,
+          -40.8
+        ],
+        [
+          12.2,
+          0,
+          -49.1
+        ],
+        [
+          10.5,
+          0,
+          -50.1
+        ]
+      ]
+    },
+    {
+      "id": "way/1204313764",
+      "class": "service",
+      "width": 3,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          42.9,
+          0,
+          99.7
+        ],
+        [
+          34.9,
+          0,
+          110.2
+        ]
+      ]
+    },
+    {
+      "id": "way/1217525798",
+      "class": "footway",
+      "width": 2,
+      "surface": "sett",
+      "name": null,
+      "points": [
+        [
+          85.1,
           0,
           -18.2
         ],
-        "priority": 64
-      },
-      {
-        "id": "node/826165742",
-        "kind": "theatre",
-        "name": "Valmieras drāmas teātris",
-        "position": [
+        [
+          87.4,
+          0,
+          -22
+        ],
+        [
+          84.6,
+          0,
+          -23.6
+        ]
+      ]
+    },
+    {
+      "id": "way/1217525799",
+      "class": "steps",
+      "width": 5,
+      "surface": "sett",
+      "name": null,
+      "points": [
+        [
+          84.1,
+          0,
+          -16.7
+        ],
+        [
+          85.1,
+          0,
+          -18.2
+        ]
+      ]
+    },
+    {
+      "id": "way/1305881606",
+      "class": "residential",
+      "width": 9,
+      "surface": "sett",
+      "name": "Poļu gāte",
+      "points": [
+        [
+          43.6,
+          0,
+          -15.4
+        ],
+        [
+          59.9,
+          0,
+          -6.2
+        ]
+      ]
+    },
+    {
+      "id": "way/1335913903",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          27.1,
+          0,
+          68.6
+        ],
+        [
+          37.9,
+          0,
+          52.5
+        ],
+        [
+          37.8,
+          0,
+          51.1
+        ]
+      ]
+    },
+    {
+      "id": "way/1335913904",
+      "class": "path",
+      "width": 1.5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          7.9,
+          0,
+          77.8
+        ],
+        [
+          0.8,
+          0,
+          77.5
+        ],
+        [
+          -3.4,
+          0,
+          79.7
+        ],
+        [
+          -5.2,
+          0,
+          78.7
+        ]
+      ]
+    },
+    {
+      "id": "way/1335913908",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          -5.2,
+          0,
+          78.7
+        ],
+        [
+          -11.9,
+          0,
+          85.5
+        ],
+        [
+          -15,
+          0,
+          90.3
+        ]
+      ]
+    },
+    {
+      "id": "way/1346606605",
+      "class": "proposed",
+      "width": 5,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          -78.4,
+          0,
+          166.5
+        ],
+        [
+          -67.6,
+          0,
+          134.7
+        ],
+        [
+          -57.5,
+          0,
+          115.4
+        ],
+        [
+          -50.8,
+          0,
+          96.7
+        ],
+        [
+          -43.4,
+          0,
+          79.7
+        ],
+        [
+          -8.1,
+          0,
+          16.2
+        ],
+        [
+          165,
+          0,
+          -286.6
+        ],
+        [
+          179.9,
+          0,
+          -313.7
+        ],
+        [
+          197.7,
+          0,
+          -349.6
+        ],
+        [
+          226.6,
+          0,
+          -386.1
+        ],
+        [
+          241.9,
+          0,
+          -404.1
+        ],
+        [
+          287.5,
+          0,
+          -454.6
+        ],
+        [
+          311.7,
+          0,
+          -479.3
+        ],
+        [
+          331.7,
+          0,
+          -498.1
+        ],
+        [
+          350.8,
+          0,
+          -514.8
+        ],
+        [
+          369.7,
+          0,
+          -533.9
+        ],
+        [
+          386.8,
+          0,
+          -547.5
+        ],
+        [
+          418.5,
+          0,
+          -576.1
+        ],
+        [
+          433.7,
+          0,
+          -595.3
+        ],
+        [
+          441.2,
+          0,
+          -602.3
+        ],
+        [
+          477.6,
+          0,
+          -634.7
+        ],
+        [
+          503.8,
+          0,
+          -656.5
+        ],
+        [
+          526.2,
+          0,
+          -669.8
+        ],
+        [
+          543.7,
+          0,
+          -681.6
+        ],
+        [
+          565.3,
+          0,
+          -693.4
+        ],
+        [
+          568.9,
+          0,
+          -697.8
+        ],
+        [
+          571.7,
+          0,
+          -703.1
+        ],
+        [
+          579.6,
+          0,
+          -709.4
+        ]
+      ]
+    },
+    {
+      "id": "way/1355001623",
+      "class": "footway",
+      "width": 2,
+      "surface": "asphalt",
+      "name": null,
+      "points": [
+        [
+          170.9,
+          0,
+          -179.6
+        ],
+        [
+          120.4,
+          0,
+          -96.7
+        ],
+        [
+          67.9,
+          0,
+          -7
+        ],
+        [
+          64.4,
+          0,
+          -3.7
+        ]
+      ]
+    },
+    {
+      "id": "way/1355001627",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          153.9,
+          0,
+          -176
+        ],
+        [
+          119.3,
+          0,
+          -117
+        ],
+        [
+          115,
+          0,
+          -113.4
+        ],
+        [
+          105.2,
+          0,
+          -97.5
+        ],
+        [
+          103,
+          0,
+          -90.4
+        ],
+        [
+          59,
+          0,
+          -15.1
+        ],
+        [
+          56.3,
+          0,
+          -15
+        ],
+        [
+          47.3,
+          0,
+          -20.6
+        ]
+      ]
+    },
+    {
+      "id": "way/1355001628",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          61.8,
+          0,
+          0.8
+        ],
+        [
+          111.7,
+          0,
+          26.2
+        ],
+        [
+          114.9,
+          0,
+          28.6
+        ],
+        [
+          116.6,
+          0,
+          31.5
+        ],
+        [
+          116.6,
+          0,
+          36.4
+        ],
+        [
+          115.3,
+          0,
+          39.8
+        ],
+        [
+          101.3,
+          0,
+          68.3
+        ]
+      ]
+    },
+    {
+      "id": "way/1355001629",
+      "class": "footway",
+      "width": 2,
+      "surface": "unhewn_cobblestone",
+      "name": null,
+      "points": [
+        [
+          -6.3,
+          0,
+          71.9
+        ],
+        [
+          7.1,
+          0,
+          73.9
+        ],
+        [
+          32.2,
+          0,
+          36.7
+        ]
+      ]
+    },
+    {
+      "id": "way/1355001630",
+      "class": "service",
+      "width": 3,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          86.2,
+          0,
+          64.4
+        ],
+        [
+          86.5,
+          0,
+          62
+        ],
+        [
+          91.1,
+          0,
+          51.1
+        ],
+        [
+          69.3,
+          0,
+          39.7
+        ],
+        [
+          68.2,
+          0,
+          34.8
+        ],
+        [
+          61.3,
+          0,
+          31.6
+        ],
+        [
+          61.5,
+          0,
+          27.9
+        ],
+        [
+          65.3,
+          0,
+          20.8
+        ]
+      ]
+    },
+    {
+      "id": "way/1355001631",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          116.8,
+          0,
+          93.8
+        ],
+        [
           119.8,
           0,
-          -42
-        ],
-        "priority": 64
-      },
-      {
-        "id": "node/10218055919",
-        "kind": "cafe",
-        "name": "Lāči",
-        "position": [
-          -14.8,
-          0,
-          -84.4
-        ],
-        "priority": 64
-      },
-      {
-        "id": "way/67233885",
-        "kind": "mall",
-        "name": "Valleta",
-        "position": [
-          1.5,
-          0,
-          -103.7
-        ],
-        "priority": 63
-      },
-      {
-        "id": "node/10218055922",
-        "kind": "supermarket",
-        "name": "Mego",
-        "position": [
-          11.7,
-          0,
-          -101.1
-        ],
-        "priority": 60
-      }
-    ],
-    "debug": {
-      "paddedBbox": {
-        "south": 57.53824956442255,
-        "west": 25.42107261636853,
-        "north": 57.54112416018253,
-        "east": 25.426428520719472
-      },
-      "layers": [
-        "roads",
-        "buildings",
-        "water",
-        "pois",
-        "water"
-      ],
-      "detail": "full",
-      "rawCache": "miss",
-      "rawStats": {
-        "nodes": 1341,
-        "ways": 225,
-        "relations": 0,
-        "roads": 193,
-        "buildings": 24,
-        "water": 5,
-        "landuse": 0,
-        "pois": 22
-      },
-      "rawElements": 1566,
-      "skippedRelations": 0
-    }
-  },
-  "location": {
-    "lat": 57.53968686230254,
-    "lon": 25.423750568544,
-    "name": "Ziloņu iela",
-    "kind": "amenity",
-    "address": {
-      "neighbourhood": "Centrs",
-      "city": "Valmiera",
-      "county": null,
-      "state": null,
-      "postcode": "LV-4201",
-      "country": "Latvija",
-      "countryCode": "lv"
+          79.9
+        ]
+      ]
     },
-    "bbox": [
-      57.5396991,
-      25.4236422,
-      57.5397991,
-      25.4237422
+    {
+      "id": "way/1425644287",
+      "class": "pedestrian",
+      "width": 4,
+      "surface": "sett",
+      "name": "Daugavas gāte",
+      "points": [
+        [
+          110.6,
+          0,
+          77.8
+        ],
+        [
+          102.7,
+          0,
+          69
+        ],
+        [
+          94.7,
+          0,
+          65
+        ]
+      ]
+    },
+    {
+      "id": "way/1426630612",
+      "class": "footway",
+      "width": 2,
+      "surface": "paving_stones",
+      "name": null,
+      "points": [
+        [
+          101.3,
+          0,
+          68.3
+        ],
+        [
+          99.8,
+          0,
+          70.9
+        ],
+        [
+          101.9,
+          0,
+          76.6
+        ],
+        [
+          101.3,
+          0,
+          79.8
+        ],
+        [
+          96.8,
+          0,
+          89.1
+        ],
+        [
+          -10,
+          0,
+          292.1
+        ],
+        [
+          -16.1,
+          0,
+          294.9
+        ],
+        [
+          -54.2,
+          0,
+          282.1
+        ],
+        [
+          -56.4,
+          0,
+          278.1
+        ],
+        [
+          -49,
+          0,
+          250.8
+        ]
+      ]
+    },
+    {
+      "id": "way/1500883463",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          -16.6,
+          0,
+          119.3
+        ],
+        [
+          -13.3,
+          0,
+          120.3
+        ]
+      ]
+    },
+    {
+      "id": "way/1500883464",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          -23.4,
+          0,
+          117.3
+        ],
+        [
+          -16.6,
+          0,
+          119.3
+        ]
+      ]
+    },
+    {
+      "id": "way/1501212205",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          59,
+          0,
+          -15.1
+        ],
+        [
+          69.2,
+          0,
+          -9.3
+        ]
+      ]
+    },
+    {
+      "id": "way/1501212206",
+      "class": "footway",
+      "width": 2,
+      "surface": null,
+      "name": null,
+      "points": [
+        [
+          116.6,
+          0,
+          31.5
+        ],
+        [
+          125.5,
+          0,
+          31.8
+        ]
+      ]
+    }
+  ],
+  "buildings": [
+    {
+      "id": "way/87493931",
+      "kind": "residential",
+      "height": 12,
+      "levels": 4,
+      "name": "9",
+      "footprint": [
+        [
+          106.4,
+          -68
+        ],
+        [
+          105.2,
+          -66.1
+        ],
+        [
+          105.9,
+          -63.1
+        ],
+        [
+          123,
+          -50.3
+        ],
+        [
+          128.7,
+          -58.6
+        ],
+        [
+          120,
+          -65.2
+        ],
+        [
+          124.2,
+          -70.2
+        ],
+        [
+          124.4,
+          -72.8
+        ],
+        [
+          133.6,
+          -65.3
+        ],
+        [
+          140.6,
+          -73.8
+        ],
+        [
+          122.3,
+          -89.3
+        ],
+        [
+          119.3,
+          -89.4
+        ],
+        [
+          117.7,
+          -86.8
+        ]
+      ]
+    },
+    {
+      "id": "way/87493950",
+      "kind": "church",
+      "height": 22,
+      "levels": null,
+      "name": "Rīgas Sāpju Dievmātes baznīca",
+      "footprint": [
+        [
+          81.1,
+          12.3
+        ],
+        [
+          80.2,
+          11.4
+        ],
+        [
+          78,
+          16
+        ],
+        [
+          70.2,
+          14.1
+        ],
+        [
+          68.4,
+          18
+        ],
+        [
+          74.7,
+          22.7
+        ],
+        [
+          72.6,
+          27.3
+        ],
+        [
+          86.7,
+          34.1
+        ],
+        [
+          83.6,
+          40.7
+        ],
+        [
+          84.9,
+          45.1
+        ],
+        [
+          89,
+          47.2
+        ],
+        [
+          93.3,
+          45.6
+        ],
+        [
+          96.5,
+          38.8
+        ],
+        [
+          105.6,
+          43.3
+        ],
+        [
+          106.2,
+          42
+        ],
+        [
+          109.6,
+          42.6
+        ],
+        [
+          111,
+          39.8
+        ],
+        [
+          112.5,
+          40.6
+        ],
+        [
+          115.4,
+          31.4
+        ],
+        [
+          112.1,
+          27.4
+        ]
+      ]
+    },
+    {
+      "id": "way/87494024",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": "5",
+      "footprint": [
+        [
+          91,
+          -9.1
+        ],
+        [
+          113.6,
+          5.7
+        ],
+        [
+          122.5,
+          -7.7
+        ],
+        [
+          98.8,
+          -22.3
+        ]
+      ]
+    },
+    {
+      "id": "way/87494062",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": "5",
+      "footprint": [
+        [
+          90.9,
+          60.1
+        ],
+        [
+          101.8,
+          65.4
+        ],
+        [
+          110.2,
+          48.3
+        ],
+        [
+          99.3,
+          43
+        ]
+      ]
+    },
+    {
+      "id": "way/135466072",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": "3",
+      "footprint": [
+        [
+          122.5,
+          -7.7
+        ],
+        [
+          131.4,
+          -1.8
+        ],
+        [
+          125.8,
+          8.3
+        ],
+        [
+          115.8,
+          2.2
+        ]
+      ]
+    },
+    {
+      "id": "way/135466073",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": null,
+      "footprint": [
+        [
+          84.7,
+          1.5
+        ],
+        [
+          91,
+          -9.1
+        ],
+        [
+          98.8,
+          -3.3
+        ],
+        [
+          95.6,
+          1.5
+        ],
+        [
+          100.5,
+          4.5
+        ],
+        [
+          97.8,
+          9.4
+        ]
+      ]
+    },
+    {
+      "id": "way/135466074",
+      "kind": "residential",
+      "height": 9,
+      "levels": 3,
+      "name": "7",
+      "footprint": [
+        [
+          136.7,
+          20.5
+        ],
+        [
+          124.5,
+          25.6
+        ],
+        [
+          102.8,
+          13
+        ],
+        [
+          109.1,
+          2.9
+        ],
+        [
+          119.1,
+          8.7
+        ],
+        [
+          116.7,
+          12.5
+        ],
+        [
+          120.9,
+          15.1
+        ],
+        [
+          122.8,
+          10
+        ],
+        [
+          126.9,
+          11.4
+        ],
+        [
+          127.7,
+          14.1
+        ],
+        [
+          131.4,
+          13
+        ]
+      ]
+    },
+    {
+      "id": "way/135466075",
+      "kind": "residential",
+      "height": 9,
+      "levels": 3,
+      "name": "9",
+      "footprint": [
+        [
+          131.4,
+          13
+        ],
+        [
+          129.9,
+          9.7
+        ],
+        [
+          126.4,
+          7.3
+        ],
+        [
+          131.4,
+          -1.8
+        ],
+        [
+          136.2,
+          1.9
+        ],
+        [
+          146,
+          16.4
+        ],
+        [
+          136.7,
+          20.5
+        ]
+      ]
+    },
+    {
+      "id": "way/135466089",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": "5",
+      "footprint": [
+        [
+          98.8,
+          -22.3
+        ],
+        [
+          94,
+          -25.1
+        ],
+        [
+          86.4,
+          -12.1
+        ],
+        [
+          91,
+          -9.1
+        ]
+      ]
+    },
+    {
+      "id": "way/135466096",
+      "kind": "residential",
+      "height": 6,
+      "levels": 2,
+      "name": "17",
+      "footprint": [
+        [
+          140.6,
+          -73.8
+        ],
+        [
+          151.4,
+          -64.8
+        ],
+        [
+          132.8,
+          -39.3
+        ],
+        [
+          120.6,
+          -46.9
+        ],
+        [
+          133.6,
+          -65.3
+        ]
+      ]
+    },
+    {
+      "id": "way/169689422",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": null,
+      "footprint": [
+        [
+          40,
+          47.3
+        ],
+        [
+          38.5,
+          49.8
+        ],
+        [
+          40.5,
+          51.1
+        ],
+        [
+          42,
+          48.6
+        ]
+      ]
+    },
+    {
+      "id": "way/171926518",
+      "kind": "church",
+      "height": 22,
+      "levels": null,
+      "name": "Anglikāņu baznīca",
+      "footprint": [
+        [
+          103.6,
+          -32.8
+        ],
+        [
+          103.8,
+          -37.9
+        ],
+        [
+          109.4,
+          -43
+        ],
+        [
+          135.7,
+          -28.1
+        ],
+        [
+          127.8,
+          -14.6
+        ],
+        [
+          102.5,
+          -29.8
+        ],
+        [
+          104.2,
+          -32.4
+        ]
+      ]
+    },
+    {
+      "id": "way/1217525797",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": null,
+      "footprint": [
+        [
+          86.1,
+          -11.4
+        ],
+        [
+          84.4,
+          -8.6
+        ],
+        [
+          86.6,
+          -7.2
+        ],
+        [
+          88.3,
+          -10.1
+        ]
+      ]
+    },
+    {
+      "id": "way/1335913907",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": "3",
+      "footprint": [
+        [
+          -3.5,
+          75.3
+        ],
+        [
+          -5.3,
+          77.6
+        ],
+        [
+          -4,
+          78.7
+        ],
+        [
+          -2.1,
+          76.3
+        ]
+      ]
+    },
+    {
+      "id": "way/1499247201",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": null,
+      "footprint": [
+        [
+          55,
+          27.7
+        ],
+        [
+          57.5,
+          29.3
+        ],
+        [
+          70.8,
+          7.8
+        ],
+        [
+          68.1,
+          6.1
+        ]
+      ]
+    },
+    {
+      "id": "way/1499247204",
+      "kind": "yes",
+      "height": 3,
+      "levels": 1,
+      "name": null,
+      "footprint": [
+        [
+          72,
+          30.6
+        ],
+        [
+          71.1,
+          32.3
+        ],
+        [
+          64.3,
+          29.2
+        ],
+        [
+          68.8,
+          19.1
+        ],
+        [
+          74.7,
+          22.7
+        ],
+        [
+          73.2,
+          27.5
+        ]
+      ]
+    },
+    {
+      "id": "way/1499247205",
+      "kind": "yes",
+      "height": 3,
+      "levels": 1,
+      "name": null,
+      "footprint": [
+        [
+          77.1,
+          33.1
+        ],
+        [
+          72,
+          30.6
+        ],
+        [
+          73.2,
+          27.5
+        ],
+        [
+          78.6,
+          30.1
+        ]
+      ]
+    },
+    {
+      "id": "way/1499247206",
+      "kind": "yes",
+      "height": 3,
+      "levels": 1,
+      "name": null,
+      "footprint": [
+        [
+          78.6,
+          30.1
+        ],
+        [
+          75.9,
+          35.7
+        ],
+        [
+          84,
+          39.6
+        ],
+        [
+          86.7,
+          34.1
+        ]
+      ]
+    },
+    {
+      "id": "way/1499247207",
+      "kind": "yes",
+      "height": 9,
+      "levels": null,
+      "name": null,
+      "footprint": [
+        [
+          46,
+          41.9
+        ],
+        [
+          52.5,
+          31.3
+        ],
+        [
+          64.3,
+          37
+        ],
+        [
+          62.7,
+          40.5
+        ],
+        [
+          63.6,
+          43.6
+        ],
+        [
+          74.2,
+          48.3
+        ],
+        [
+          74.9,
+          46.8
+        ],
+        [
+          82.3,
+          50.5
+        ],
+        [
+          81.7,
+          51.8
+        ],
+        [
+          87.6,
+          55.5
+        ],
+        [
+          86.3,
+          57.8
+        ],
+        [
+          84.2,
+          56.7
+        ],
+        [
+          82.5,
+          60
+        ],
+        [
+          58.8,
+          48.1
+        ]
+      ]
+    },
+    {
+      "id": "relation/1297991",
+      "kind": "apartments",
+      "height": 15,
+      "levels": 5,
+      "name": "14",
+      "footprint": [
+        [
+          176.8,
+          -113.4
+        ],
+        [
+          167.8,
+          -120.9
+        ],
+        [
+          165.5,
+          -118.8
+        ],
+        [
+          164.2,
+          -119.8
+        ],
+        [
+          166.2,
+          -122.4
+        ],
+        [
+          159,
+          -128.2
+        ],
+        [
+          157.2,
+          -125.9
+        ],
+        [
+          155.2,
+          -127.3
+        ],
+        [
+          156.5,
+          -129.6
+        ],
+        [
+          146.9,
+          -135.6
+        ],
+        [
+          126.5,
+          -101.6
+        ],
+        [
+          127.2,
+          -98.1
+        ],
+        [
+          144.2,
+          -84.1
+        ],
+        [
+          147.2,
+          -84.2
+        ],
+        [
+          162,
+          -98.8
+        ]
+      ]
+    },
+    {
+      "id": "relation/1393926",
+      "kind": "castle",
+      "height": 9,
+      "levels": null,
+      "name": "Rīgas Pils",
+      "footprint": [
+        [
+          14.9,
+          90.5
+        ],
+        [
+          16.3,
+          92
+        ],
+        [
+          41.8,
+          52.8
+        ],
+        [
+          40.7,
+          52.1
+        ],
+        [
+          43.3,
+          47.8
+        ],
+        [
+          47.8,
+          50.5
+        ],
+        [
+          47.2,
+          51.5
+        ],
+        [
+          85.9,
+          74.6
+        ],
+        [
+          87.1,
+          72
+        ],
+        [
+          91.8,
+          69
+        ],
+        [
+          96.9,
+          69.7
+        ],
+        [
+          100.2,
+          73.2
+        ],
+        [
+          100.6,
+          78.8
+        ],
+        [
+          58.2,
+          159.5
+        ],
+        [
+          51.5,
+          156.6
+        ],
+        [
+          50.1,
+          159.8
+        ],
+        [
+          56.2,
+          162.6
+        ],
+        [
+          48.8,
+          178.1
+        ],
+        [
+          27.4,
+          167.1
+        ],
+        [
+          31.5,
+          159.4
+        ],
+        [
+          42.8,
+          163.8
+        ],
+        [
+          48.2,
+          155.2
+        ],
+        [
+          22,
+          143.7
+        ],
+        [
+          18.9,
+          151.7
+        ],
+        [
+          10.5,
+          148.1
+        ],
+        [
+          13.7,
+          138.9
+        ],
+        [
+          6.3,
+          135.2
+        ],
+        [
+          6.9,
+          134
+        ],
+        [
+          -14.8,
+          125.3
+        ],
+        [
+          -4.5,
+          91.4
+        ],
+        [
+          -5.9,
+          91
+        ],
+        [
+          -4.5,
+          86.1
+        ],
+        [
+          7.2,
+          89.4
+        ],
+        [
+          13.1,
+          89.5
+        ]
+      ]
+    }
+  ],
+  "water": [
+    {
+      "id": "way/69885572",
+      "kind": "river",
+      "polygons": [
+        [
+          [
+            10440.7,
+            -10898.5
+          ],
+          [
+            9833.2,
+            -10245.9
+          ],
+          [
+            9555.7,
+            -9851.3
+          ],
+          [
+            9471,
+            -9631.8
+          ],
+          [
+            9094,
+            -9206.5
+          ],
+          [
+            8803,
+            -8979.7
+          ],
+          [
+            7746.7,
+            -8357.4
+          ],
+          [
+            6909.3,
+            -7964.8
+          ],
+          [
+            6223.8,
+            -7458.8
+          ],
+          [
+            5711.3,
+            -6591.8
+          ],
+          [
+            5315,
+            -5744.2
+          ],
+          [
+            4152.7,
+            -4555.1
+          ],
+          [
+            3144.1,
+            -3295.6
+          ],
+          [
+            1102.5,
+            -1326.7
+          ],
+          [
+            198,
+            -738.8
+          ],
+          [
+            100.4,
+            -593.6
+          ],
+          [
+            -262.9,
+            28.5
+          ],
+          [
+            -422.7,
+            534.8
+          ],
+          [
+            -625.2,
+            1314.8
+          ],
+          [
+            -761.7,
+            1948.3
+          ],
+          [
+            -727.4,
+            2458.7
+          ],
+          [
+            -700,
+            2905.5
+          ],
+          [
+            -512.9,
+            4410.9
+          ],
+          [
+            -509.7,
+            5592.3
+          ],
+          [
+            -513.9,
+            6706.8
+          ],
+          [
+            -639.9,
+            8174.3
+          ],
+          [
+            -909.8,
+            8875.1
+          ],
+          [
+            -996.9,
+            9019
+          ],
+          [
+            -2120.7,
+            10365.7
+          ],
+          [
+            -2637.2,
+            10879.5
+          ],
+          [
+            -3535.4,
+            11637.4
+          ],
+          [
+            -4557.7,
+            12479.9
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/84914188",
+      "kind": "river",
+      "polygons": [
+        [
+          [
+            -438.6,
+            2939.1
+          ],
+          [
+            -236.2,
+            2354.2
+          ],
+          [
+            -236.3,
+            2334.6
+          ],
+          [
+            -233.8,
+            2321.1
+          ],
+          [
+            -235.1,
+            2311.3
+          ],
+          [
+            -236.3,
+            2310.1
+          ],
+          [
+            -266.9,
+            2306.4
+          ],
+          [
+            -266.9,
+            2301.5
+          ],
+          [
+            -236.3,
+            2303.9
+          ],
+          [
+            -236.3,
+            2300.3
+          ],
+          [
+            -235.1,
+            2300.3
+          ],
+          [
+            -233.9,
+            2290.5
+          ],
+          [
+            -235.2,
+            2216.9
+          ],
+          [
+            -236.4,
+            2216.9
+          ],
+          [
+            -236.4,
+            2214.5
+          ],
+          [
+            -235.2,
+            2214.5
+          ],
+          [
+            -236.5,
+            2142.2
+          ],
+          [
+            -237.8,
+            2136
+          ],
+          [
+            -236.9,
+            2077.5
+          ],
+          [
+            -300.9,
+            2076.7
+          ],
+          [
+            -416.1,
+            2393.7
+          ],
+          [
+            -447.9,
+            2424.3
+          ],
+          [
+            -469.8,
+            2493
+          ],
+          [
+            -454.9,
+            2663.3
+          ],
+          [
+            -464.7,
+            2664.6
+          ],
+          [
+            -480.8,
+            2499.1
+          ],
+          [
+            -479.6,
+            2490.6
+          ],
+          [
+            -446.7,
+            2388.8
+          ],
+          [
+            -450.4,
+            2383.9
+          ],
+          [
+            -451.6,
+            2379
+          ],
+          [
+            -449.2,
+            2358.2
+          ],
+          [
+            -465.2,
+            2299.3
+          ],
+          [
+            -470.1,
+            2284.7
+          ],
+          [
+            -472.5,
+            2284.5
+          ],
+          [
+            -473,
+            2281.5
+          ],
+          [
+            -470.1,
+            2281
+          ],
+          [
+            -498.4,
+            2164.6
+          ],
+          [
+            -521.8,
+            2048.2
+          ],
+          [
+            -525.5,
+            2044.5
+          ],
+          [
+            -531.6,
+            2022.5
+          ],
+          [
+            -532.9,
+            2011.4
+          ],
+          [
+            -531.6,
+            2005.3
+          ],
+          [
+            -528,
+            1999.2
+          ],
+          [
+            -530.5,
+            1974.7
+          ],
+          [
+            -529.3,
+            1972.2
+          ],
+          [
+            -532.9,
+            1951.4
+          ],
+          [
+            -534.2,
+            1934.2
+          ],
+          [
+            -533,
+            1929.3
+          ],
+          [
+            -540.4,
+            1842.3
+          ],
+          [
+            -539.2,
+            1823.9
+          ],
+          [
+            -541.7,
+            1819
+          ],
+          [
+            -555.2,
+            1820.3
+          ],
+          [
+            -555.2,
+            1815.4
+          ],
+          [
+            -553.9,
+            1815.4
+          ],
+          [
+            -554,
+            1749.2
+          ],
+          [
+            -555.2,
+            1749.2
+          ],
+          [
+            -556.5,
+            1741.8
+          ],
+          [
+            -547.9,
+            1743
+          ],
+          [
+            -549.2,
+            1727.1
+          ],
+          [
+            -556.5,
+            1725.9
+          ],
+          [
+            -556.5,
+            1721
+          ],
+          [
+            -547.9,
+            1721
+          ],
+          [
+            -549.2,
+            1681.8
+          ],
+          [
+            -556.6,
+            1681.8
+          ],
+          [
+            -556.6,
+            1676.9
+          ],
+          [
+            -550.4,
+            1676.9
+          ],
+          [
+            -540.7,
+            1664.7
+          ],
+          [
+            -546.6,
+            1661.1
+          ],
+          [
+            -500,
+            1426.9
+          ],
+          [
+            -488.1,
+            1429.9
+          ],
+          [
+            -484.7,
+            1418.2
+          ],
+          [
+            -487.2,
+            1417
+          ],
+          [
+            -478.6,
+            1386.3
+          ],
+          [
+            -440.5,
+            1183.6
+          ],
+          [
+            -429.4,
+            1154.8
+          ],
+          [
+            -411.8,
+            1161.3
+          ],
+          [
+            -359.2,
+            1029.5
+          ],
+          [
+            -277,
+            809.5
+          ],
+          [
+            -260.4,
+            752.8
+          ],
+          [
+            -283.6,
+            744.8
+          ],
+          [
+            -287,
+            740.2
+          ],
+          [
+            -273.2,
+            690.6
+          ],
+          [
+            -269.9,
+            689.2
+          ],
+          [
+            -252.5,
+            693.3
+          ],
+          [
+            -134.2,
+            248.5
+          ],
+          [
+            -128.4,
+            244.8
+          ],
+          [
+            -120.8,
+            225.1
+          ],
+          [
+            -112.1,
+            225.5
+          ],
+          [
+            -85.3,
+            158.9
+          ],
+          [
+            -68.8,
+            109.3
+          ],
+          [
+            -25.8,
+            7.5
+          ],
+          [
+            -2.7,
+            -43.5
+          ],
+          [
+            31.4,
+            -108.3
+          ],
+          [
+            100.4,
+            -224.3
+          ],
+          [
+            177.6,
+            -343.9
+          ],
+          [
+            200.4,
+            -373.6
+          ],
+          [
+            244.2,
+            -422.9
+          ],
+          [
+            240.5,
+            -427.8
+          ],
+          [
+            260.1,
+            -449.5
+          ],
+          [
+            -103.8,
+            -778
+          ],
+          [
+            -118.9,
+            -750.9
+          ],
+          [
+            -121.5,
+            -750.8
+          ],
+          [
+            -124.4,
+            -747.9
+          ],
+          [
+            -207.1,
+            -562.7
+          ],
+          [
+            -412,
+            -196.2
+          ],
+          [
+            -431.4,
+            -163.9
+          ],
+          [
+            -435.9,
+            -162.1
+          ],
+          [
+            -495.5,
+            -78.7
+          ],
+          [
+            -483,
+            -54.7
+          ],
+          [
+            -548.1,
+            138.9
+          ],
+          [
+            -554.9,
+            136.6
+          ],
+          [
+            -559.4,
+            151.6
+          ],
+          [
+            -578.2,
+            191.8
+          ],
+          [
+            -596.7,
+            204.7
+          ],
+          [
+            -659.3,
+            210.8
+          ],
+          [
+            -702,
+            199
+          ],
+          [
+            -748,
+            171.7
+          ],
+          [
+            -770.1,
+            123.9
+          ],
+          [
+            -776.4,
+            103.1
+          ],
+          [
+            -777.5,
+            87.1
+          ],
+          [
+            -780.1,
+            81.5
+          ],
+          [
+            -785,
+            90
+          ],
+          [
+            -793.4,
+            150.1
+          ],
+          [
+            -795.8,
+            190.6
+          ],
+          [
+            -803.1,
+            238.4
+          ],
+          [
+            -811.6,
+            319.3
+          ],
+          [
+            -840.4,
+            395.6
+          ],
+          [
+            -848.1,
+            423.5
+          ],
+          [
+            -861.2,
+            737.3
+          ],
+          [
+            -861.1,
+            796.1
+          ],
+          [
+            -864.8,
+            816.9
+          ],
+          [
+            -874.1,
+            836.9
+          ],
+          [
+            -882.1,
+            849.5
+          ],
+          [
+            -943.2,
+            983.8
+          ],
+          [
+            -954.8,
+            1012.3
+          ],
+          [
+            -981.9,
+            1094
+          ],
+          [
+            -989.2,
+            1111.2
+          ],
+          [
+            -1006.1,
+            1171.5
+          ],
+          [
+            -1045.9,
+            1362.3
+          ],
+          [
+            -1059.3,
+            1539
+          ],
+          [
+            -1068.7,
+            1700.5
+          ],
+          [
+            -1067.1,
+            1702.7
+          ],
+          [
+            -1070.9,
+            1705.5
+          ],
+          [
+            -1071.5,
+            1717.1
+          ],
+          [
+            -1068.7,
+            1718.7
+          ],
+          [
+            -1070.9,
+            1763.2
+          ],
+          [
+            -1073,
+            1768.5
+          ],
+          [
+            -1075.4,
+            1820.2
+          ],
+          [
+            -1081.9,
+            1831.1
+          ],
+          [
+            -1074.2,
+            1834.4
+          ],
+          [
+            -1072.6,
+            1991.3
+          ],
+          [
+            -1066.3,
+            2079.5
+          ],
+          [
+            -1059,
+            2153.5
+          ],
+          [
+            -1056.4,
+            2153.9
+          ],
+          [
+            -1055.2,
+            2167.7
+          ],
+          [
+            -1057.4,
+            2172.8
+          ],
+          [
+            -1043.5,
+            2426
+          ],
+          [
+            -991.2,
+            2482.8
+          ],
+          [
+            -973.4,
+            2510
+          ],
+          [
+            -963.5,
+            2533.5
+          ],
+          [
+            -835.8,
+            3018.5
+          ],
+          [
+            -838.8,
+            3027.8
+          ],
+          [
+            -838.4,
+            3033.4
+          ],
+          [
+            -829.4,
+            3056.3
+          ],
+          [
+            -825.6,
+            3084.2
+          ],
+          [
+            -824.2,
+            3128.9
+          ],
+          [
+            -818.6,
+            3165.5
+          ],
+          [
+            -822.5,
+            3322
+          ],
+          [
+            -827.3,
+            3337.9
+          ],
+          [
+            -827.3,
+            3352.6
+          ],
+          [
+            -823.6,
+            3358.7
+          ],
+          [
+            -827.3,
+            3386.9
+          ],
+          [
+            -832.2,
+            3394.3
+          ],
+          [
+            -835.4,
+            3405.3
+          ],
+          [
+            -836.6,
+            3416.5
+          ],
+          [
+            -842.3,
+            3429.1
+          ],
+          [
+            -849.9,
+            3455.5
+          ],
+          [
+            -849.3,
+            3458.1
+          ],
+          [
+            -846.5,
+            3458.1
+          ],
+          [
+            -843.1,
+            3462
+          ],
+          [
+            -838.8,
+            3473.4
+          ],
+          [
+            -841.6,
+            3497.1
+          ],
+          [
+            -857.2,
+            3521.2
+          ],
+          [
+            -858.9,
+            3527.7
+          ],
+          [
+            -859.6,
+            3551.8
+          ],
+          [
+            -863.1,
+            3560.4
+          ],
+          [
+            -865.5,
+            3578.2
+          ],
+          [
+            -869.7,
+            3593.8
+          ],
+          [
+            -866.2,
+            3617
+          ],
+          [
+            -866.2,
+            3631.8
+          ],
+          [
+            -859.2,
+            3645.6
+          ],
+          [
+            -848.5,
+            3657
+          ],
+          [
+            -848,
+            3662
+          ],
+          [
+            -859.8,
+            3673.9
+          ],
+          [
+            -863.2,
+            3679.9
+          ],
+          [
+            -866.3,
+            3703.9
+          ],
+          [
+            -873.6,
+            3724.8
+          ],
+          [
+            -875.1,
+            3734
+          ],
+          [
+            -874.8,
+            3750.3
+          ],
+          [
+            -868.8,
+            3769.1
+          ],
+          [
+            -859.7,
+            3786
+          ],
+          [
+            -849.9,
+            3800.1
+          ],
+          [
+            -842.2,
+            3818.9
+          ],
+          [
+            -833.6,
+            3831.1
+          ],
+          [
+            -845.6,
+            3857.3
+          ],
+          [
+            -845.9,
+            3894.4
+          ],
+          [
+            -840.7,
+            3922.7
+          ],
+          [
+            -821.6,
+            3981.3
+          ],
+          [
+            -818,
+            3986.2
+          ],
+          [
+            -809.4,
+            3987.4
+          ],
+          [
+            -806.9,
+            3989.9
+          ],
+          [
+            -806.9,
+            3992.3
+          ],
+          [
+            -822.8,
+            3998.5
+          ],
+          [
+            -822.8,
+            4002.2
+          ],
+          [
+            -828.9,
+            4014.4
+          ],
+          [
+            -833.8,
+            4016.9
+          ],
+          [
+            -844.8,
+            4029.1
+          ],
+          [
+            -844.8,
+            4045.1
+          ],
+          [
+            -846,
+            4050
+          ],
+          [
+            -849.7,
+            4054.9
+          ],
+          [
+            -852.1,
+            4065.9
+          ],
+          [
+            -850,
+            4075
+          ],
+          [
+            -846.2,
+            4145.7
+          ],
+          [
+            -842.6,
+            4150.6
+          ],
+          [
+            -833.9,
+            4152.4
+          ],
+          [
+            -824.2,
+            4158.4
+          ],
+          [
+            -816.2,
+            4167.9
+          ],
+          [
+            -815.2,
+            4175.2
+          ],
+          [
+            -818.7,
+            4180.3
+          ],
+          [
+            -825.1,
+            4184.8
+          ],
+          [
+            -827.5,
+            4190.9
+          ],
+          [
+            -820.1,
+            4247.3
+          ],
+          [
+            -206.7,
+            4228.1
+          ],
+          [
+            -23.3,
+            3931.9
+          ],
+          [
+            -77.9,
+            3548.9
+          ],
+          [
+            -181.9,
+            3556.4
+          ],
+          [
+            -159.5,
+            3850.5
+          ],
+          [
+            -188.8,
+            3854.2
+          ],
+          [
+            -262.2,
+            3940.1
+          ],
+          [
+            -346.6,
+            3947.6
+          ],
+          [
+            -346.6,
+            3948.8
+          ],
+          [
+            -362.5,
+            3951.3
+          ],
+          [
+            -363.8,
+            3950.1
+          ],
+          [
+            -365,
+            3936.6
+          ],
+          [
+            -371.1,
+            3936.6
+          ],
+          [
+            -399.8,
+            3556.7
+          ],
+          [
+            -402.3,
+            3516.3
+          ],
+          [
+            -396.2,
+            3515
+          ],
+          [
+            -431.1,
+            3033.4
+          ]
+        ]
+      ]
+    }
+  ],
+  "landuse": [
+    {
+      "id": "way/45018608",
+      "kind": "park",
+      "polygons": [
+        [
+          [
+            106.2,
+            94.6
+          ],
+          [
+            111.6,
+            90.2
+          ],
+          [
+            117.3,
+            90
+          ],
+          [
+            136.7,
+            95.9
+          ],
+          [
+            138.7,
+            104.5
+          ],
+          [
+            143.1,
+            182.8
+          ],
+          [
+            137.2,
+            189.9
+          ],
+          [
+            80.9,
+            175.3
+          ],
+          [
+            74.4,
+            163.2
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/85390121",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            110.7,
+            -126.4
+          ],
+          [
+            140.2,
+            -179
+          ],
+          [
+            145.6,
+            -184.5
+          ],
+          [
+            151.8,
+            -178.3
+          ],
+          [
+            118.3,
+            -121.9
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/85390128",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            43,
+            -9.1
+          ],
+          [
+            60.2,
+            0.7
+          ],
+          [
+            39.6,
+            35.2
+          ],
+          [
+            36.8,
+            37
+          ],
+          [
+            21,
+            27.7
+          ],
+          [
+            42.1,
+            -8.2
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/85390132",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            19.3,
+            31.2
+          ],
+          [
+            36.8,
+            41.7
+          ],
+          [
+            35.8,
+            42.8
+          ],
+          [
+            32,
+            40.5
+          ],
+          [
+            8.2,
+            76.5
+          ],
+          [
+            -4.9,
+            74.2
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/135466085",
+      "kind": "park",
+      "polygons": [
+        [
+          [
+            10.5,
+            148.1
+          ],
+          [
+            1.4,
+            144.9
+          ],
+          [
+            -12.1,
+            135
+          ],
+          [
+            -11,
+            133.7
+          ],
+          [
+            -19.6,
+            127.2
+          ],
+          [
+            -6.4,
+            82.4
+          ],
+          [
+            10.3,
+            84.2
+          ],
+          [
+            8.2,
+            76.5
+          ],
+          [
+            -4.9,
+            74.2
+          ],
+          [
+            -17.5,
+            91.9
+          ],
+          [
+            -22.1,
+            103.8
+          ],
+          [
+            -25,
+            117.7
+          ],
+          [
+            -23.9,
+            140.7
+          ],
+          [
+            -12.5,
+            145.6
+          ],
+          [
+            -27,
+            202.7
+          ],
+          [
+            -24.8,
+            204.7
+          ],
+          [
+            24.4,
+            221.4
+          ],
+          [
+            48.8,
+            178.1
+          ],
+          [
+            27.4,
+            167.1
+          ],
+          [
+            31.5,
+            159.4
+          ],
+          [
+            14.9,
+            150
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169683897",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            116,
+            -205.1
+          ],
+          [
+            94.9,
+            -201.1
+          ],
+          [
+            90.6,
+            -194.3
+          ],
+          [
+            92,
+            -193.4
+          ],
+          [
+            89.8,
+            -189.9
+          ],
+          [
+            88.2,
+            -190.9
+          ],
+          [
+            74.3,
+            -169.1
+          ],
+          [
+            75.7,
+            -168.2
+          ],
+          [
+            73.5,
+            -164.7
+          ],
+          [
+            72.1,
+            -165.6
+          ],
+          [
+            64,
+            -151.3
+          ],
+          [
+            65.5,
+            -150.5
+          ],
+          [
+            63.6,
+            -147.1
+          ],
+          [
+            62.1,
+            -148
+          ],
+          [
+            54,
+            -133.7
+          ],
+          [
+            55.4,
+            -132.9
+          ],
+          [
+            53.5,
+            -129.4
+          ],
+          [
+            52.1,
+            -130.2
+          ],
+          [
+            43.3,
+            -114.8
+          ],
+          [
+            44.8,
+            -113.9
+          ],
+          [
+            42.8,
+            -110.4
+          ],
+          [
+            41.3,
+            -111.3
+          ],
+          [
+            29,
+            -88.6
+          ],
+          [
+            30.5,
+            -87.8
+          ],
+          [
+            28.6,
+            -84.3
+          ],
+          [
+            27.1,
+            -85.2
+          ],
+          [
+            20.7,
+            -73.5
+          ],
+          [
+            22.5,
+            -72.5
+          ],
+          [
+            20.8,
+            -69.4
+          ],
+          [
+            19.3,
+            -70.2
+          ],
+          [
+            11.4,
+            -56.1
+          ],
+          [
+            14.7,
+            -54.2
+          ],
+          [
+            12.9,
+            -50.5
+          ],
+          [
+            22.4,
+            -40.5
+          ],
+          [
+            30.7,
+            -55.1
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169683898",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            -74.5,
+            163.5
+          ],
+          [
+            -79.3,
+            161.7
+          ],
+          [
+            -48.3,
+            77.7
+          ],
+          [
+            -39.9,
+            57.5
+          ],
+          [
+            -38.3,
+            58.2
+          ],
+          [
+            -36.8,
+            55
+          ],
+          [
+            -38.5,
+            54
+          ],
+          [
+            -30.8,
+            36.8
+          ],
+          [
+            -29.3,
+            37.6
+          ],
+          [
+            -27.9,
+            34.3
+          ],
+          [
+            -29.4,
+            33.5
+          ],
+          [
+            -20.5,
+            12.2
+          ],
+          [
+            -18.4,
+            12.8
+          ],
+          [
+            -16.9,
+            9.7
+          ],
+          [
+            -19,
+            8.7
+          ],
+          [
+            -13.6,
+            -3.5
+          ],
+          [
+            -11.8,
+            -2.7
+          ],
+          [
+            -10.3,
+            -5.9
+          ],
+          [
+            -12.1,
+            -6.7
+          ],
+          [
+            -4.8,
+            -22.7
+          ],
+          [
+            -1.4,
+            -20.8
+          ],
+          [
+            2.1,
+            -28.1
+          ],
+          [
+            7.2,
+            -29.3
+          ],
+          [
+            11.9,
+            -26.8
+          ],
+          [
+            11.2,
+            -25.1
+          ],
+          [
+            13.1,
+            -23.9
+          ],
+          [
+            -42.2,
+            73
+          ],
+          [
+            -50.7,
+            90
+          ],
+          [
+            -58.8,
+            114.8
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169689463",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            3.6,
+            118.9
+          ],
+          [
+            5,
+            113.4
+          ],
+          [
+            2.9,
+            111
+          ],
+          [
+            1.1,
+            111.4
+          ],
+          [
+            0,
+            117.4
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169689465",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            53.3,
+            131
+          ],
+          [
+            44.1,
+            123.4
+          ],
+          [
+            42.2,
+            116.6
+          ],
+          [
+            54.5,
+            124
+          ],
+          [
+            55.5,
+            126.5
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169689467",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            -27.7,
+            119.6
+          ],
+          [
+            -29.2,
+            181.3
+          ],
+          [
+            -38.5,
+            217.3
+          ],
+          [
+            -48,
+            222.7
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169689469",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            22.5,
+            121.4
+          ],
+          [
+            25.3,
+            121.2
+          ],
+          [
+            25.6,
+            122.9
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169689470",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            26.9,
+            123.6
+          ],
+          [
+            29.1,
+            122.7
+          ],
+          [
+            30,
+            125
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169689471",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            6.7,
+            107.6
+          ],
+          [
+            14.9,
+            106.9
+          ],
+          [
+            17.9,
+            103.4
+          ],
+          [
+            8.1,
+            106.1
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169738898",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            82.5,
+            60
+          ],
+          [
+            84.2,
+            60.8
+          ],
+          [
+            85.7,
+            57.5
+          ],
+          [
+            84.2,
+            56.7
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/169738899",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            62.3,
+            2.1
+          ],
+          [
+            42.2,
+            36.5
+          ],
+          [
+            43.2,
+            40.6
+          ],
+          [
+            46,
+            41.9
+          ],
+          [
+            68,
+            5.4
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/477466586",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            106.9,
+            -119.8
+          ],
+          [
+            114.3,
+            -115.2
+          ],
+          [
+            104,
+            -97.8
+          ],
+          [
+            96.9,
+            -102.4
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/477466588",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            100.1,
+            -91.1
+          ],
+          [
+            57.8,
+            -17.8
+          ],
+          [
+            53.3,
+            -17.7
+          ],
+          [
+            50.8,
+            -22.5
+          ],
+          [
+            93.1,
+            -95.8
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/494679539",
+      "kind": "residential",
+      "polygons": [
+        [
+          [
+            102.8,
+            13
+          ],
+          [
+            71.4,
+            -6.8
+          ],
+          [
+            85.5,
+            -30.6
+          ],
+          [
+            122.8,
+            -8.2
+          ],
+          [
+            136.2,
+            1.9
+          ],
+          [
+            146,
+            16.4
+          ],
+          [
+            124.5,
+            25.6
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/494679540",
+      "kind": "residential",
+      "polygons": [
+        [
+          [
+            215,
+            -5.4
+          ],
+          [
+            214.4,
+            -3.1
+          ],
+          [
+            198.9,
+            0.9
+          ],
+          [
+            198.6,
+            -0.2
+          ],
+          [
+            167.8,
+            9.4
+          ],
+          [
+            164.4,
+            8.3
+          ],
+          [
+            137.7,
+            -24.1
+          ],
+          [
+            143.5,
+            -33.4
+          ],
+          [
+            120.6,
+            -46.9
+          ],
+          [
+            121.2,
+            -47.8
+          ],
+          [
+            103.3,
+            -61.9
+          ],
+          [
+            118.4,
+            -88.5
+          ],
+          [
+            122.3,
+            -89.3
+          ],
+          [
+            157.9,
+            -59.6
+          ],
+          [
+            201.2,
+            -20.1
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/494679545",
+      "kind": "residential",
+      "polygons": [
+        [
+          [
+            144.2,
+            -84.1
+          ],
+          [
+            127.2,
+            -98.1
+          ],
+          [
+            126.5,
+            -101.6
+          ],
+          [
+            163.7,
+            -164.1
+          ],
+          [
+            179.2,
+            -155
+          ],
+          [
+            178.6,
+            -154
+          ],
+          [
+            196.3,
+            -140.2
+          ],
+          [
+            176.8,
+            -113.4
+          ],
+          [
+            147.2,
+            -84.2
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/1105843485",
+      "kind": "grass",
+      "polygons": [
+        [
+          [
+            11.2,
+            -47.1
+          ],
+          [
+            8.2,
+            -39.9
+          ],
+          [
+            9.2,
+            -35.4
+          ],
+          [
+            14.4,
+            -32.6
+          ],
+          [
+            18.3,
+            -39.4
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/1322710420",
+      "kind": "religious",
+      "polygons": [
+        [
+          [
+            132.8,
+            -39.3
+          ],
+          [
+            120.6,
+            -46.9
+          ],
+          [
+            121.2,
+            -47.8
+          ],
+          [
+            103.3,
+            -61.9
+          ],
+          [
+            89,
+            -36.9
+          ],
+          [
+            130.2,
+            -11.9
+          ],
+          [
+            143.5,
+            -33.4
+          ],
+          [
+            136.2,
+            -37.7
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/1360465840",
+      "kind": "religious",
+      "polygons": [
+        [
+          [
+            79.9,
+            12.1
+          ],
+          [
+            68,
+            5.4
+          ],
+          [
+            46,
+            41.9
+          ],
+          [
+            82.5,
+            60
+          ],
+          [
+            84.2,
+            56.7
+          ],
+          [
+            101.8,
+            65.4
+          ],
+          [
+            110.2,
+            48.3
+          ],
+          [
+            104.5,
+            45.6
+          ],
+          [
+            106.2,
+            42
+          ],
+          [
+            108.2,
+            43
+          ],
+          [
+            111,
+            39.8
+          ],
+          [
+            112.5,
+            40.6
+          ],
+          [
+            115.2,
+            35.2
+          ],
+          [
+            113.8,
+            34.5
+          ],
+          [
+            114.9,
+            30.1
+          ],
+          [
+            112.2,
+            27.2
+          ],
+          [
+            80.2,
+            11.4
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/1444768717",
+      "kind": "institutional",
+      "polygons": [
+        [
+          [
+            52.2,
+            105.6
+          ],
+          [
+            55.6,
+            107.6
+          ],
+          [
+            68.9,
+            86
+          ],
+          [
+            48.7,
+            74.7
+          ],
+          [
+            35.6,
+            94.5
+          ],
+          [
+            42.9,
+            99.7
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/1444768718",
+      "kind": "institutional",
+      "polygons": [
+        [
+          [
+            0.9,
+            105.3
+          ],
+          [
+            -3.8,
+            118.5
+          ],
+          [
+            20.7,
+            130
+          ],
+          [
+            22.3,
+            126.8
+          ],
+          [
+            26.1,
+            128.6
+          ],
+          [
+            24.7,
+            131.8
+          ],
+          [
+            46.5,
+            141.1
+          ],
+          [
+            48.5,
+            136.8
+          ],
+          [
+            52.7,
+            137.4
+          ],
+          [
+            57.6,
+            126.4
+          ],
+          [
+            34.9,
+            110.2
+          ],
+          [
+            16.3,
+            100.9
+          ],
+          [
+            13,
+            103.5
+          ],
+          [
+            6.7,
+            103.3
+          ],
+          [
+            2.6,
+            105.9
+          ]
+        ]
+      ]
+    },
+    {
+      "id": "way/1444768720",
+      "kind": "institutional",
+      "polygons": [
+        [
+          [
+            41.5,
+            46.6
+          ],
+          [
+            32,
+            40.5
+          ],
+          [
+            8.2,
+            76.5
+          ],
+          [
+            10.3,
+            84.2
+          ],
+          [
+            -6.4,
+            82.4
+          ],
+          [
+            -19.6,
+            127.2
+          ],
+          [
+            -11,
+            133.7
+          ],
+          [
+            -12.1,
+            135
+          ],
+          [
+            1.4,
+            144.9
+          ],
+          [
+            10.5,
+            148.1
+          ],
+          [
+            14,
+            136.7
+          ],
+          [
+            -13.8,
+            126
+          ],
+          [
+            -15,
+            124.1
+          ],
+          [
+            -4.5,
+            91.4
+          ],
+          [
+            -5.9,
+            91
+          ],
+          [
+            -4.5,
+            86.1
+          ],
+          [
+            7.2,
+            89.4
+          ],
+          [
+            11.2,
+            88.9
+          ],
+          [
+            16.3,
+            92
+          ],
+          [
+            41.8,
+            52.8
+          ],
+          [
+            40.7,
+            52.1
+          ],
+          [
+            43.3,
+            47.8
+          ]
+        ]
+      ]
+    }
+  ],
+  "trees": [
+    {
+      "id": "node/1808495991",
+      "kind": "tree",
+      "position": [
+        53.8,
+        0,
+        -124.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808495992",
+      "kind": "tree",
+      "position": [
+        117.9,
+        0,
+        -123.2
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808495993",
+      "kind": "tree",
+      "position": [
+        114.7,
+        0,
+        -117.7
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808495994",
+      "kind": "tree",
+      "position": [
+        50,
+        0,
+        -117.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496009",
+      "kind": "tree",
+      "position": [
+        46.1,
+        0,
+        -110.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496018",
+      "kind": "tree",
+      "position": [
+        43,
+        0,
+        -104.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496021",
+      "kind": "tree",
+      "position": [
+        38.7,
+        0,
+        -97.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496023",
+      "kind": "tree",
+      "position": [
+        98.6,
+        0,
+        -91
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496025",
+      "kind": "tree",
+      "position": [
+        34.9,
+        0,
+        -90.1
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496032",
+      "kind": "tree",
+      "position": [
+        95.7,
+        0,
+        -86
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496054",
+      "kind": "tree",
+      "position": [
+        30.8,
+        0,
+        -82.8
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496055",
+      "kind": "tree",
+      "position": [
+        92.5,
+        0,
+        -80.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496056",
+      "kind": "tree",
+      "position": [
+        27.6,
+        0,
+        -76.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496057",
+      "kind": "tree",
+      "position": [
+        89.4,
+        0,
+        -75.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496062",
+      "kind": "tree",
+      "position": [
+        86.6,
+        0,
+        -70.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496067",
+      "kind": "tree",
+      "position": [
+        83.9,
+        0,
+        -65.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496068",
+      "kind": "tree",
+      "position": [
+        20.5,
+        0,
+        -62.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496069",
+      "kind": "tree",
+      "position": [
+        80.4,
+        0,
+        -60.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496077",
+      "kind": "tree",
+      "position": [
+        17.1,
+        0,
+        -55.8
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496078",
+      "kind": "tree",
+      "position": [
+        77.8,
+        0,
+        -55.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496081",
+      "kind": "tree",
+      "position": [
+        24.1,
+        0,
+        -52.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496083",
+      "kind": "tree",
+      "position": [
+        74.6,
+        0,
+        -50.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496088",
+      "kind": "tree",
+      "position": [
+        71.4,
+        0,
+        -45.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496089",
+      "kind": "tree",
+      "position": [
+        20.2,
+        0,
+        -45.1
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496092",
+      "kind": "tree",
+      "position": [
+        68.3,
+        0,
+        -40.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496096",
+      "kind": "tree",
+      "position": [
+        65.5,
+        0,
+        -35
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496104",
+      "kind": "tree",
+      "position": [
+        62.2,
+        0,
+        -29.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496112",
+      "kind": "tree",
+      "position": [
+        59.7,
+        0,
+        -25.1
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496119",
+      "kind": "tree",
+      "position": [
+        7.9,
+        0,
+        -21.7
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496122",
+      "kind": "tree",
+      "position": [
+        56.4,
+        0,
+        -19.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496123",
+      "kind": "tree",
+      "position": [
+        -1.2,
+        0,
+        -17.8
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496129",
+      "kind": "tree",
+      "position": [
+        4.7,
+        0,
+        -15.1
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496131",
+      "kind": "tree",
+      "position": [
+        -4.5,
+        0,
+        -10.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496136",
+      "kind": "tree",
+      "position": [
+        -8,
+        0,
+        -3.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496138",
+      "kind": "tree",
+      "position": [
+        50.7,
+        0,
+        -2.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496141",
+      "kind": "tree",
+      "position": [
+        54,
+        0,
+        -1.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496143",
+      "kind": "tree",
+      "position": [
+        57.5,
+        0,
+        0.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496144",
+      "kind": "tree",
+      "position": [
+        -11.2,
+        0,
+        3.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496149",
+      "kind": "tree",
+      "position": [
+        -14.3,
+        0,
+        10.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496154",
+      "kind": "tree",
+      "position": [
+        -17.8,
+        0,
+        17.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496156",
+      "kind": "tree",
+      "position": [
+        -20.9,
+        0,
+        24.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496157",
+      "kind": "tree",
+      "position": [
+        47.7,
+        0,
+        30.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496158",
+      "kind": "tree",
+      "position": [
+        29.8,
+        0,
+        30.8
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496160",
+      "kind": "tree",
+      "position": [
+        -24.2,
+        0,
+        32.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496164",
+      "kind": "tree",
+      "position": [
+        36.3,
+        0,
+        34.8
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496168",
+      "kind": "tree",
+      "position": [
+        -28.6,
+        0,
+        41.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496169",
+      "kind": "tree",
+      "position": [
+        -31.8,
+        0,
+        48.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496171",
+      "kind": "tree",
+      "position": [
+        28.7,
+        0,
+        48.7
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496177",
+      "kind": "tree",
+      "position": [
+        24.5,
+        0,
+        54.1
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496182",
+      "kind": "tree",
+      "position": [
+        28.9,
+        0,
+        60.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496190",
+      "kind": "tree",
+      "position": [
+        -45.5,
+        0,
+        76.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496192",
+      "kind": "tree",
+      "position": [
+        -48.3,
+        0,
+        83.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496194",
+      "kind": "tree",
+      "position": [
+        -12.3,
+        0,
+        95.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496195",
+      "kind": "tree",
+      "position": [
+        -15.9,
+        0,
+        109
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496200",
+      "kind": "tree",
+      "position": [
+        -17.8,
+        0,
+        116.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808496201",
+      "kind": "tree",
+      "position": [
+        -19,
+        0,
+        120.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808542223",
+      "kind": "tree",
+      "position": [
+        41.7,
+        0,
+        90
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808542289",
+      "kind": "tree",
+      "position": [
+        14.6,
+        0,
+        105.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808542334",
+      "kind": "tree",
+      "position": [
+        10.1,
+        0,
+        107
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808542408",
+      "kind": "tree",
+      "position": [
+        45,
+        0,
+        119.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808542418",
+      "kind": "tree",
+      "position": [
+        23.9,
+        0,
+        121.8
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808542470",
+      "kind": "tree",
+      "position": [
+        28.7,
+        0,
+        123.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808983239",
+      "kind": "tree",
+      "position": [
+        102.1,
+        0,
+        -56.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808983240",
+      "kind": "tree",
+      "position": [
+        100.9,
+        0,
+        -52.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808983242",
+      "kind": "tree",
+      "position": [
+        119.5,
+        0,
+        -45.6
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808983243",
+      "kind": "tree",
+      "position": [
+        92.5,
+        0,
+        -37.7
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808983245",
+      "kind": "tree",
+      "position": [
+        82.5,
+        0,
+        -14
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1808983249",
+      "kind": "tree",
+      "position": [
+        84.7,
+        0,
+        -3.9
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1810200727",
+      "kind": "tree",
+      "position": [
+        115.4,
+        0,
+        91.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1810200756",
+      "kind": "tree",
+      "position": [
+        115.7,
+        0,
+        96.3
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1810200763",
+      "kind": "tree",
+      "position": [
+        121.2,
+        0,
+        97.1
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1810200769",
+      "kind": "tree",
+      "position": [
+        54.5,
+        0,
+        97.4
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    },
+    {
+      "id": "node/1810200787",
+      "kind": "tree",
+      "position": [
+        126.6,
+        0,
+        98.5
+      ],
+      "height": null,
+      "crownDiameter": null,
+      "species": null,
+      "genus": null
+    }
+  ],
+  "pois": [
+    {
+      "id": "relation/1393926",
+      "kind": "attraction",
+      "name": "Rīgas Pils",
+      "position": [
+        42.9,
+        0,
+        112.9
+      ],
+      "priority": 100
+    },
+    {
+      "id": "node/1294679116",
+      "kind": "artwork",
+      "name": "Lielais Kristaps",
+      "position": [
+        8.4,
+        0,
+        -37.1
+      ],
+      "priority": 98
+    },
+    {
+      "id": "node/5124850509",
+      "kind": "artwork",
+      "name": "Eiropiāde",
+      "position": [
+        38.4,
+        0,
+        13.1
+      ],
+      "priority": 98
+    },
+    {
+      "id": "node/12287802354",
+      "kind": "museum",
+      "name": "Latvijas Nacionālais vēstures muzejs",
+      "position": [
+        60.8,
+        0,
+        62.5
+      ],
+      "priority": 96
+    },
+    {
+      "id": "node/1294679024",
+      "kind": "information",
+      "name": null,
+      "position": [
+        4.5,
+        0,
+        -30.9
+      ],
+      "priority": 92
+    },
+    {
+      "id": "way/87493950",
+      "kind": "place_of_worship",
+      "name": "Rīgas Sāpju Dievmātes baznīca",
+      "position": [
+        91.9,
+        0,
+        29.3
+      ],
+      "priority": 66
+    },
+    {
+      "id": "way/171926518",
+      "kind": "place_of_worship",
+      "name": "Anglikāņu baznīca",
+      "position": [
+        119,
+        0,
+        -28.9
+      ],
+      "priority": 66
+    }
+  ],
+  "debug": {
+    "paddedBbox": {
+      "south": 56.94858650212001,
+      "west": 24.097329947118816,
+      "north": 56.951461097879985,
+      "east": 24.10260085288118
+    },
+    "layers": [
+      "roads",
+      "buildings",
+      "water",
+      "landuse",
+      "pois",
+      "trees"
     ],
-    "cache": "miss"
+    "detail": "full",
+    "rawCache": "miss",
+    "rawStats": {
+      "nodes": 1809,
+      "ways": 186,
+      "relations": 2,
+      "roads": 109,
+      "buildings": 38,
+      "water": 2,
+      "landuse": 34,
+      "trees": 122,
+      "pois": 16
+    },
+    "rawElements": 1997,
+    "skippedRelations": 2
   }
 }
 

@@ -1,12 +1,20 @@
 {
- "luau-lsp.sourcemap.enabled": true,
-  "luau-lsp.sourcemap.autogenerate": false,
-  "luau-lsp.sourcemap.includeNonScripts": true,
+  "luau-lsp.platform.type": "roblox",
 
   "luau-lsp.studioPlugin.enabled": true,
   "luau-lsp.studioPlugin.port": 3668,
+  "luau-lsp.studioPlugin.maximumRequestBodySize": "20mb",
 
-  "luau-lsp.platform.type": "roblox",
+  "luau-lsp.sourcemap.enabled": false,
+  "luau-lsp.sourcemap.autogenerate": false,
+
+  "luau-lsp.completion.enabled": true,
+  "luau-lsp.completion.imports.enabled": true,
+  "luau-lsp.completion.imports.suggestServices": true,
+  "luau-lsp.completion.imports.suggestRequires": true,
+
+  "luau-lsp.diagnostics.strictDatamodelTypes": false,
+  "luau-lsp.diagnostics.workspace": false,
 
   "files.associations": {
     "*.lua": "luau",

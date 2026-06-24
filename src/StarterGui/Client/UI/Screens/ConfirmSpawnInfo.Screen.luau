@@ -7,6 +7,7 @@ local ClientOSMApiInterface = require(script.Parent.Parent.Parent.Controllers.Cl
 local PickSpawnUtils = require(script.Parent.Parent.Utils["PickSpawn.Screen.Utils"])
 local ConfirmSpawnUtils = require(script.Parent.Parent.Utils["ConfirmSpawnInfo.Screen.Utils"])
 local OsmApiReturnedDataUtils = require(script.Parent.Parent.Utils["OsmApiReturnedData.Utils"])
+local DefaultOsmApiReturnedData = require(game.ReplicatedStorage.App.OsmApiReturnedData)
 
 local ConfirmSpawnInfo = {}
 ConfirmSpawnInfo.__index = ConfirmSpawnInfo
@@ -20,6 +21,15 @@ local mapLoadGeneration = 0
 
 local MAX_CHUNK_DISTANCE = 10
 local MAX_CONCURRENT_CHUNK_REQUESTS = 6
+
+local OSM_VECTOR_CHUNK_LAYERS = {
+	"roads",
+	"buildings",
+	"water",
+	"landuse",
+	"trees",
+	"pois",
+}
 
 -- Debug only: exposes the PickSpawn camera without pan or zoom limits so the
 -- OSM renderer can be inspected independently of normal map bounds.
@@ -100,11 +110,13 @@ local function getChunkRequestInfo(osmApiReturnedData)
 		else {}
 	local origin = if type(initialChunk) == "table" and type(initialChunk.origin) == "table"
 		then initialChunk.origin
-		elseif type(osmApiReturnedData) == "table" and type(osmApiReturnedData.origin) == "table"
-			then osmApiReturnedData.origin
-			elseif type(osmApiReturnedData) == "table" and type(osmApiReturnedData.location) == "table"
-				then osmApiReturnedData.location
-			else nil
+		elseif
+			type(osmApiReturnedData) == "table" and type(osmApiReturnedData.origin) == "table"
+		then osmApiReturnedData.origin
+		elseif
+			type(osmApiReturnedData) == "table" and type(osmApiReturnedData.location) == "table"
+		then osmApiReturnedData.location
+		else nil
 
 	local originLat = origin and tonumber(origin.lat)
 	local originLon = origin and tonumber(origin.lon)
@@ -136,13 +148,50 @@ local function buildAddressText(address)
 	return table.concat(parts, ", ")
 end
 
+local function normaliseOsmApiReturnedData(osmApiReturnedData: any): any
+	-- The bundled data is a raw chunk response, whereas the live initial request
+	-- includes that response under `chunk` alongside the selected location.
+	-- Adapt raw responses to the live shape so the remainder of this screen has
+	-- one consistent data contract.
+	local function wrapRawChunk(rawChunk: any): any
+		if type(rawChunk) ~= "table" or type(rawChunk.chunk) ~= "table" then
+			return nil
+		end
+
+		local origin = if type(rawChunk.origin) == "table" then rawChunk.origin else {}
+		return {
+			origin = origin,
+			location = if type(rawChunk.location) == "table"
+				then rawChunk.location
+				else {
+					lat = origin.lat,
+					lon = origin.lon,
+				},
+			chunk = rawChunk,
+		}
+	end
+
+	if type(osmApiReturnedData) == "table" then
+		if type(osmApiReturnedData.roads) == "table" then
+			return wrapRawChunk(osmApiReturnedData)
+		end
+
+		if type(osmApiReturnedData.chunk) == "table" then
+			return osmApiReturnedData
+		end
+	end
+
+	return wrapRawChunk(DefaultOsmApiReturnedData)
+end
+
 local connections = {}
 
 function ConfirmSpawnInfo:StartFunctions(osmApiReturnedData)
 	destroyMap()
+	osmApiReturnedData = normaliseOsmApiReturnedData(osmApiReturnedData)
 
 	if type(osmApiReturnedData) ~= "table" then
-		warn("ConfirmSpawnInfo requires initial OSM data.")
+		warn("ConfirmSpawnInfo requires initial OSM data or a valid bundled fallback.")
 		UIController:OpenScreen("PickSpawn")
 		return
 	end
@@ -207,6 +256,8 @@ function ConfirmSpawnInfo:StartFunctions(osmApiReturnedData)
 				ChunkX = nextChunk.X,
 				ChunkZ = nextChunk.Z,
 				ChunkSize = chunkSize,
+				Detail = "full",
+				Layers = OSM_VECTOR_CHUNK_LAYERS,
 			})
 				:andThen(function(response)
 					if requestGeneration ~= mapLoadGeneration or renderer ~= mapRenderer then
