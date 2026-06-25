@@ -271,7 +271,7 @@ end
 local connections = {}
 
 function PickSpawn:StartFunctions()
-	Mouse.ChangeMouseIcon("DragInactive")
+	-- Mouse.ChangeMouseIcon("DragInactive")
 
 	disconnectMapDataSignals()
 	PickSpawn.KilometresPerPixel = 0
@@ -365,6 +365,7 @@ function PickSpawn:StartFunctions()
 		tileManifest
 	)
 	if mapController then
+		mapController.MinCameraZoom = INITIAL_MAP_ZOOM
 		mapController.IsInputEnabled = function()
 			return not UIController:IsPopupOpen()
 		end
@@ -555,11 +556,11 @@ function PickSpawn:StartFunctions()
 		end)
 		mapDragStartedConnection = mapController.MapDragStarted:Connect(function(_isDragging)
 			PickSpawn.IsMapDragging = true
-			Mouse.ChangeMouseIcon("DragActive")
+			-- Mouse.ChangeMouseIcon("DragActive")
 		end)
 		mapDragEndedConnection = mapController.MapDragEnded:Connect(function(_isDragging)
 			PickSpawn.IsMapDragging = false
-			Mouse.ChangeMouseIcon("DragInactive")
+			-- Mouse.ChangeMouseIcon("DragInactive")
 		end)
 		mapPointSelectedConnection = mapController.MapPointSelected:Connect(function(mapPosition, latitude, longitude)
 			if UIController:IsPopupOpen() then

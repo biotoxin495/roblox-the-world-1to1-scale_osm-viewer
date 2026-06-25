@@ -106,8 +106,6 @@ function ConfirmSpawnInfo:StartFunctions(osmApiReturnedData)
 	confirmSpawnInfoScreen:SetAttribute("WaterAmount", osmSummary.Densities.Water)
 	confirmSpawnInfoScreen:SetAttribute("POIsAmount", osmSummary.Densities.POIs)
 
-	print(osmSummary, "osm summary")
-
 	local ExpectedDetailList = confirmSpawnInfoScreen.LeftSide.ExpectedDetailList
 	ExpectedDetailList.Roads.DetailValue.Text = osmSummary.Densities.Roads
 	ExpectedDetailList.Buildings.DetailValue.Text = osmSummary.Densities.Buildings

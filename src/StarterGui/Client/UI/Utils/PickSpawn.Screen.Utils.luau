@@ -55,6 +55,8 @@ type MapPointSelectedSignal = Signal.Signal<Vector2, number, number>
 export type MapViewChangedSignal = Signal.Signal<Vector2, number, Vector2, number, Vector2?>
 
 local MAP_CLICK_DRAG_THRESHOLD = 6
+local BUTTON_ZOOM_STEP = 0.75
+local WHEEL_ZOOM_STEP = 0.35
 local MAP_PIN_ATTRIBUTE = "PickSpawnMapPin"
 local PIN_IN_POOL_ATTRIBUTE = "PickSpawnPinInPool"
 
@@ -74,6 +76,7 @@ export type MapController = {
 	ViewChanged: MapViewChangedSignal,
 	AllowUnboundedCamera: boolean,
 	IsInputEnabled: () -> boolean,
+	MinCameraZoom: number?,
 }
 
 type MapControllerPrivate = MapController & {
@@ -100,6 +103,7 @@ type MapControllerPrivate = MapController & {
 	TileSize: number,
 	MinZoom: number,
 	MaxZoom: number,
+	MinCameraZoom: number?,
 	Center: Vector2,
 	Zoom: number,
 	ShowBorders: boolean,
@@ -162,10 +166,27 @@ local function getTilesXYForZoom(zoom: number): (number, number)
 	return 2 ^ (zoom + 1), 2 ^ zoom
 end
 
+local function getTileZoomForCameraZoom(self: MapControllerPrivate): number
+	return math.clamp(math.floor(self.Zoom), self.MinZoom, self.MaxZoom)
+end
+
 local function getLocationSeparationRadius(zoom: number): number
 	-- Keep the overview uncluttered, then reveal increasingly dense cities as
 	-- the player zooms in. The value is measured in on-screen pixels.
 	return math.max(40, 96 - zoom * 8)
+end
+
+local function getMinimumCameraZoom(self: MapControllerPrivate): number
+	local minCameraZoom = self.MinCameraZoom
+	if minCameraZoom == nil then
+		return self.MinZoom
+	end
+
+	if minCameraZoom > self.MinZoom then
+		return minCameraZoom
+	end
+
+	return self.MinZoom
 end
 
 function PickSpawnUtils.CreateMap(
@@ -206,6 +227,7 @@ function PickSpawnUtils.CreateMap(
 			TileSize = tileManifest.TileSize or 512,
 			MinZoom = tileManifest.MinZoom or 0,
 			MaxZoom = tileManifest.MaxZoom or 3,
+			MinCameraZoom = nil,
 			Center = Vector2.new(0.5, 0.5),
 			Zoom = tileManifest.MinZoom or 0,
 			ShowBorders = true,
@@ -375,11 +397,13 @@ function PickSpawnUtils.renderTileLayer(
 	end
 
 	local viewportSize = self.ClipFrame.AbsoluteSize
-	local worldSize = self:getWorldPixelSize(self.Zoom)
-	local centerPixel = self.Center * worldSize
-	local viewMinPixel = centerPixel - viewportSize / 2
-	local viewMaxPixel = centerPixel + viewportSize / 2
-	local tilesX, tilesY = getTilesXYForZoom(self.Zoom)
+	local tileZoom = getTileZoomForCameraZoom(self)
+	local tileWorldSize = self:getWorldPixelSize(tileZoom)
+	local tileScale = (2 ^ (self.Zoom - tileZoom)) * self.ZoomScale
+	local centerPixel = self.Center * tileWorldSize
+	local viewMinPixel = centerPixel - viewportSize / (2 * tileScale)
+	local viewMaxPixel = centerPixel + viewportSize / (2 * tileScale)
+	local tilesX, tilesY = getTilesXYForZoom(tileZoom)
 	local maxTileXBound = math.max(0, tilesX - 1)
 	local maxTileYBound = math.max(0, tilesY - 1)
 	local minTileX = math.clamp(math.floor(viewMinPixel.X / self.TileSize) - 1, 0, maxTileXBound)
@@ -390,10 +414,10 @@ function PickSpawnUtils.renderTileLayer(
 
 	for y = minTileY, maxTileY do
 		for x = minTileX, maxTileX do
-			local key = string.format("%d/%d/%d", self.Zoom, x, y)
+			local key = string.format("%d/%d/%d", tileZoom, x, y)
 			needed[key] = true
 			local tile = active[key] :: ImageLabel?
-			local tileImage = self:getTileImage(layerName, self.Zoom, x, y)
+			local tileImage = self:getTileImage(layerName, tileZoom, x, y)
 
 			if tileImage then
 				if not tile then
@@ -406,7 +430,7 @@ function PickSpawnUtils.renderTileLayer(
 
 				assert(tile)
 				tile.Image = tileImage.Image
-				local subdivisions = 2 ^ (self.Zoom - tileImage.SourceZoom)
+				local subdivisions = 2 ^ (tileZoom - tileImage.SourceZoom)
 				if subdivisions == 1 then
 					tile.ImageRectOffset = Vector2.new(0, 0)
 					tile.ImageRectSize = Vector2.new(0, 0)
@@ -417,10 +441,11 @@ function PickSpawnUtils.renderTileLayer(
 					tile.ImageRectSize = Vector2.new(croppedSize, croppedSize)
 				end
 
-				local position = viewportSize / 2 + (Vector2.new(x * self.TileSize, y * self.TileSize) - centerPixel)
+				local position = viewportSize / 2
+					+ (Vector2.new(x * self.TileSize, y * self.TileSize) - centerPixel) * tileScale
 				position = self:transformForZoomAnimation(position)
 				tile.Position = UDim2.fromOffset(math.floor(position.X), math.floor(position.Y))
-				tile.Size = UDim2.fromOffset(self.TileSize * self.ZoomScale, self.TileSize * self.ZoomScale)
+				tile.Size = UDim2.fromOffset(math.ceil(self.TileSize * tileScale), math.ceil(self.TileSize * tileScale))
 			end
 		end
 	end
@@ -761,7 +786,7 @@ end
 
 function PickSpawnUtils.SetViewLatLon(self: MapControllerPrivate, latitude: number, longitude: number, zoom: number)
 	self:cancelCameraAnimation(false)
-	self.Zoom = math.clamp(zoom, self.MinZoom, self.MaxZoom)
+	self.Zoom = math.clamp(zoom, getMinimumCameraZoom(self), self.MaxZoom)
 
 	local mapPosition = Vector2.new(math.clamp((longitude + 180) / 360, 0, 1), math.clamp((90 - latitude) / 180, 0, 1))
 	self.Center = self:clampCenter(mapPosition, self.Zoom)
@@ -774,7 +799,7 @@ function PickSpawnUtils.zoomBy(self: MapControllerPrivate, deltaZoom: number, sc
 	local oldZoom = self.Zoom
 	local newZoom = if self.AllowUnboundedCamera
 		then oldZoom + deltaZoom
-		else math.clamp(oldZoom + deltaZoom, self.MinZoom, self.MaxZoom)
+		else math.clamp(oldZoom + deltaZoom, getMinimumCameraZoom(self), self.MaxZoom)
 	if newZoom == oldZoom then
 		return
 	end
@@ -790,21 +815,31 @@ function PickSpawnUtils.zoomBy(self: MapControllerPrivate, deltaZoom: number, sc
 	local targetCenter =
 		self:clampCenter(Vector2.new(desiredCenter.X / newWorldSize.X, desiredCenter.Y / newWorldSize.Y), newZoom)
 
-	local zoomScaleValue = Instance.new("NumberValue")
-	zoomScaleValue.Value = 1
-	self.ZoomScaleValue = zoomScaleValue
+	local zoomProgressValue = Instance.new("NumberValue")
+	zoomProgressValue.Value = 0
+	self.ZoomScaleValue = zoomProgressValue
 	self.ZoomAnchor = localScreenPoint
 	self.PendingZoom = newZoom
 	self.PendingCenter = targetCenter
-	self.AnimationValueConnection = zoomScaleValue:GetPropertyChangedSignal("Value"):Connect(function()
-		self.ZoomScale = zoomScaleValue.Value
+	self.AnimationValueConnection = zoomProgressValue:GetPropertyChangedSignal("Value"):Connect(function()
+		local progress = zoomProgressValue.Value
+		local currentZoom = oldZoom + (newZoom - oldZoom) * progress
+		local currentWorldSize = self:getWorldPixelSize(currentZoom)
+		local currentDesiredCenter = mapPointBefore * currentWorldSize - (localScreenPoint - viewportSize / 2)
+		self.Zoom = currentZoom
+		self.Center = self:clampCenter(
+			Vector2.new(currentDesiredCenter.X / currentWorldSize.X, currentDesiredCenter.Y / currentWorldSize.Y),
+			currentZoom
+		)
+		self.ZoomScale = 1
+		self:outputMapScale()
 		self:queueRender()
 	end)
 
 	local tween = TweenService:Create(
-		zoomScaleValue,
+		zoomProgressValue,
 		TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-		{ Value = 2 ^ (newZoom - oldZoom) }
+		{ Value = 1 }
 	)
 	self.CameraTween = tween
 	self.AnimationCompletedConnection = tween.Completed:Connect(function()
@@ -932,7 +967,7 @@ function PickSpawnUtils.Start(self: MapControllerPrivate)
 					and mousePosition.X <= exclusionPosition.X + exclusionSize.X
 					and mousePosition.Y <= exclusionPosition.Y + exclusionSize.Y
 				if inside and not overZoomExclusionRegion then
-					self:zoomBy(if input.Position.Z > 0 then 1 else -1, mousePosition)
+					self:zoomBy((if input.Position.Z > 0 then 1 else -1) * WHEEL_ZOOM_STEP, mousePosition)
 				end
 			end
 		end)
@@ -942,7 +977,7 @@ function PickSpawnUtils.Start(self: MapControllerPrivate)
 		self.Connections,
 		self.ZoomInButton.MouseButton1Click:Connect(function()
 			if self.IsInputEnabled() then
-				self:zoomBy(1)
+				self:zoomBy(BUTTON_ZOOM_STEP)
 			end
 		end)
 	)
@@ -950,7 +985,7 @@ function PickSpawnUtils.Start(self: MapControllerPrivate)
 		self.Connections,
 		self.ZoomOutButton.MouseButton1Click:Connect(function()
 			if self.IsInputEnabled() then
-				self:zoomBy(-1)
+				self:zoomBy(-BUTTON_ZOOM_STEP)
 			end
 		end)
 	)
