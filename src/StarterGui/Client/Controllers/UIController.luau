@@ -6,6 +6,7 @@ local UIRoot = require(script.Parent.Parent.UI.UIRoot)
 local GuiButtonEffects = require(script.Parent.Parent.ClientPackages.GuiButtonEffects)
 
 local DEFAULT_SCREEN = "PickSpawn"
+local STARTUP_LOADING_ENABLED = true
 
 local STARTUP_INTRO_LINES = {
 	"The World",
@@ -599,6 +600,11 @@ function UIController:Init() end
 function UIController:Start()
 	self:CloseAllPopups()
 	self:CloseAllScreens()
+
+	if not STARTUP_LOADING_ENABLED then
+		self:OpenScreen(DEFAULT_SCREEN)
+		return
+	end
 
 	local openedDefaultScreen = false
 	local ok, errorValue = pcall(function()
