@@ -121,7 +121,6 @@ function UIController:OpenScreen(screenName, parseData)
 		self:CloseScreen()
 	end
 
-	print("Screen changed to:", screenName)
 	currentScreen = screenName
 	self:ChangeScreenOpen(true, screenName)
 	screenModule:StartFunctions(parseData)
@@ -157,12 +156,7 @@ function UIController:CloseAllScreens()
 	end
 end
 
-function UIController:Init()
-	print("UIController Init")
-end
-
 function UIController:Start()
-	print("UIController Start")
 	self:CloseAllPopups()
 	self:CloseAllScreens()
 	self:OpenScreen(DEFAULT_SCREEN)

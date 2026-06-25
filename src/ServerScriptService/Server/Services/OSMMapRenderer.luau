@@ -1279,7 +1279,7 @@ function OSMMapRenderer:Start()
 		end
 
 		local ok, value = OSMApiInterface.Initial(request.Latitude, request.Longitude, {
-			ChunkSize = 256,
+			ChunkSize = 512,
 			Detail = "full",
 			Layers = { "roads", "buildings", "water", "landuse", "trees", "pois" },
 		}):await()

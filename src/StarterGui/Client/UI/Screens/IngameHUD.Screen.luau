@@ -109,6 +109,114 @@ local function getChunkBounds(mapData)
 	return minX, minZ, maxX, maxZ
 end
 
+local function finiteNumber(value): number?
+	local numberValue = tonumber(value)
+	if numberValue and numberValue == numberValue and numberValue ~= math.huge and numberValue ~= -math.huge then
+		return numberValue
+	end
+	return nil
+end
+
+local function readMapPoint(point: any): Vector2?
+	if type(point) ~= "table" then
+		return nil
+	end
+
+	local x = finiteNumber(point[1])
+	local z = finiteNumber(point[3]) or finiteNumber(point[2])
+	if not x or not z then
+		return nil
+	end
+
+	return Vector2.new(x, z)
+end
+
+local function readFeatureName(feature: any): string?
+	if type(feature) ~= "table" or type(feature.name) ~= "string" or feature.name == "" then
+		return nil
+	end
+
+	return feature.name
+end
+
+local function distanceSquaredToSegment(point: Vector2, segmentStart: Vector2, segmentEnd: Vector2): number
+	local segment = segmentEnd - segmentStart
+	local segmentLengthSquared = segment:Dot(segment)
+	if segmentLengthSquared <= 0.000001 then
+		local delta = point - segmentStart
+		return delta:Dot(delta)
+	end
+
+	local alpha = math.clamp((point - segmentStart):Dot(segment) / segmentLengthSquared, 0, 1)
+	local closestPoint = segmentStart + segment * alpha
+	local delta = point - closestPoint
+	return delta:Dot(delta)
+end
+
+local function findClosestNamedFeature(
+	loadedChunks: { [string]: { X: number, Z: number, Data: any } },
+	mapPosition: Vector3
+): string?
+	local queryPoint = Vector2.new(mapPosition.X, mapPosition.Z)
+	local closestName: string? = nil
+	local closestDistanceSquared = math.huge
+
+	for _, chunkInfo in pairs(loadedChunks) do
+		local chunk = getMapChunk(chunkInfo.Data)
+		if type(chunk) ~= "table" then
+			continue
+		end
+
+		if type(chunk.pois) == "table" then
+			for _, poi in ipairs(chunk.pois) do
+				local name = readFeatureName(poi)
+				local position = type(poi) == "table" and readMapPoint(poi.position) or nil
+				if name and position then
+					local delta = queryPoint - position
+					local distanceSquared = delta:Dot(delta)
+					if distanceSquared < closestDistanceSquared then
+						closestName = name
+						closestDistanceSquared = distanceSquared
+					end
+				end
+			end
+		end
+
+		if type(chunk.roads) == "table" then
+			for _, road in ipairs(chunk.roads) do
+				local name = readFeatureName(road)
+				if not name or type(road) ~= "table" or type(road.points) ~= "table" then
+					continue
+				end
+
+				local previousPoint: Vector2? = nil
+				for _, rawPoint in ipairs(road.points) do
+					local point = readMapPoint(rawPoint)
+					if point then
+						if previousPoint then
+							local distanceSquared = distanceSquaredToSegment(queryPoint, previousPoint, point)
+							if distanceSquared < closestDistanceSquared then
+								closestName = name
+								closestDistanceSquared = distanceSquared
+							end
+						else
+							local delta = queryPoint - point
+							local distanceSquared = delta:Dot(delta)
+							if distanceSquared < closestDistanceSquared then
+								closestName = name
+								closestDistanceSquared = distanceSquared
+							end
+						end
+						previousPoint = point
+					end
+				end
+			end
+		end
+	end
+
+	return closestName
+end
+
 -- Notification stubs. Replace these with the game's notification service when
 -- that system is available.
 local function notifyChunkLoadingStarted(chunkKey: string)
@@ -453,7 +561,9 @@ function IngameHUD:StartFunctions(parsedData)
 	latitude = tonumber(mapLocation.lat) or latitude
 	longitude = tonumber(mapLocation.lon) or longitude
 
-	placeTitle.Text = if type(placeName) == "string" and placeName ~= "" then placeName else "Unknown Location"
+	local fallbackPlaceName = if type(placeName) == "string" and placeName ~= "" then placeName else "Unknown Location"
+	local displayedPlaceName = fallbackPlaceName
+	placeTitle.Text = fallbackPlaceName
 	if type(latitude) == "number" and type(longitude) == "number" then
 		coordinates.Text = string.format("LAT %.5f  LON %.5f", latitude, longitude)
 	else
@@ -492,6 +602,18 @@ function IngameHUD:StartFunctions(parsedData)
 			Z = initialZ,
 			Data = mapData,
 		}
+	end
+
+	local lastRootPosition: Vector3? = nil
+	local function updatePlaceTitleForWorldPosition(worldPosition: Vector3)
+		local nearestName = findClosestNamedFeature(loadedChunks, worldRenderer:WorldPositionToMap(worldPosition))
+		local nextPlaceName = nearestName or fallbackPlaceName
+		if nextPlaceName == displayedPlaceName then
+			return
+		end
+
+		displayedPlaceName = nextPlaceName
+		placeTitle.Text = nextPlaceName
 	end
 
 	local function ensureSurroundingChunkBases(centerChunkX: number?, centerChunkZ: number?)
@@ -627,6 +749,9 @@ function IngameHUD:StartFunctions(parsedData)
 				if minimapRenderer then
 					minimapRenderer:AddChunk(chunkX, chunkZ, response.Data)
 				end
+				if lastRootPosition then
+					updatePlaceTitleForWorldPosition(lastRootPosition)
+				end
 				ensureSurroundingChunkBases()
 				notifyChunkLoadingFinished(chunkKey)
 			end)
@@ -685,7 +810,6 @@ function IngameHUD:StartFunctions(parsedData)
 		ensureSurroundingChunkBases(currentChunk.X, currentChunk.Z)
 	end
 
-	local lastRootPosition: Vector3? = nil
 	table.insert(
 		connections,
 		RunService.Heartbeat:Connect(function()
@@ -706,6 +830,7 @@ function IngameHUD:StartFunctions(parsedData)
 			end
 			updateMinimapMarker(mapData, rootPart.Position)
 			cleanupDistantChunks(rootPart.Position)
+			updatePlaceTitleForWorldPosition(rootPart.Position)
 			requestAdjacentChunk(rootPart.Position)
 		end)
 	)

@@ -85,6 +85,26 @@ function Loading:StartFunctions(parsedData)
 		end
 	end)
 
+	if parsedData and parsedData.TargetScreen == "IngameHUD" and type(parsedData.MapData) == "table" then
+		local latitude = parsedData.Latitude or parsedData.Lat
+		local longitude = parsedData.Longitude or parsedData.Lon
+		local mapData = parsedData.MapData
+
+		task.delay(0.1, function()
+			if requestGeneration ~= loadingRequestGeneration then
+				return
+			end
+
+			UIController:OpenScreen("IngameHUD", {
+				PlaceName = placeNameLoading,
+				Latitude = latitude,
+				Longitude = longitude,
+				MapData = mapData,
+			})
+		end)
+		return
+	end
+
 	local latitude = parsedData and parsedData.Lat
 	local longitude = parsedData and parsedData.Lon
 	if type(latitude) ~= "number" or type(longitude) ~= "number" then

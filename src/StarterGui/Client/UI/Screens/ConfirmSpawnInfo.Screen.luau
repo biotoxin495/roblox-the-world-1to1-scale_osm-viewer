@@ -3,9 +3,6 @@
 local GuiButtonEffects = require(script.Parent.Parent.Parent.ClientPackages.GuiButtonEffects)
 local UIRoot = require(script.Parent.Parent.UIRoot)
 local UIController = require(script.Parent.Parent.Parent.Controllers.UIController)
-local ClientOSMApiInterface = require(script.Parent.Parent.Parent.Controllers.ClientOSMApiInterface)
-local ClientOSMMapInterface = require(script.Parent.Parent.Parent.Controllers.ClientOSMMapInterface)
-local PickSpawnUtils = require(script.Parent.Parent.Utils["PickSpawn.Screen.Utils"])
 local ConfirmSpawnUtils = require(script.Parent.Parent.Utils["ConfirmSpawnInfo.Screen.Utils"])
 local OsmApiReturnedDataUtils = require(script.Parent.Parent.Utils["OsmApiReturnedData.Utils"])
 local DefaultOsmApiReturnedData = require(game.ReplicatedStorage.App.OsmApiReturnedData)
@@ -15,116 +12,13 @@ ConfirmSpawnInfo.__index = ConfirmSpawnInfo
 ConfirmSpawnInfo.Name = "ConfirmSpawnInfo"
 
 local mapRenderer: ConfirmSpawnUtils.MapRenderer? = nil
-local mapController: PickSpawnUtils.MapController? = nil
-local mapViewChangedConnection: any = nil
-local interactionSupport: Frame? = nil
-local mapLoadGeneration = 0
 local isGeneratingMap = false
 
-local MAX_CHUNK_DISTANCE = 10
-local MAX_CONCURRENT_CHUNK_REQUESTS = 6
-
-local OSM_VECTOR_CHUNK_LAYERS = {
-	"roads",
-	"buildings",
-	"water",
-	"landuse",
-	"trees",
-	"pois",
-}
-
--- Debug only: exposes the PickSpawn camera without pan or zoom limits so the
--- OSM renderer can be inspected independently of normal map bounds.
-local DEBUG_ALLOW_UNBOUNDED_MAP_CAMERA = true
-
-local OSM_INTERACTION_TILE_MANIFEST: PickSpawnUtils.TileManifest = {
-	-- The PickSpawn controller owns all input, drag thresholds, wheel behaviour,
-	-- zoom animation, and camera bounds. This empty manifest intentionally
-	-- suppresses its raster tile rendering; the OSM vector renderer is the map.
-	TileSize = 256,
-	MinZoom = 0,
-	MaxZoom = 4,
-	Layers = {
-		base = {},
-		borders = {},
-	},
-}
-
-local function createLayer(parent: Instance, name: string, zIndex: number): Frame
-	local layer = Instance.new("Frame")
-	layer.Name = name
-	layer.Active = false
-	layer.BackgroundTransparency = 1
-	layer.BorderSizePixel = 0
-	layer.Size = UDim2.fromScale(1, 1)
-	layer.ZIndex = zIndex
-	layer.Parent = parent
-	return layer
-end
-
-local function createZoomButton(parent: GuiObject, name: string, text: string, position: UDim2): TextButton
-	local button = Instance.new("TextButton")
-	button.Name = name
-	button.AnchorPoint = Vector2.new(1, 1)
-	button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-	button.BackgroundTransparency = 0.1
-	button.BorderSizePixel = 0
-	button.Font = Enum.Font.GothamBold
-	button.Position = position
-	button.Size = UDim2.fromOffset(32, 32)
-	button.Text = text
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.TextSize = 20
-	button.ZIndex = parent.ZIndex + 1
-	button.Parent = parent
-
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 5)
-	corner.Parent = button
-
-	return button
-end
-
 local function destroyMap()
-	mapLoadGeneration += 1
-	if mapViewChangedConnection then
-		mapViewChangedConnection:Disconnect()
-		mapViewChangedConnection = nil
-	end
-	if mapController then
-		mapController:Stop()
-		mapController = nil
-	end
 	if mapRenderer then
 		mapRenderer:Destroy()
 		mapRenderer = nil
 	end
-	if interactionSupport then
-		interactionSupport:Destroy()
-		interactionSupport = nil
-	end
-end
-
-local function getChunkRequestInfo(osmApiReturnedData)
-	local initialChunk = if type(osmApiReturnedData) == "table" then osmApiReturnedData.chunk else nil
-	local metadata = if type(initialChunk) == "table" and type(initialChunk.chunk) == "table"
-		then initialChunk.chunk
-		else {}
-	local origin = if type(initialChunk) == "table" and type(initialChunk.origin) == "table"
-		then initialChunk.origin
-		elseif
-			type(osmApiReturnedData) == "table" and type(osmApiReturnedData.origin) == "table"
-		then osmApiReturnedData.origin
-		elseif
-			type(osmApiReturnedData) == "table" and type(osmApiReturnedData.location) == "table"
-		then osmApiReturnedData.location
-		else nil
-
-	local originLat = origin and tonumber(origin.lat)
-	local originLon = origin and tonumber(origin.lon)
-	local chunkSize = tonumber(metadata.size) or 256
-
-	return originLat, originLon, tonumber(metadata.x) or 0, tonumber(metadata.z) or 0, chunkSize
 end
 
 local function buildAddressText(address)
@@ -222,151 +116,6 @@ function ConfirmSpawnInfo:StartFunctions(osmApiReturnedData)
 
 	local renderer = ConfirmSpawnUtils.Create(clipFrame, osmApiReturnedData.chunk)
 	mapRenderer = renderer
-	local requestGeneration = mapLoadGeneration
-	local originLat, originLon, initialChunkX, initialChunkZ, chunkSize = getChunkRequestInfo(osmApiReturnedData)
-	local loadedChunks = {
-		[string.format("%d:%d", initialChunkX, initialChunkZ)] = true,
-	} :: { [string]: boolean }
-	local queuedChunks = {} :: { { X: number, Z: number, Key: string } }
-	local queuedChunkKeys = {} :: { [string]: boolean }
-	local failedChunks = {} :: { [string]: boolean }
-	local activeChunkRequests = 0
-	local requestVisibleChunks: () -> ()
-	local processNextChunk: () -> ()
-
-	processNextChunk = function()
-		if requestGeneration ~= mapLoadGeneration or renderer ~= mapRenderer then
-			return
-		end
-
-		while activeChunkRequests < MAX_CONCURRENT_CHUNK_REQUESTS do
-			local nextChunk = table.remove(queuedChunks, 1)
-			while nextChunk and (loadedChunks[nextChunk.Key] or failedChunks[nextChunk.Key]) do
-				queuedChunkKeys[nextChunk.Key] = nil
-				nextChunk = table.remove(queuedChunks, 1)
-			end
-			if not nextChunk then
-				return
-			end
-
-			queuedChunkKeys[nextChunk.Key] = nil
-			activeChunkRequests += 1
-			renderer:SetChunkLoading(nextChunk.X, nextChunk.Z, true)
-			ClientOSMApiInterface:Chunk({
-				OriginLat = originLat or 0,
-				OriginLon = originLon or 0,
-				ChunkX = nextChunk.X,
-				ChunkZ = nextChunk.Z,
-				ChunkSize = chunkSize,
-				Detail = "full",
-				Layers = OSM_VECTOR_CHUNK_LAYERS,
-			})
-				:andThen(function(response)
-					if requestGeneration ~= mapLoadGeneration or renderer ~= mapRenderer then
-						return
-					end
-
-					if response.Ok and type(response.Data) == "table" then
-						loadedChunks[nextChunk.Key] = true
-						renderer:AddChunk(nextChunk.X, nextChunk.Z, response.Data)
-					else
-						failedChunks[nextChunk.Key] = true
-						local message = response.Error and response.Error.Message or "Unknown chunk request failure."
-						warn(string.format("OSM chunk %s failed: %s", nextChunk.Key, message))
-					end
-				end)
-				:catch(function(errorValue)
-					if requestGeneration == mapLoadGeneration and renderer == mapRenderer then
-						failedChunks[nextChunk.Key] = true
-						warn(string.format("OSM chunk %s request failed: %s", nextChunk.Key, tostring(errorValue)))
-					end
-				end)
-				:finally(function()
-					activeChunkRequests -= 1
-					if requestGeneration == mapLoadGeneration and renderer == mapRenderer then
-						if not loadedChunks[nextChunk.Key] then
-							renderer:SetChunkLoading(nextChunk.X, nextChunk.Z, false)
-						end
-						requestVisibleChunks()
-					end
-				end)
-		end
-	end
-
-	requestVisibleChunks = function()
-		if requestGeneration ~= mapLoadGeneration or renderer ~= mapRenderer then
-			return
-		end
-
-		local visibleChunkKeys = {} :: { [string]: boolean }
-		for _, coordinate in ipairs(renderer:GetVisibleChunkCoordinates(MAX_CHUNK_DISTANCE)) do
-			local key = string.format("%d:%d", coordinate.X, coordinate.Z)
-			visibleChunkKeys[key] = true
-			if not loadedChunks[key] and not failedChunks[key] and not queuedChunkKeys[key] then
-				queuedChunkKeys[key] = true
-				table.insert(queuedChunks, {
-					X = coordinate.X,
-					Z = coordinate.Z,
-					Key = key,
-				})
-			end
-		end
-
-		-- Do not continue fetching chunks the player has already dragged away
-		-- from. Loaded chunks stay cached for the lifetime of this screen.
-		for index = #queuedChunks, 1, -1 do
-			local queuedChunk = queuedChunks[index]
-			if not visibleChunkKeys[queuedChunk.Key] then
-				queuedChunkKeys[queuedChunk.Key] = nil
-				table.remove(queuedChunks, index)
-			end
-		end
-
-		processNextChunk()
-	end
-
-	if type(originLat) ~= "number" or type(originLon) ~= "number" then
-		warn("Cannot stream OSM chunks: initial response has no valid origin.")
-		requestVisibleChunks = function() end
-	end
-
-	-- Keep the controller support restricted to the controls themselves. A full
-	-- transparent frame above the map would become the pointer target and stop
-	-- ClipFrame (which PickSpawnUtils listens to) from receiving drag starts.
-	local support = createLayer(clipFrame, "OsmMapInteractionSupport", clipFrame.ZIndex + 10)
-	interactionSupport = support
-	support.AnchorPoint = Vector2.new(1, 1)
-	support.Position = UDim2.fromScale(1, 1)
-	support.Size = UDim2.fromOffset(76, 44)
-	local baseTileLayer = createLayer(support, "BaseTileLayer", support.ZIndex)
-	local borderTileLayer = createLayer(support, "BorderTileLayer", support.ZIndex + 1)
-	local pinLayer = createLayer(support, "PinLayer", support.ZIndex + 2)
-
-	local zoomOutButton = createZoomButton(support, "ZoomOutBtn", "−", UDim2.fromOffset(36, 38))
-	local zoomInButton = createZoomButton(support, "ZoomInBtn", "+", UDim2.fromOffset(70, 38))
-	local locations = {} :: { PickSpawnUtils.Location }
-	local controller = PickSpawnUtils.CreateMap(
-		clipFrame,
-		support,
-		baseTileLayer,
-		borderTileLayer,
-		pinLayer,
-		zoomInButton,
-		zoomOutButton,
-		locations,
-		OSM_INTERACTION_TILE_MANIFEST
-	)
-	controller.AllowUnboundedCamera = DEBUG_ALLOW_UNBOUNDED_MAP_CAMERA
-	controller.IsInputEnabled = function()
-		return not UIController:IsPopupOpen()
-	end
-	mapController = controller
-	mapViewChangedConnection = controller.ViewChanged:Connect(function(center, zoom, worldSize, zoomScale, zoomAnchor)
-		renderer:SetCamera(center, zoom, worldSize, zoomScale, zoomAnchor)
-		requestVisibleChunks()
-	end)
-
-	controller:Start()
 	renderer:Render()
 
 	local leftSide = confirmSpawnInfoScreen.LeftSide
@@ -394,37 +143,13 @@ function ConfirmSpawnInfo:StartFunctions(osmApiReturnedData)
 
 			isGeneratingMap = true
 			spawnButton.Active = false
-			local requestGeneration = mapLoadGeneration
-			ClientOSMMapInterface:Generate(latitude, longitude)
-				:andThen(function(response)
-					if requestGeneration ~= mapLoadGeneration then
-						return
-					end
-
-					if not response.Ok or type(response.Data) ~= "table" then
-						local message = response.Error and response.Error.Message or "OSM map generation failed."
-						warn(string.format("OSM map generation failed: %s", message))
-						return
-					end
-
-					UIController:OpenScreen("IngameHUD", {
-						PlaceName = locationData.name or "Unknown Location",
-						Latitude = latitude,
-						Longitude = longitude,
-						MapData = response.Data,
-					})
-				end)
-				:catch(function(errorValue)
-					if requestGeneration == mapLoadGeneration then
-						warn(string.format("OSM map generation request failed: %s", tostring(errorValue)))
-					end
-				end)
-				:finally(function()
-					if requestGeneration == mapLoadGeneration then
-						isGeneratingMap = false
-						spawnButton.Active = true
-					end
-				end)
+			UIController:OpenScreen("Loading", {
+				TargetScreen = "IngameHUD",
+				PlaceName = locationData.name or "Unknown Location",
+				Latitude = latitude,
+				Longitude = longitude,
+				MapData = osmApiReturnedData,
+			})
 		end)
 	)
 	GuiButtonEffects:SetupFromTemplate(spawnButton, "GreenButton")
