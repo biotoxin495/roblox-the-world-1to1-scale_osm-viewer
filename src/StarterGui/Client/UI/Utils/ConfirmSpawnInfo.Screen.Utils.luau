@@ -11,7 +11,20 @@ local ConfirmSpawnInfoUtils = {}
 ConfirmSpawnInfoUtils.__index = ConfirmSpawnInfoUtils
 ConfirmSpawnInfoUtils.Name = "ConfirmSpawnInfoUtils"
 
+local AssetService = game:GetService("AssetService")
+
 type Point = Vector2
+type ImageTile = {
+	Gui: ImageLabel,
+	Image: any,
+	Offset: Vector2,
+	Size: Vector2,
+}
+type RenderTarget = {
+	Gui: GuiObject,
+	Tiles: { ImageTile },
+	Size: Vector2,
+}
 type RoadLabelCandidate = {
 	Name: string,
 	From: Point,
@@ -32,6 +45,10 @@ export type MapRenderer = {
 	ClipFrame: GuiObject,
 	Layer: Frame,
 	Canvas: Frame,
+	TileLayer: Frame,
+	Overlay: Frame,
+	ImageTiles: { ImageTile },
+	TileSignature: string,
 	Chunks: { [string]: any },
 	LoadingChunks: { [string]: { X: number, Z: number } },
 	InitialChunkKey: string,
@@ -89,7 +106,138 @@ local ROAD_COLOURS = {
 	cycleway = Color3.fromRGB(210, 229, 233),
 }
 
-local function getOrCreateLayer(clipFrame: GuiObject): (Frame, Frame)
+local MAX_EDITABLE_IMAGE_SIZE = 1023
+
+local function createEditableImage(size: Vector2): any?
+	local ok, editableImage = pcall(function()
+		return (AssetService :: any):CreateEditableImage({
+			Size = size,
+		})
+	end)
+	if ok then
+		return editableImage
+	end
+
+	warn("Cannot create EditableImage for OSM map: " .. tostring(editableImage))
+	return nil
+end
+
+local function setImageContent(imageLabel: ImageLabel, editableImage: any)
+	local ok, result = pcall(function()
+		return (Content :: any).fromObject(editableImage)
+	end)
+	if ok then
+		(imageLabel :: any).ImageContent = result
+		return
+	end
+
+	warn("Cannot bind EditableImage to OSM map ImageLabel: " .. tostring(result))
+end
+
+local function drawImageRectangle(image: any, position: Vector2, size: Vector2, colour: Color3)
+	if not image or size.X <= 0 or size.Y <= 0 then
+		return
+	end
+
+	local ok = pcall(function()
+		image:DrawRectangle(position, size, colour, 0, Enum.ImageCombineType.Overwrite)
+	end)
+	if not ok then
+		pcall(function()
+			image:DrawRectangle(position, size, colour, 0)
+		end)
+	end
+end
+
+local function clearOverlay(layer: GuiObject)
+	for _, child in ipairs(layer:GetChildren()) do
+		child:Destroy()
+	end
+end
+
+local function rectanglesOverlap(position: Vector2, size: Vector2, tile: ImageTile): boolean
+	return position.X < tile.Offset.X + tile.Size.X
+		and position.X + size.X > tile.Offset.X
+		and position.Y < tile.Offset.Y + tile.Size.Y
+		and position.Y + size.Y > tile.Offset.Y
+end
+
+local function drawTargetRectangle(target: RenderTarget, position: Vector2, size: Vector2, colour: Color3)
+	if size.X <= 0 or size.Y <= 0 then
+		return
+	end
+
+	for _, tile in ipairs(target.Tiles) do
+		if not rectanglesOverlap(position, size, tile) then
+			continue
+		end
+
+		local left = math.max(position.X, tile.Offset.X)
+		local top = math.max(position.Y, tile.Offset.Y)
+		local right = math.min(position.X + size.X, tile.Offset.X + tile.Size.X)
+		local bottom = math.min(position.Y + size.Y, tile.Offset.Y + tile.Size.Y)
+		drawImageRectangle(
+			tile.Image,
+			Vector2.new(left - tile.Offset.X, top - tile.Offset.Y),
+			Vector2.new(right - left, bottom - top),
+			colour
+		)
+	end
+end
+
+local function drawTargetCircle(target: RenderTarget, center: Point, radius: number, colour: Color3)
+	if radius <= 0 then
+		return
+	end
+
+	local integerRadius = math.ceil(radius)
+	for offsetY = -integerRadius, integerRadius do
+		local span = math.sqrt(math.max(0, radius * radius - offsetY * offsetY))
+		local left = center.X - span
+		local width = span * 2
+		if width > 0 then
+			drawTargetRectangle(target, Vector2.new(left, center.Y + offsetY), Vector2.new(width, 1), colour)
+		end
+	end
+end
+
+local function fillScreenPolygon(target: RenderTarget, polygon: { Point }, colour: Color3, step: number?)
+	if #polygon < 3 then
+		return
+	end
+
+	local minY = math.huge
+	local maxY = -math.huge
+	for _, point in ipairs(polygon) do
+		minY = math.min(minY, point.Y)
+		maxY = math.max(maxY, point.Y)
+	end
+
+	local scanlineStep = step or 1
+	local startY = math.max(0, math.floor(minY / scanlineStep) * scanlineStep)
+	local endY = math.min(target.Size.Y, math.ceil(maxY / scanlineStep) * scanlineStep)
+	for y = startY, endY, scanlineStep do
+		local intersections = {} :: { number }
+		for index, point in ipairs(polygon) do
+			local nextPoint = polygon[index % #polygon + 1]
+			if (point.Y <= y and nextPoint.Y > y) or (nextPoint.Y <= y and point.Y > y) then
+				local progress = (y - point.Y) / (nextPoint.Y - point.Y)
+				table.insert(intersections, point.X + (nextPoint.X - point.X) * progress)
+			end
+		end
+
+		table.sort(intersections)
+		for index = 1, #intersections - 1, 2 do
+			local left = math.max(0, intersections[index])
+			local right = math.min(target.Size.X, intersections[index + 1])
+			if right > left then
+				drawTargetRectangle(target, Vector2.new(left, y), Vector2.new(right - left, scanlineStep), colour)
+			end
+		end
+	end
+end
+
+local function getOrCreateLayer(clipFrame: GuiObject): (Frame, Frame, Frame, Frame)
 	local existing = clipFrame:FindFirstChild("OsmMapLayer")
 	if existing and existing:IsA("Frame") then
 		existing:Destroy()
@@ -110,39 +258,51 @@ local function getOrCreateLayer(clipFrame: GuiObject): (Frame, Frame)
 	canvas.Active = false
 	canvas.AnchorPoint = Vector2.new(0.5, 0.5)
 	canvas.BackgroundColor3 = MAP_BACKGROUND
+	canvas.BackgroundTransparency = 1
 	canvas.BorderSizePixel = 0
 	canvas.ClipsDescendants = true
 	canvas.Position = UDim2.fromScale(0.5, 0.5)
 	canvas.ZIndex = layer.ZIndex + 1
 	canvas.Parent = layer
 
-	return layer, canvas
+	local tileLayer = Instance.new("Frame")
+	tileLayer.Name = "MapImageTiles"
+	tileLayer.Active = false
+	tileLayer.BackgroundTransparency = 1
+	tileLayer.BorderSizePixel = 0
+	tileLayer.ClipsDescendants = true
+	tileLayer.Size = UDim2.fromScale(1, 1)
+	tileLayer.ZIndex = canvas.ZIndex
+	tileLayer.Parent = canvas
+
+	local overlay = Instance.new("Frame")
+	overlay.Name = "MapOverlay"
+	overlay.Active = false
+	overlay.BackgroundTransparency = 1
+	overlay.BorderSizePixel = 0
+	overlay.ClipsDescendants = true
+	overlay.Size = UDim2.fromScale(1, 1)
+	overlay.ZIndex = canvas.ZIndex + 50
+	overlay.Parent = canvas
+
+	return layer, canvas, tileLayer, overlay
 end
 
-local function clearLayer(layer: Frame)
-	for _, child in ipairs(layer:GetChildren()) do
-		child:Destroy()
-	end
-end
-
-local function createSegment(parent: GuiObject, from: Point, to: Point, thickness: number, colour: Color3, zIndex: 
-number)
+local function createSegment(target: RenderTarget, from: Point, to: Point, thickness: number, colour: Color3, _zIndex: number)
 	local delta = to - from
 	local length = delta.Magnitude
 	if length < 0.1 then
 		return
 	end
 
-	local segment = Instance.new("Frame")
-	segment.Name = "Geometry"
-	segment.AnchorPoint = Vector2.new(0.5, 0.5)
-	segment.BackgroundColor3 = colour
-	segment.BorderSizePixel = 0
-	segment.Position = UDim2.fromOffset((from.X + to.X) * 0.5, (from.Y + to.Y) * 0.5)
-	segment.Rotation = math.deg(math.atan2(delta.Y, delta.X))
-	segment.Size = UDim2.fromOffset(length, thickness)
-	segment.ZIndex = zIndex
-	segment.Parent = parent
+	local halfThickness = math.max(0.5, thickness * 0.5)
+	local normal = Vector2.new(-delta.Y / length, delta.X / length) * halfThickness
+	fillScreenPolygon(target, {
+		from + normal,
+		to + normal,
+		to - normal,
+		from - normal,
+	}, colour, 1)
 end
 
 local function finiteNumber(value: any): number?
@@ -296,7 +456,7 @@ local function projectPoint(
 end
 
 local function drawPath(
-	parent: GuiObject,
+	target: RenderTarget,
 	points: any,
 	isRoad: boolean,
 	minX: number,
@@ -346,19 +506,18 @@ local function drawPath(
 			zoomAnchor
 		)
 		if previous and current then
-			local clippedFrom, clippedTo = clipSegmentToRect(previous, current, 0, 0, parent.AbsoluteSize.X, 
-parent.AbsoluteSize.Y)
+			local clippedFrom, clippedTo = clipSegmentToRect(previous, current, 0, 0, target.Size.X, target.Size.Y)
 			if clippedFrom and clippedTo then
-				createSegment(parent, clippedFrom, clippedTo, thickness, colour, zIndex)
+				createSegment(target, clippedFrom, clippedTo, thickness, colour, zIndex)
 			end
 		end
 		previous = current
 	end
 
 	if closed and previous and first then
-		local clippedFrom, clippedTo = clipSegmentToRect(previous, first, 0, 0, parent.AbsoluteSize.X, parent.AbsoluteSize.Y)
+		local clippedFrom, clippedTo = clipSegmentToRect(previous, first, 0, 0, target.Size.X, target.Size.Y)
 		if clippedFrom and clippedTo then
-			createSegment(parent, clippedFrom, clippedTo, thickness, colour, zIndex)
+			createSegment(target, clippedFrom, clippedTo, thickness, colour, zIndex)
 		end
 	end
 end
@@ -458,7 +617,7 @@ local function drawRoadLabel(parent: GuiObject, candidate: RoadLabelCandidate, z
 end
 
 local function fillPolygon(
-	parent: GuiObject,
+	target: RenderTarget,
 	points: any,
 	minX: number,
 	minZ: number,
@@ -499,46 +658,11 @@ local function fillPolygon(
 		return
 	end
 
-	local minY = math.huge
-	local maxY = -math.huge
-	for _, point in ipairs(polygon) do
-		minY = math.min(minY, point.Y)
-		maxY = math.max(maxY, point.Y)
-	end
-
-	local step = 2
-	local startY = math.max(0, math.floor(minY / step) * step)
-	local endY = math.min(parent.AbsoluteSize.Y, math.ceil(maxY / step) * step)
-	for y = startY, endY, step do
-		local intersections = {} :: { number }
-		for index, point in ipairs(polygon) do
-			local nextPoint = polygon[index % #polygon + 1]
-			if (point.Y <= y and nextPoint.Y > y) or (nextPoint.Y <= y and point.Y > y) then
-				local progress = (y - point.Y) / (nextPoint.Y - point.Y)
-				table.insert(intersections, point.X + (nextPoint.X - point.X) * progress)
-			end
-		end
-
-		table.sort(intersections)
-		for index = 1, #intersections - 1, 2 do
-			local left = math.max(0, intersections[index])
-			local right = math.min(parent.AbsoluteSize.X, intersections[index + 1])
-			if right > left then
-				local scanline = Instance.new("Frame")
-				scanline.Name = "AreaFill"
-				scanline.BackgroundColor3 = colour
-				scanline.BorderSizePixel = 0
-				scanline.Position = UDim2.fromOffset(left, y)
-				scanline.Size = UDim2.fromOffset(right - left, step)
-				scanline.ZIndex = zIndex
-				scanline.Parent = parent
-			end
-		end
-	end
+	fillScreenPolygon(target, polygon, colour, 2)
 end
 
 local function drawAreaCollection(
-	parent: GuiObject,
+	target: RenderTarget,
 	features: any,
 	minX: number,
 	minZ: number,
@@ -572,7 +696,7 @@ local function drawAreaCollection(
 		if type(polygons) == "table" then
 			for _, polygon in ipairs(polygons) do
 				fillPolygon(
-					parent,
+					target,
 					polygon,
 					minX,
 					minZ,
@@ -587,7 +711,7 @@ local function drawAreaCollection(
 					zIndex
 				)
 				drawPath(
-					parent,
+					target,
 					polygon,
 					false,
 					minX,
@@ -621,41 +745,16 @@ local function resolveLanduseColours(feature: any): (Color3, Color3)
 end
 
 local function createCircularMarker(
-	parent: GuiObject,
-	name: string,
+	target: RenderTarget,
+	_name: string,
 	position: Point,
 	diameter: number,
 	fillColour: Color3,
 	outlineColour: Color3,
-	zIndex: number
+	_zIndex: number
 )
-	local outer = Instance.new("Frame")
-	outer.Name = name
-	outer.AnchorPoint = Vector2.new(0.5, 0.5)
-	outer.BackgroundColor3 = outlineColour
-	outer.BorderSizePixel = 0
-	outer.Position = UDim2.fromOffset(position.X, position.Y)
-	outer.Size = UDim2.fromOffset(diameter, diameter)
-	outer.ZIndex = zIndex
-	outer.Parent = parent
-
-	local outerCorner = Instance.new("UICorner")
-	outerCorner.CornerRadius = UDim.new(1, 0)
-	outerCorner.Parent = outer
-
-	local inner = Instance.new("Frame")
-	inner.Name = "Fill"
-	inner.AnchorPoint = Vector2.new(0.5, 0.5)
-	inner.BackgroundColor3 = fillColour
-	inner.BorderSizePixel = 0
-	inner.Position = UDim2.fromScale(0.5, 0.5)
-	inner.Size = UDim2.fromOffset(math.max(2, diameter - 2), math.max(2, diameter - 2))
-	inner.ZIndex = zIndex + 1
-	inner.Parent = outer
-
-	local innerCorner = Instance.new("UICorner")
-	innerCorner.CornerRadius = UDim.new(1, 0)
-	innerCorner.Parent = inner
+	drawTargetCircle(target, position, diameter * 0.5, outlineColour)
+	drawTargetCircle(target, position, math.max(1, diameter * 0.5 - 1), fillColour)
 end
 
 local function getTreeMarkerDiameter(
@@ -692,7 +791,7 @@ local function getTreeRowPoints(tree: any): any
 end
 
 local function drawTreeCollection(
-	parent: GuiObject,
+	target: RenderTarget,
 	trees: any,
 	minX: number,
 	minZ: number,
@@ -733,10 +832,10 @@ local function drawTreeCollection(
 			if
 				position.X >= -diameter
 				and position.Y >= -diameter
-				and position.X <= viewportSize.X + diameter
-				and position.Y <= viewportSize.Y + diameter
+				and position.X <= target.Size.X + diameter
+				and position.Y <= target.Size.Y + diameter
 			then
-				createCircularMarker(parent, "Tree", position, diameter, TREE_FILL, TREE_OUTLINE, zIndex)
+				createCircularMarker(target, "Tree", position, diameter, TREE_FILL, TREE_OUTLINE, zIndex)
 			end
 			continue
 		end
@@ -747,7 +846,7 @@ local function drawTreeCollection(
 		end
 
 		drawPath(
-			parent,
+			target,
 			rowPoints,
 			true,
 			minX,
@@ -765,7 +864,7 @@ local function drawTreeCollection(
 			false
 		)
 		drawPath(
-			parent,
+			target,
 			rowPoints,
 			true,
 			minX,
@@ -802,17 +901,17 @@ local function drawTreeCollection(
 				rowPosition
 				and rowPosition.X >= -rowMarkerDiameter
 				and rowPosition.Y >= -rowMarkerDiameter
-				and rowPosition.X <= viewportSize.X + rowMarkerDiameter
-				and rowPosition.Y <= viewportSize.Y + rowMarkerDiameter
+				and rowPosition.X <= target.Size.X + rowMarkerDiameter
+				and rowPosition.Y <= target.Size.Y + rowMarkerDiameter
 			then
-				createCircularMarker(parent, "TreeRowPoint", rowPosition, rowMarkerDiameter, TREE_FILL, TREE_OUTLINE, zIndex + 2)
+				createCircularMarker(target, "TreeRowPoint", rowPosition, rowMarkerDiameter, TREE_FILL, TREE_OUTLINE, zIndex + 2)
 			end
 		end
 	end
 end
 
 local function drawPois(
-	parent: GuiObject,
+	target: RenderTarget,
 	pois: any,
 	minX: number,
 	minZ: number,
@@ -847,27 +946,10 @@ local function drawPois(
 			position
 			and position.X >= -8
 			and position.Y >= -8
-			and position.X <= viewportSize.X + 8
-			and position.Y <= viewportSize.Y + 8
+			and position.X <= target.Size.X + 8
+			and position.Y <= target.Size.Y + 8
 		then
-			local marker = Instance.new("Frame")
-			marker.Name = "Poi"
-			marker.AnchorPoint = Vector2.new(0.5, 0.5)
-			marker.BackgroundColor3 = POI_COLOUR
-			marker.BorderSizePixel = 0
-			marker.Position = UDim2.fromOffset(position.X, position.Y)
-			marker.Size = UDim2.fromOffset(10, 10)
-			marker.ZIndex = zIndex
-			marker.Parent = parent
-
-			local corner = Instance.new("UICorner")
-			corner.CornerRadius = UDim.new(1, 0)
-			corner.Parent = marker
-
-			local stroke = Instance.new("UIStroke")
-			stroke.Color = Color3.fromRGB(255, 255, 255)
-			stroke.Thickness = 1.5
-			stroke.Parent = marker
+			createCircularMarker(target, "Poi", position, 10, POI_COLOUR, Color3.fromRGB(255, 255, 255), zIndex)
 
 			if type(poi.name) == "string" and poi.name ~= "" then
 				local label = Instance.new("TextLabel")
@@ -884,44 +966,26 @@ local function drawPois(
 				label.TextStrokeTransparency = 0.15
 				label.TextTruncate = Enum.TextTruncate.AtEnd
 				label.ZIndex = zIndex + 1
-				label.Parent = parent
+				label.Parent = target.Gui
 			end
 		end
 	end
 end
 
 local function drawReferenceMarker(
-	parent: GuiObject,
-	name: string,
+	target: RenderTarget,
+	_name: string,
 	position: Point,
 	colour: Color3,
 	size: number,
 	zIndex: number,
 	labelText: string?
 )
-	if position.X < -size or position.Y < -size or position.X > parent.AbsoluteSize.X + size or position.Y > 
-parent.AbsoluteSize.Y + size then
+	if position.X < -size or position.Y < -size or position.X > target.Size.X + size or position.Y > target.Size.Y + size then
 		return
 	end
 
-	local marker = Instance.new("Frame")
-	marker.Name = name
-	marker.AnchorPoint = Vector2.new(0.5, 0.5)
-	marker.BackgroundColor3 = colour
-	marker.BorderSizePixel = 0
-	marker.Position = UDim2.fromOffset(position.X, position.Y)
-	marker.Size = UDim2.fromOffset(size, size)
-	marker.ZIndex = zIndex
-	marker.Parent = parent
-
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(1, 0)
-	corner.Parent = marker
-
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.fromRGB(255, 255, 255)
-	stroke.Thickness = 2
-	stroke.Parent = marker
+	createCircularMarker(target, _name, position, size, colour, Color3.fromRGB(255, 255, 255), zIndex)
 
 	if labelText then
 		local label = Instance.new("TextLabel")
@@ -937,12 +1001,12 @@ parent.AbsoluteSize.Y + size then
 		label.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
 		label.TextStrokeTransparency = 0.1
 		label.ZIndex = zIndex + 1
-		label.Parent = parent
+		label.Parent = target.Gui
 	end
 end
 
 local function drawChunkReferenceMarkers(
-	parent: GuiObject,
+	target: RenderTarget,
 	minX: number,
 	minZ: number,
 	maxX: number,
@@ -965,7 +1029,7 @@ local function drawChunkReferenceMarkers(
 	-- sit half outside the ClipFrame at the exact chunk edge and are easy to
 	-- miss, especially at the initial zoom.
 	drawPath(
-		parent,
+		target,
 		{
 			{ minX, 0, minZ },
 			{ minX, 0, maxZ },
@@ -1006,7 +1070,7 @@ local function drawChunkReferenceMarkers(
 
 	local spawnPosition = projectWorldPosition(spawnX, spawnZ)
 	if drawSpawnMarker and spawnPosition then
-		drawReferenceMarker(parent, "SpawnMarker", spawnPosition, SPAWN_MARKER_COLOUR, 14, zIndex + 1, "SPAWN")
+		drawReferenceMarker(target, "SpawnMarker", spawnPosition, SPAWN_MARKER_COLOUR, 14, zIndex + 1, "SPAWN")
 	end
 
 	for _, corner in ipairs({
@@ -1017,7 +1081,7 @@ local function drawChunkReferenceMarkers(
 	}) do
 		local position = projectWorldPosition(corner.X, corner.Y)
 		if position then
-			drawReferenceMarker(parent, "ChunkBoundaryMarker", position, BOUNDARY_MARKER_COLOUR, 8, zIndex, nil)
+			drawReferenceMarker(target, "ChunkBoundaryMarker", position, BOUNDARY_MARKER_COLOUR, 8, zIndex, nil)
 		end
 	end
 end
@@ -1083,8 +1147,74 @@ local function drawChunkLoadingLabel(
 	corner.Parent = label
 end
 
+local function buildTileSignature(size: Vector2): string
+	return string.format("%dx%d", math.ceil(size.X), math.ceil(size.Y))
+end
+
+local function createImageTiles(tileLayer: Frame, size: Vector2, zIndex: number): { ImageTile }?
+	clearOverlay(tileLayer)
+
+	local tiles = {} :: { ImageTile }
+	local columns = math.max(1, math.ceil(size.X / MAX_EDITABLE_IMAGE_SIZE))
+	local rows = math.max(1, math.ceil(size.Y / MAX_EDITABLE_IMAGE_SIZE))
+	for row = 0, rows - 1 do
+		for column = 0, columns - 1 do
+			local offset = Vector2.new(column * MAX_EDITABLE_IMAGE_SIZE, row * MAX_EDITABLE_IMAGE_SIZE)
+			local tileSize = Vector2.new(
+				math.min(MAX_EDITABLE_IMAGE_SIZE, size.X - offset.X),
+				math.min(MAX_EDITABLE_IMAGE_SIZE, size.Y - offset.Y)
+			)
+			if tileSize.X <= 0 or tileSize.Y <= 0 then
+				continue
+			end
+
+			local editableImage = createEditableImage(tileSize)
+			if not editableImage then
+				return nil
+			end
+
+			local imageLabel = Instance.new("ImageLabel")
+			imageLabel.Name = string.format("Tile_%d_%d", column, row)
+			imageLabel.Active = false
+			imageLabel.BackgroundTransparency = 1
+			imageLabel.BorderSizePixel = 0
+			imageLabel.Position = UDim2.fromOffset(offset.X, offset.Y)
+			imageLabel.ScaleType = Enum.ScaleType.Stretch
+			imageLabel.Size = UDim2.fromOffset(tileSize.X, tileSize.Y)
+			imageLabel.ZIndex = zIndex
+			imageLabel.Parent = tileLayer
+			setImageContent(imageLabel, editableImage)
+
+			table.insert(tiles, {
+				Gui = imageLabel,
+				Image = editableImage,
+				Offset = offset,
+				Size = tileSize,
+			})
+		end
+	end
+
+	return tiles
+end
+
+local function getImageTiles(self: MapRenderer, size: Vector2): { ImageTile }?
+	local signature = buildTileSignature(size)
+	if self.TileSignature ~= signature then
+		local tiles = createImageTiles(self.TileLayer, size, self.Canvas.ZIndex)
+		if not tiles then
+			self.ImageTiles = {}
+			self.TileSignature = ""
+			return nil
+		end
+		self.ImageTiles = tiles
+		self.TileSignature = signature
+	end
+
+	return self.ImageTiles
+end
+
 function ConfirmSpawnInfoUtils.Create(clipFrame: GuiObject, data: any): MapRenderer
-	local layer, canvas = getOrCreateLayer(clipFrame)
+	local layer, canvas, tileLayer, overlay = getOrCreateLayer(clipFrame)
 	local initialData = getMapData(data)
 	local initialMetadata = if type(initialData) == "table" then initialData.chunk else nil
 	local initialChunkX = if type(initialMetadata) == "table" then tonumber(initialMetadata.x) or 0 else 0
@@ -1094,6 +1224,10 @@ function ConfirmSpawnInfoUtils.Create(clipFrame: GuiObject, data: any): MapRende
 		ClipFrame = clipFrame,
 		Layer = layer,
 		Canvas = canvas,
+		TileLayer = tileLayer,
+		Overlay = overlay,
+		ImageTiles = {} :: { ImageTile },
+		TileSignature = "",
 		Chunks = {
 			[initialChunkKey] = data,
 		},
@@ -1296,9 +1430,22 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 	local canvas = self.Canvas
 	local canvasSide = math.max(layerSize.X, layerSize.Y)
 	canvas.Size = UDim2.fromOffset(canvasSide, canvasSide)
-	local size = Vector2.new(canvasSide, canvasSide)
+	self.TileLayer.Size = UDim2.fromOffset(canvasSide, canvasSide)
+	self.Overlay.Size = UDim2.fromOffset(canvasSide, canvasSide)
+	local imageSide = math.max(1, math.ceil(canvasSide))
+	local size = Vector2.new(imageSide, imageSide)
 
-	clearLayer(canvas)
+	clearOverlay(self.Overlay)
+	local imageTiles = getImageTiles(self, size)
+	if not imageTiles then
+		return
+	end
+	local renderTarget: RenderTarget = {
+		Gui = self.Overlay,
+		Tiles = imageTiles,
+		Size = size,
+	}
+	drawTargetRectangle(renderTarget, Vector2.zero, size, MAP_BACKGROUND)
 	local initialData = getMapData(self.Chunks[self.InitialChunkKey])
 	if type(initialData) ~= "table" then
 		warn("Cannot render OSM map: expected a decoded data table")
@@ -1349,7 +1496,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 
 		-- Areas first, then roads, matching normal cartographic layer order.
 		if self.LayerVisibility.Water then drawAreaCollection(
-			canvas,
+			renderTarget,
 			data.water,
 			minX,
 			minZ,
@@ -1366,7 +1513,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			nil
 		) end
 		if self.LayerVisibility.Landuse then drawAreaCollection(
-			canvas,
+			renderTarget,
 			data.landuse,
 			minX,
 			minZ,
@@ -1383,7 +1530,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			resolveLanduseColours
 		) end
 		if self.LayerVisibility.Trees then drawTreeCollection(
-			canvas,
+			renderTarget,
 			data.trees,
 			minX,
 			minZ,
@@ -1397,7 +1544,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			zIndex + 4
 		) end
 		if self.LayerVisibility.Buildings then drawAreaCollection(
-			canvas,
+			renderTarget,
 			data.buildings,
 			minX,
 			minZ,
@@ -1420,7 +1567,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 				local roadThickness = math.max(1, width * math.min(scaleX, scaleZ) * zoomFactor * animationZoomScale)
 				local roadColour = ROAD_COLOURS[road.class] or Color3.fromRGB(248, 248, 248)
 				drawPath(
-					canvas,
+					renderTarget,
 					road.points,
 					true,
 					minX,
@@ -1438,7 +1585,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 					false
 				)
 				drawPath(
-					canvas,
+					renderTarget,
 					road.points,
 					true,
 					minX,
@@ -1485,7 +1632,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			end
 
 		if self.LayerVisibility.Pois then drawPois(
-			canvas,
+			renderTarget,
 			data.pois,
 			minX,
 			minZ,
@@ -1502,7 +1649,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 
 	if self.LayerVisibility.Roads then
 		for _, candidate in pairs(roadLabelsByName) do
-			drawRoadLabel(canvas, candidate, zIndex + 10)
+			drawRoadLabel(self.Overlay, candidate, zIndex + 10)
 		end
 	end
 
@@ -1522,7 +1669,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 		local chunkSpawnX = tonumber(metadata.x) or chunkMinX
 		local chunkSpawnZ = tonumber(metadata.z) or chunkMinZ
 		drawChunkReferenceMarkers(
-			canvas,
+			renderTarget,
 			chunkMinX,
 			chunkMinZ,
 			chunkMaxX,
@@ -1560,7 +1707,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 		local chunkMaxX = chunkMinX + chunkWidth
 		local chunkMaxZ = chunkMinZ + chunkHeight
 		drawChunkReferenceMarkers(
-			canvas,
+			renderTarget,
 			chunkMinX,
 			chunkMinZ,
 			chunkMaxX,
@@ -1580,7 +1727,7 @@ function ConfirmSpawnInfoUtils.Render(self: MapRenderer)
 			false
 		)
 		drawChunkLoadingLabel(
-			canvas,
+			self.Overlay,
 			chunkMinX,
 			chunkMinZ,
 			chunkMaxX,
