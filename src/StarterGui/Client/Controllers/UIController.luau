@@ -5,8 +5,8 @@ local TweenService = game:GetService("TweenService")
 local UIRoot = require(script.Parent.Parent.UI.UIRoot)
 local GuiButtonEffects = require(script.Parent.Parent.ClientPackages.GuiButtonEffects)
 
-local DEFAULT_SCREEN = "ConfirmSpawnInfo"
-local STARTUP_LOADING_ENABLED = false
+local DEFAULT_SCREEN = "PickSpawn"
+local STARTUP_LOADING_ENABLED = true
 
 local STARTUP_INTRO_LINES = {
 	"The World",

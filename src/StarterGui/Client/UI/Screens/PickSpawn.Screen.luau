@@ -12,6 +12,9 @@ local UIRoot = require(script.Parent.Parent.UIRoot)
 local UIController = require(script.Parent.Parent.Parent.Controllers.UIController)
 local PickSpawnUtils = require(script.Parent.Parent.Utils["PickSpawn.Screen.Utils"])
 
+local CountriesSimplified = require(Configs.CountryConfig.CountriesSimplified)
+local LandSimplified = require(Configs.CountryConfig.LandSimplified)
+
 local Packages = ReplicatedStorage.App.Shared.Packages
 local Signal = require(Packages.Signal)
 
@@ -313,7 +316,6 @@ function PickSpawn:StartFunctions()
 	local bottomScale = rightSide.BottomScale
 
 	local locations = require(Configs.Locations)
-	local tileManifest = require(Configs.TileManifest)
 	local CountryLocations = require(Configs.CountryLocations)
 	local countryCodesByName = {} :: { [string]: string }
 	for countryCode, countryData in pairs(CountryLocations) do
@@ -362,7 +364,8 @@ function PickSpawn:StartFunctions()
 		zoomInButton,
 		zoomOutButton,
 		locations,
-		tileManifest
+		CountriesSimplified,
+		LandSimplified
 	)
 	if mapController then
 		mapController.MinCameraZoom = INITIAL_MAP_ZOOM

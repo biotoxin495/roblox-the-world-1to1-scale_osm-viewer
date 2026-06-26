@@ -2,6 +2,7 @@
 
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local AssetService = game:GetService("AssetService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.App.Shared.Packages
 local Signal = require(Packages.Signal)
@@ -23,28 +24,24 @@ export type Location = {
 	Priority: number?,
 }
 
-export type TileManifest = {
-	TileSize: number?,
-	MinZoom: number?,
-	MaxZoom: number?,
-	Layers: {
-		[string]: {
-			[string]: string,
-		},
-	},
+export type SimplifiedMapData = {
+	Features: { any }?,
+	Meta: any?,
 }
-
-type TileLayerName = "base" | "borders"
-type TileMap = { [string]: ImageLabel }
-type TileImage = {
-	Image: string,
-	SourceZoom: number,
+type ImageTile = {
+	Gui: ImageLabel,
+	Image: any,
+	Offset: Vector2,
+	Size: Vector2,
+}
+type RenderTarget = {
+	Tiles: { ImageTile },
+	Size: Vector2,
 }
 type LocationCandidate = {
 	Location: Location,
 	ScreenPosition: Vector2,
 }
-type TilePool = { ImageLabel }
 type PinMap = { [string]: TextButton }
 type ConnectionList = { RBXScriptConnection }
 type VisibleLocationsSignal = Signal.Signal<{ Location }>
@@ -59,6 +56,14 @@ local BUTTON_ZOOM_STEP = 0.75
 local WHEEL_ZOOM_STEP = 0.35
 local MAP_PIN_ATTRIBUTE = "PickSpawnMapPin"
 local PIN_IN_POOL_ATTRIBUTE = "PickSpawnPinInPool"
+local WORLD_IMAGE_SIZE = Vector2.new(2046, 1023)
+local MAX_EDITABLE_IMAGE_SIZE = 1023
+local MAP_WATER = Color3.fromRGB(157, 203, 225)
+local MAP_LAND = Color3.fromRGB(203, 220, 187)
+local MAP_COUNTRY_FILL = Color3.fromRGB(203, 220, 187)
+local MAP_COASTLINE = Color3.fromRGB(151, 138, 121)
+local MAP_BORDER = Color3.fromRGB(151, 138, 121)
+local WORLD_IMAGE_BATCH_SIZE = 28
 
 export type MapController = {
 	Start: (self: MapController) -> (),
@@ -82,13 +87,14 @@ export type MapController = {
 type MapControllerPrivate = MapController & {
 	ClipFrame: GuiObject,
 	ZoomExclusionRegion: GuiObject,
-	BaseTileLayer: GuiObject,
-	BorderTileLayer: GuiObject,
+	MapLayer: GuiObject,
+	BorderLayer: GuiObject,
 	PinLayer: GuiObject,
 	ZoomInButton: GuiButton,
 	ZoomOutButton: GuiButton,
 	Locations: { Location },
-	TileManifest: TileManifest,
+	CountriesData: SimplifiedMapData,
+	LandData: SimplifiedMapData,
 	VisibleLocations: { Location },
 	KilometresPerPixel: number,
 	VisibleLocationsChanged: VisibleLocationsSignal,
@@ -107,8 +113,10 @@ type MapControllerPrivate = MapController & {
 	Center: Vector2,
 	Zoom: number,
 	ShowBorders: boolean,
-	ActiveTiles: { [TileLayerName]: TileMap },
-	TilePools: { [TileLayerName]: TilePool },
+	WorldImageTiles: { ImageTile },
+	WorldImageSignature: string,
+	WorldImageBuildVersion: number,
+	WorldImageBuildState: "idle" | "building" | "generated",
 	ActivePins: PinMap,
 	PinPool: { TextButton },
 	Connections: ConnectionList,
@@ -131,21 +139,8 @@ type MapControllerPrivate = MapController & {
 	clampCenter: (self: MapControllerPrivate, center: Vector2, zoom: number) -> Vector2,
 	mapToScreen: (self: MapControllerPrivate, mapPosition: Vector2, zoom: number) -> Vector2,
 	screenToMap: (self: MapControllerPrivate, screenPosition: Vector2, zoom: number) -> Vector2,
-	getTileImage: (
-		self: MapControllerPrivate,
-		layerName: TileLayerName,
-		zoom: number,
-		x: number,
-		y: number
-	) -> TileImage?,
-	getTileFromPool: (self: MapControllerPrivate, layerName: TileLayerName) -> ImageLabel,
-	releaseTile: (self: MapControllerPrivate, layerName: TileLayerName, key: string) -> (),
-	renderTileLayer: (
-		self: MapControllerPrivate,
-		layerName: TileLayerName,
-		parentLayer: GuiObject,
-		enabled: boolean
-	) -> (),
+	rebuildWorldImage: (self: MapControllerPrivate) -> (),
+	renderWorldImage: (self: MapControllerPrivate) -> (),
 	getPinFromPool: (self: MapControllerPrivate) -> TextButton,
 	releaseAllPins: (self: MapControllerPrivate) -> (),
 	renderPins: (self: MapControllerPrivate) -> (),
@@ -164,10 +159,6 @@ type MapControllerPrivate = MapController & {
 
 local function getTilesXYForZoom(zoom: number): (number, number)
 	return 2 ^ (zoom + 1), 2 ^ zoom
-end
-
-local function getTileZoomForCameraZoom(self: MapControllerPrivate): number
-	return math.clamp(math.floor(self.Zoom), self.MinZoom, self.MaxZoom)
 end
 
 local function getLocationSeparationRadius(zoom: number): number
@@ -189,28 +180,173 @@ local function getMinimumCameraZoom(self: MapControllerPrivate): number
 	return self.MinZoom
 end
 
+local function createEditableImage(size: Vector2): any?
+	local ok, editableImage = pcall(function()
+		return (AssetService :: any):CreateEditableImage({
+			Size = size,
+		})
+	end)
+	if ok then
+		return editableImage
+	end
+
+	warn("Cannot create EditableImage for pick-spawn map: " .. tostring(editableImage))
+	return nil
+end
+
+local function setImageContent(imageLabel: ImageLabel, editableImage: any)
+	local ok, result = pcall(function()
+		return (Content :: any).fromObject(editableImage)
+	end)
+	if ok then
+		(imageLabel :: any).ImageContent = result
+		return
+	end
+
+	warn("Cannot bind EditableImage to pick-spawn map ImageLabel: " .. tostring(result))
+end
+
+local function drawImageRectangle(image: any, position: Vector2, size: Vector2, colour: Color3)
+	if not image or size.X <= 0 or size.Y <= 0 then
+		return
+	end
+
+	local ok = pcall(function()
+		image:DrawRectangle(position, size, colour, 0, Enum.ImageCombineType.Overwrite)
+	end)
+	if not ok then
+		pcall(function()
+			image:DrawRectangle(position, size, colour, 0)
+		end)
+	end
+end
+
+local function rectanglesOverlap(position: Vector2, size: Vector2, tile: ImageTile): boolean
+	return position.X < tile.Offset.X + tile.Size.X
+		and position.X + size.X > tile.Offset.X
+		and position.Y < tile.Offset.Y + tile.Size.Y
+		and position.Y + size.Y > tile.Offset.Y
+end
+
+local function drawTargetRectangle(target: RenderTarget, position: Vector2, size: Vector2, colour: Color3)
+	if size.X <= 0 or size.Y <= 0 then
+		return
+	end
+
+	for _, tile in ipairs(target.Tiles) do
+		if not rectanglesOverlap(position, size, tile) then
+			continue
+		end
+
+		local left = math.max(position.X, tile.Offset.X)
+		local top = math.max(position.Y, tile.Offset.Y)
+		local right = math.min(position.X + size.X, tile.Offset.X + tile.Size.X)
+		local bottom = math.min(position.Y + size.Y, tile.Offset.Y + tile.Size.Y)
+		drawImageRectangle(
+			tile.Image,
+			Vector2.new(left - tile.Offset.X, top - tile.Offset.Y),
+			Vector2.new(right - left, bottom - top),
+			colour
+		)
+	end
+end
+
+local function fillScreenPolygon(target: RenderTarget, polygon: { Vector2 }, colour: Color3, step: number?)
+	if #polygon < 3 then
+		return
+	end
+
+	local minY = math.huge
+	local maxY = -math.huge
+	for _, point in ipairs(polygon) do
+		minY = math.min(minY, point.Y)
+		maxY = math.max(maxY, point.Y)
+	end
+
+	local scanlineStep = step or 1
+	local startY = math.max(0, math.floor(minY / scanlineStep) * scanlineStep)
+	local endY = math.min(target.Size.Y, math.ceil(maxY / scanlineStep) * scanlineStep)
+	for y = startY, endY, scanlineStep do
+		local intersections = {} :: { number }
+		for index, point in ipairs(polygon) do
+			local nextPoint = polygon[index % #polygon + 1]
+			if (point.Y <= y and nextPoint.Y > y) or (nextPoint.Y <= y and point.Y > y) then
+				local progress = (y - point.Y) / (nextPoint.Y - point.Y)
+				table.insert(intersections, point.X + (nextPoint.X - point.X) * progress)
+			end
+		end
+
+		table.sort(intersections)
+		for index = 1, #intersections - 1, 2 do
+			local left = math.max(0, intersections[index])
+			local right = math.min(target.Size.X, intersections[index + 1])
+			if right > left then
+				drawTargetRectangle(target, Vector2.new(left, y), Vector2.new(right - left, scanlineStep), colour)
+			end
+		end
+	end
+end
+
+local function drawSegment(target: RenderTarget, from: Vector2, to: Vector2, thickness: number, colour: Color3)
+	local delta = to - from
+	local length = delta.Magnitude
+	if length < 0.1 then
+		return
+	end
+
+	local halfThickness = math.max(0.5, thickness * 0.5)
+	local normal = Vector2.new(-delta.Y / length, delta.X / length) * halfThickness
+	fillScreenPolygon(target, {
+		from + normal,
+		to + normal,
+		to - normal,
+		from - normal,
+	}, colour, 1)
+end
+
+local function normalisedRingToPoints(ring: any, imageSize: Vector2): { Vector2 }
+	local points = {} :: { Vector2 }
+	if type(ring) ~= "table" then
+		return points
+	end
+
+	local index = 1
+	while index < #ring do
+		local x = tonumber(ring[index])
+		local y = tonumber(ring[index + 1])
+		if x and y then
+			table.insert(points, Vector2.new(x * imageSize.X, y * imageSize.Y))
+		end
+		index += 2
+	end
+
+	return points
+end
+
 function PickSpawnUtils.CreateMap(
 	clipFrame: GuiObject,
 	zoomExclusionRegion: GuiObject,
-	baseTileLayer: GuiObject,
-	borderTileLayer: GuiObject,
+	mapLayer: GuiObject,
+	borderLayer: GuiObject,
 	pinLayer: GuiObject,
 	zoomInButton: GuiButton,
 	zoomOutButton: GuiButton,
 	locations: { Location },
-	tileManifest: TileManifest
+	countriesData: SimplifiedMapData,
+	landData: SimplifiedMapData
 ): MapController
 	local controller = setmetatable(
 		{
 			ClipFrame = clipFrame,
 			ZoomExclusionRegion = zoomExclusionRegion,
-			BaseTileLayer = baseTileLayer,
-			BorderTileLayer = borderTileLayer,
+			MapLayer = mapLayer,
+			BorderLayer = borderLayer,
 			PinLayer = pinLayer,
 			ZoomInButton = zoomInButton,
 			ZoomOutButton = zoomOutButton,
 			Locations = locations,
-			TileManifest = tileManifest,
+			CountriesData = countriesData,
+			LandData = landData,
 			VisibleLocations = {} :: { Location },
 			KilometresPerPixel = 0,
 			VisibleLocationsChanged = Signal.new() :: VisibleLocationsSignal,
@@ -224,21 +360,17 @@ function PickSpawnUtils.CreateMap(
 			IsInputEnabled = function()
 				return true
 			end,
-			TileSize = tileManifest.TileSize or 512,
-			MinZoom = tileManifest.MinZoom or 0,
-			MaxZoom = tileManifest.MaxZoom or 3,
+			TileSize = 512,
+			MinZoom = 0,
+			MaxZoom = 5,
 			MinCameraZoom = nil,
 			Center = Vector2.new(0.5, 0.5),
-			Zoom = tileManifest.MinZoom or 0,
+			Zoom = 0,
 			ShowBorders = true,
-			ActiveTiles = {
-				base = {} :: TileMap,
-				borders = {} :: TileMap,
-			},
-			TilePools = {
-				base = {} :: TilePool,
-				borders = {} :: TilePool,
-			},
+			WorldImageTiles = {} :: { ImageTile },
+			WorldImageSignature = "",
+			WorldImageBuildVersion = 0,
+			WorldImageBuildState = "idle",
 			ActivePins = {} :: PinMap,
 			PinPool = {} :: { TextButton },
 			Connections = {} :: ConnectionList,
@@ -313,147 +445,162 @@ function PickSpawnUtils.transformForZoomAnimation(self: MapControllerPrivate, sc
 	return self.ZoomAnchor + (screenPosition - self.ZoomAnchor) * self.ZoomScale
 end
 
-local function isUsableTileImage(image: string?): boolean
-	return image ~= nil and image ~= "" and image ~= "rbxassetid://PLACEHOLDER"
-end
-
-function PickSpawnUtils.getTileImage(
-	self: MapControllerPrivate,
-	layerName: TileLayerName,
-	zoom: number,
-	x: number,
-	y: number
-): TileImage?
-	local layer = self.TileManifest.Layers[layerName]
-	if not layer then
-		return nil
-	end
-
-	local image = layer[string.format("%d/%d/%d", zoom, x, y)]
-	if isUsableTileImage(image) then
-		return { Image = image, SourceZoom = zoom }
-	end
-
-	-- Higher-resolution assets are optional. Missing tiles are cropped from the
-	-- corresponding first-level tile and scaled to the requested zoom level.
-	local sourceZoom = self.MinZoom
-	if zoom <= sourceZoom then
-		return nil
-	end
-
-	local subdivisions = 2 ^ (zoom - sourceZoom)
-	local sourceX = math.floor(x / subdivisions)
-	local sourceY = math.floor(y / subdivisions)
-	image = layer[string.format("%d/%d/%d", sourceZoom, sourceX, sourceY)]
-	if not isUsableTileImage(image) then
-		return nil
-	end
-
-	return { Image = image, SourceZoom = sourceZoom }
-end
-
-function PickSpawnUtils.getTileFromPool(self: MapControllerPrivate, layerName: TileLayerName): ImageLabel
-	local tile = table.remove(self.TilePools[layerName]) :: ImageLabel?
-	if tile then
-		tile.Visible = true
-		return tile
-	end
-
-	local newTile = Instance.new("ImageLabel")
-	newTile.Name = "Tile"
-	newTile.BackgroundTransparency = 1
-	newTile.BorderSizePixel = 0
-	newTile.ScaleType = Enum.ScaleType.Stretch
-	newTile.Size = UDim2.fromOffset(self.TileSize, self.TileSize)
-	newTile.ZIndex = if layerName == "base" then 1 else 2
-	return newTile
-end
-
-function PickSpawnUtils.releaseTile(self: MapControllerPrivate, layerName: TileLayerName, key: string)
-	local tile = self.ActiveTiles[layerName][key]
-	if not tile then
+function PickSpawnUtils.rebuildWorldImage(self: MapControllerPrivate)
+	if self.WorldImageBuildState == "generated" or self.WorldImageBuildState == "building" then
 		return
 	end
 
-	self.ActiveTiles[layerName][key] = nil
-	tile.Visible = false
-	tile.Image = ""
-	tile.Parent = nil
-	table.insert(self.TilePools[layerName], tile)
-end
+	self.WorldImageBuildVersion += 1
+	local buildVersion = self.WorldImageBuildVersion
+	self.WorldImageBuildState = "building"
+	self.WorldImageSignature = "generated"
+	self.MapLayer.BackgroundColor3 = MAP_WATER
+	self.MapLayer.BackgroundTransparency = 0
+	self.MapLayer.BorderSizePixel = 0
+	self.MapLayer.ClipsDescendants = true
+	self.BorderLayer.Visible = false
+	for _, child in ipairs(self.MapLayer:GetChildren()) do
+		child:Destroy()
+	end
+	table.clear(self.WorldImageTiles)
 
-function PickSpawnUtils.renderTileLayer(
-	self: MapControllerPrivate,
-	layerName: TileLayerName,
-	parentLayer: GuiObject,
-	enabled: boolean
-)
-	local active = self.ActiveTiles[layerName]
-	if not enabled then
-		for key in pairs(active) do
-			self:releaseTile(layerName, key)
+	local columns = math.max(1, math.ceil(WORLD_IMAGE_SIZE.X / MAX_EDITABLE_IMAGE_SIZE))
+	local rows = math.max(1, math.ceil(WORLD_IMAGE_SIZE.Y / MAX_EDITABLE_IMAGE_SIZE))
+	for row = 0, rows - 1 do
+		for column = 0, columns - 1 do
+			local offset = Vector2.new(column * MAX_EDITABLE_IMAGE_SIZE, row * MAX_EDITABLE_IMAGE_SIZE)
+			local tileSize = Vector2.new(
+				math.min(MAX_EDITABLE_IMAGE_SIZE, WORLD_IMAGE_SIZE.X - offset.X),
+				math.min(MAX_EDITABLE_IMAGE_SIZE, WORLD_IMAGE_SIZE.Y - offset.Y)
+			)
+			local editableImage = createEditableImage(tileSize)
+			if not editableImage then
+				self.WorldImageSignature = ""
+				self.WorldImageBuildState = "idle"
+				return
+			end
+
+			local imageLabel = Instance.new("ImageLabel")
+			imageLabel.Name = string.format("World_%d_%d", column, row)
+			imageLabel.Active = false
+			imageLabel.BackgroundTransparency = 1
+			imageLabel.BorderSizePixel = 0
+			imageLabel.ScaleType = Enum.ScaleType.Stretch
+			imageLabel.ZIndex = self.MapLayer.ZIndex
+			imageLabel.Parent = self.MapLayer
+			setImageContent(imageLabel, editableImage)
+
+			table.insert(self.WorldImageTiles, {
+				Gui = imageLabel,
+				Image = editableImage,
+				Offset = offset,
+				Size = tileSize,
+			})
 		end
-		return
 	end
 
-	local viewportSize = self.ClipFrame.AbsoluteSize
-	local tileZoom = getTileZoomForCameraZoom(self)
-	local tileWorldSize = self:getWorldPixelSize(tileZoom)
-	local tileScale = (2 ^ (self.Zoom - tileZoom)) * self.ZoomScale
-	local centerPixel = self.Center * tileWorldSize
-	local viewMinPixel = centerPixel - viewportSize / (2 * tileScale)
-	local viewMaxPixel = centerPixel + viewportSize / (2 * tileScale)
-	local tilesX, tilesY = getTilesXYForZoom(tileZoom)
-	local maxTileXBound = math.max(0, tilesX - 1)
-	local maxTileYBound = math.max(0, tilesY - 1)
-	local minTileX = math.clamp(math.floor(viewMinPixel.X / self.TileSize) - 1, 0, maxTileXBound)
-	local maxTileX = math.clamp(math.floor(viewMaxPixel.X / self.TileSize) + 1, 0, maxTileXBound)
-	local minTileY = math.clamp(math.floor(viewMinPixel.Y / self.TileSize) - 1, 0, maxTileYBound)
-	local maxTileY = math.clamp(math.floor(viewMaxPixel.Y / self.TileSize) + 1, 0, maxTileYBound)
-	local needed: { [string]: boolean } = {}
+	local renderTarget = {
+		Tiles = self.WorldImageTiles,
+		Size = WORLD_IMAGE_SIZE,
+	}
 
-	for y = minTileY, maxTileY do
-		for x = minTileX, maxTileX do
-			local key = string.format("%d/%d/%d", tileZoom, x, y)
-			needed[key] = true
-			local tile = active[key] :: ImageLabel?
-			local tileImage = self:getTileImage(layerName, tileZoom, x, y)
+	drawTargetRectangle(renderTarget, Vector2.new(0, 0), WORLD_IMAGE_SIZE, MAP_WATER)
 
-			if tileImage then
-				if not tile then
-					local pooledTile = self:getTileFromPool(layerName)
-					pooledTile.Name = layerName .. "_" .. key
-					pooledTile.Parent = parentLayer
-					active[key] = pooledTile
-					tile = pooledTile
+	local function isBuildCurrent(): boolean
+		return self.Started and self.WorldImageBuildVersion == buildVersion
+	end
+
+	local function drawFeatures(
+		data: SimplifiedMapData,
+		fillColour: Color3?,
+		lineColour: Color3?,
+		lineThickness: number
+	)
+		local features = data.Features
+		if type(features) ~= "table" then
+			return
+		end
+
+		local processedRings = 0
+		for _, feature in ipairs(features) do
+			local polygons = if type(feature) == "table" then feature.Polygons else nil
+			if type(polygons) ~= "table" then
+				continue
+			end
+
+			for _, polygon in ipairs(polygons) do
+				if type(polygon) ~= "table" then
+					continue
 				end
 
-				assert(tile)
-				tile.Image = tileImage.Image
-				local subdivisions = 2 ^ (tileZoom - tileImage.SourceZoom)
-				if subdivisions == 1 then
-					tile.ImageRectOffset = Vector2.new(0, 0)
-					tile.ImageRectSize = Vector2.new(0, 0)
-				else
-					local croppedSize = self.TileSize / subdivisions
-					tile.ImageRectOffset =
-						Vector2.new((x % subdivisions) * croppedSize, (y % subdivisions) * croppedSize)
-					tile.ImageRectSize = Vector2.new(croppedSize, croppedSize)
-				end
+				for _, ring in ipairs(polygon) do
+					local points = normalisedRingToPoints(ring, WORLD_IMAGE_SIZE)
+					if #points < 2 then
+						continue
+					end
+					if fillColour and #points >= 3 then
+						fillScreenPolygon(renderTarget, points, fillColour, 2)
+					end
+					if lineColour then
+						for index, point in ipairs(points) do
+							local nextPoint = points[index % #points + 1]
+							drawSegment(renderTarget, point, nextPoint, lineThickness, lineColour)
+						end
+					end
 
-				local position = viewportSize / 2
-					+ (Vector2.new(x * self.TileSize, y * self.TileSize) - centerPixel) * tileScale
-				position = self:transformForZoomAnimation(position)
-				tile.Position = UDim2.fromOffset(math.floor(position.X), math.floor(position.Y))
-				tile.Size = UDim2.fromOffset(math.ceil(self.TileSize * tileScale), math.ceil(self.TileSize * tileScale))
+					processedRings += 1
+					if processedRings >= WORLD_IMAGE_BATCH_SIZE then
+						processedRings = 0
+						if not isBuildCurrent() then
+							return
+						end
+						task.wait()
+					end
+				end
 			end
 		end
 	end
 
-	for key in pairs(active) do
-		if not needed[key] then
-			self:releaseTile(layerName, key)
+	task.defer(function()
+		if not isBuildCurrent() then
+			return
 		end
+
+		drawFeatures(self.LandData, MAP_LAND, nil, 0.9)
+		if not isBuildCurrent() then
+			return
+		end
+
+		-- -- Country fill matches the land fill, so only the border pass is needed here.
+		drawFeatures(self.CountriesData, nil, MAP_BORDER, 0.9)
+		if not isBuildCurrent() then
+			return
+		end
+
+		self.WorldImageBuildState = "generated"
+	end)
+end
+
+function PickSpawnUtils.renderWorldImage(self: MapControllerPrivate)
+	self:rebuildWorldImage()
+
+	local viewportSize = self.ClipFrame.AbsoluteSize
+	local worldSize = self:getWorldPixelSize(self.Zoom)
+	local centerPixel = self.Center * worldSize
+	for _, tile in ipairs(self.WorldImageTiles) do
+		local tileTopLeftWorld = Vector2.new(
+			(tile.Offset.X / WORLD_IMAGE_SIZE.X) * worldSize.X,
+			(tile.Offset.Y / WORLD_IMAGE_SIZE.Y) * worldSize.Y
+		)
+		local tileSizeWorld = Vector2.new(
+			(tile.Size.X / WORLD_IMAGE_SIZE.X) * worldSize.X,
+			(tile.Size.Y / WORLD_IMAGE_SIZE.Y) * worldSize.Y
+		) * self.ZoomScale
+		local position = viewportSize / 2 + (tileTopLeftWorld - centerPixel) * self.ZoomScale
+		position = self:transformForZoomAnimation(position)
+		tile.Gui.Position = UDim2.fromOffset(math.floor(position.X), math.floor(position.Y))
+		tile.Gui.Size = UDim2.fromOffset(math.ceil(tileSizeWorld.X), math.ceil(tileSizeWorld.Y))
+		tile.Gui.Visible = true
 	end
 end
 
@@ -662,8 +809,7 @@ function PickSpawnUtils.render(self: MapControllerPrivate)
 
 	self.Center = self:clampCenter(self.Center, self.Zoom)
 	self.ViewChanged:Fire(self.Center, self.Zoom, self:getWorldPixelSize(self.Zoom), self.ZoomScale, self.ZoomAnchor)
-	self:renderTileLayer("base", self.BaseTileLayer, true)
-	self:renderTileLayer("borders", self.BorderTileLayer, self.ShowBorders)
+	self:renderWorldImage()
 	self:renderPins()
 end
 
@@ -1015,11 +1161,13 @@ function PickSpawnUtils.Stop(self: MapControllerPrivate)
 	end
 	table.clear(self.Connections)
 
-	for layerName, active in pairs(self.ActiveTiles) do
-		for key in pairs(active) do
-			self:releaseTile(layerName :: TileLayerName, key :: string)
-		end
+	for _, child in ipairs(self.MapLayer:GetChildren()) do
+		child:Destroy()
 	end
+	table.clear(self.WorldImageTiles)
+	self.WorldImageSignature = ""
+	self.WorldImageBuildVersion += 1
+	self.WorldImageBuildState = "idle"
 	self:releaseAllPins()
 end
 
