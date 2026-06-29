@@ -638,14 +638,20 @@ function PickSpawnUtils.getPinFromPool(self: MapControllerPrivate): TextButton
 	label.Name = "Label"
 	label.AnchorPoint = Vector2.new(0.5, 0)
 	label.Position = UDim2.fromScale(0.5, 1)
-	label.Size = UDim2.fromOffset(120, 22)
-	label.BackgroundTransparency = 1
+	label.Size = UDim2.fromOffset(120, 15)
+	label.BackgroundTransparency = 0.7
+	label.BackgroundColor3 = Color3.fromRGB(27, 27, 27)
 	label.TextColor3 = Color3.fromRGB(255, 255, 255)
 	label.TextStrokeTransparency = 0.4
 	label.Font = Enum.Font.GothamMedium
 	label.TextSize = 12
 	label.ZIndex = 11
+	label.TextScaled = true
 	label.Parent = pin
+
+	local labelCorner = Instance.new("UICorner")
+	labelCorner.CornerRadius = UDim.new(0, 4)
+	labelCorner.Parent = label
 
 	pin.Activated:Connect(function()
 		if not self.IsInputEnabled() then
