@@ -475,6 +475,7 @@ function UIController:ChangeScreenOpen(isOpen, screenName)
 end
 
 function UIController:OpenScreen(screenName, parseData)
+	print(UIRoot.GetScreens(), "screens", screenName, parseData)
 	local screenModuleScript = script.Parent.Parent.UI.Screens:FindFirstChild(screenName .. ".Screen")
 	if not screenModuleScript or not screenModuleScript:IsA("ModuleScript") then
 		warn("Screen module not found: " .. tostring(screenName))

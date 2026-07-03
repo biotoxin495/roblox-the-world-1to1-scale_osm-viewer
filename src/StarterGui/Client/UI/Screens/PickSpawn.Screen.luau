@@ -580,6 +580,7 @@ function PickSpawn:StartFunctions()
 				Lon = longitude,
 				Country = "Unknown",
 				LocationName = "Unknown",
+				NeedsReverseGeocode = true,
 			})
 		end)
 		focusPlayerCountry(INITIAL_MAP_ZOOM)
@@ -621,6 +622,7 @@ function PickSpawn:StartFunctions()
 	end
 
 	local SearchByFrame = pickSpawnScreen.LeftSide.SearchBy
+	local CustomCoordinatesButton = pickSpawnScreen.LeftSide.CustomCoordinates
 	local TextBox = SearchByFrame.TextBox
 	local deleteButton = SearchByFrame.DeleteButton
 
@@ -756,6 +758,16 @@ function PickSpawn:StartFunctions()
 		end)
 	end
 
+	table.insert(
+		connections,
+		CustomCoordinatesButton.Activated:Connect(function()
+			if UIController:IsPopupOpen() then
+				return
+			end
+
+			UIController:OpenPopup("CustomCoordinates")
+		end)
+	)
 	table.insert(
 		connections,
 		deleteButton.Activated:Connect(function()
