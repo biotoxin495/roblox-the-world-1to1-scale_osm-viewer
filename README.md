@@ -13,6 +13,14 @@ This public version is designed to be self-contained and does **not** require a 
 
 ![Generated World](images/Thumb_Main2.png)
 
+---
+
+made with ❤️ by biotoxin495
+
+view my other projects on my site: [bi.otox.in](https://bi.otox.in/)
+
+---
+
 ## ✨ What is this?
 
 This project is a Roblox game showcase that lets players explore real places through procedural map generation.
