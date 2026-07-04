@@ -222,21 +222,21 @@ end
 local function notifyChunkLoadingStarted(chunkKey: string)
 	Notifications:SendNotification({
 		Type = "Info",
-		Text = string.format("[OSM] Chunk %s loading started.", chunkKey),
+		Text = string.format("Chunk %s loading started.", chunkKey),
 	})
 end
 
 local function notifyChunkLoadingFinished(chunkKey: string)
 	Notifications:SendNotification({
 		Type = "Success",
-		Text = string.format("[OSM] Chunk %s loading finished.", chunkKey),
+		Text = string.format("Chunk %s loading finished.", chunkKey),
 	})
 end
 
 local function notifyChunkLoadingFailed(chunkKey: string, message: string)
 	Notifications:SendNotification({
 		Type = "Warning",
-		Text = string.format("[OSM] Chunk %s failed to load: %s", chunkKey, message),
+		Text = string.format("Chunk %s failed to load: %s", chunkKey, message),
 	})
 end
 

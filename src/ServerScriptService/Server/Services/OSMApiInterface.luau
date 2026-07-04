@@ -1,28 +1,19 @@
 --!strict
 
 --[[
-	A small server-only client for the osm-viewer API. Consumers should use the
-	endpoint methods below instead of HttpService directly so authentication,
-	retries, validation, and caching stay consistent as the API grows.
+	Server-only facade for OSM data requests. Public builds use the direct OSM
+	implementation, which requests Overpass/Nominatim from Roblox without the
+	old private osm-viewer backend.
 ]]
 
-local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Promise = require(ReplicatedStorage.App.Shared.Packages.Promise)
 local OSMDirectApiInterface = require(script.Parent.OSM.OSMDirectApiInterface)
 
-local DEFAULT_BASE_URL = "https://api.playallava.com/osm-viewer/api/v1"
-local DEFAULT_TOKEN = "change_me"
-local DEFAULT_CACHE_TTL = 15
-local DEFAULT_MAX_CACHE_ENTRIES = 128
-local MAX_ATTEMPTS = 3
-local USE_DIRECT_OSM = false
-local DEBUG_REQUEST_FLOW = true
-
 export type Layers = { string }
 
-export type ErrorKind = "Configuration" | "Validation" | "Network" | "Http" | "Decode"
+export type ErrorKind = "Validation"
 
 export type RequestError = {
 	Kind: ErrorKind,
@@ -32,11 +23,17 @@ export type RequestError = {
 }
 
 export type Configuration = {
-	BaseUrl: string?,
-	Token: string?,
+	OverpassUrl: string?,
+	NominatimUrl: string?,
+	NominatimUserAgent: string?,
+	NominatimEmail: string?,
+	NominatimReferer: string?,
 	CacheTtl: number?,
+	RawCacheTtl: number?,
 	MaxCacheEntries: number?,
-	UseDirectOSM: boolean?,
+	DebugRequests: boolean?,
+
+	-- Backward-compatible names used by older local configuration.
 	DirectOverpassUrl: string?,
 	DirectNominatimUrl: string?,
 	DirectNominatimUserAgent: string?,
@@ -45,7 +42,6 @@ export type Configuration = {
 	DirectCacheTtl: number?,
 	DirectRawCacheTtl: number?,
 	DirectMaxCacheEntries: number?,
-	DebugRequests: boolean?,
 }
 
 export type SearchOptions = {
@@ -58,6 +54,7 @@ export type MapLoadOptions = {
 	Detail: string?,
 	Layers: Layers?,
 	Debug: boolean?,
+	Language: string?,
 }
 
 export type ChunkOptions = MapLoadOptions & {
@@ -67,31 +64,11 @@ export type ChunkOptions = MapLoadOptions & {
 	ChunkZ: number,
 }
 
-type QueryValue = string | number | boolean
-type Query = { [string]: QueryValue? }
-type CachedResponse = {
-	Value: unknown,
-	ExpiresAt: number,
-	LastAccessedAt: number,
-}
-type HttpResponse = {
-	Success: boolean,
-	StatusCode: number,
-	StatusMessage: string,
-	Body: string,
-}
+local DEBUG_REQUEST_FLOW = true
 
 local configuration = {
-	BaseUrl = DEFAULT_BASE_URL,
-	Token = DEFAULT_TOKEN,
-	CacheTtl = DEFAULT_CACHE_TTL,
-	MaxCacheEntries = DEFAULT_MAX_CACHE_ENTRIES,
-	UseDirectOSM = USE_DIRECT_OSM,
 	DebugRequests = DEBUG_REQUEST_FLOW,
 }
-
-local responseCache: { [string]: CachedResponse } = {}
-local inFlightRequests: { [string]: any } = {}
 
 local OSMApiInterface = {}
 
@@ -126,12 +103,10 @@ local function logRequestFlow(event: string, details: { [string]: any }?)
 	print("[OSMApi] " .. event .. " | " .. table.concat(parts, " "))
 end
 
-local function makeError(kind: ErrorKind, message: string, statusCode: number?, body: string?): RequestError
+local function makeError(kind: ErrorKind, message: string): RequestError
 	return {
 		Kind = kind,
 		Message = message,
-		StatusCode = statusCode,
-		Body = body,
 	}
 end
 
@@ -167,266 +142,6 @@ local function validatePositiveInteger(value: number, name: string): string?
 	return nil
 end
 
-local function trimTrailingSlash(url: string): string
-	return string.gsub(url, "/+$", "")
-end
-
-local function buildUrl(path: string, query: Query): string
-	local encodedPairs = {}
-
-	for key, value in pairs(query) do
-		if value ~= nil then
-			table.insert(encodedPairs, HttpService:UrlEncode(key) .. "=" .. HttpService:UrlEncode(tostring(value)))
-		end
-	end
-
-	table.sort(encodedPairs)
-
-	local url = trimTrailingSlash(configuration.BaseUrl) .. "/" .. path
-	if #encodedPairs > 0 then
-		url ..= "?" .. table.concat(encodedPairs, "&")
-	end
-
-	return url
-end
-
-local function isRetryable(errorValue: unknown): boolean
-	if type(errorValue) ~= "table" then
-		return true
-	end
-
-	local error = errorValue :: RequestError
-	if error.Kind == "Network" then
-		return true
-	end
-
-	return error.Kind == "Http"
-		and error.StatusCode ~= nil
-		and (error.StatusCode == 408 or error.StatusCode == 429 or error.StatusCode >= 500)
-end
-
-local function getRetryDelay(errorValue: unknown, attempt: number): number
-	if type(errorValue) == "table" then
-		local error = errorValue :: RequestError
-		if error.StatusCode == 429 then
-			return 1.5 * attempt
-		end
-	end
-
-	return 0.5 * (2 ^ (attempt - 1))
-end
-
-local function executeRequest(url: string)
-	return Promise.try(function()
-		logRequestFlow("proxy.http.start", {
-			url = url,
-		})
-
-		local headers: { [string]: string } = {
-			Accept = "application/json",
-		}
-
-		if configuration.Token ~= "" then
-			headers.Authorization = "Bearer " .. configuration.Token
-		end
-
-		local requestResult: { any } = table.pack(pcall(function()
-			return HttpService:RequestAsync({
-				Url = url,
-				Method = "GET",
-				Headers = headers,
-			})
-		end))
-		local ok = requestResult[1] :: boolean
-		local response: HttpResponse = requestResult[2]
-
-		if not ok then
-			logRequestFlow("proxy.http.network_error", {
-				url = url,
-				error = tostring(response),
-			})
-			return Promise.reject(makeError("Network", "OSM API request failed: " .. tostring(response)))
-		end
-
-		if not response.Success then
-			logRequestFlow("proxy.http.error", {
-				url = url,
-				statusCode = response.StatusCode,
-				statusMessage = response.StatusMessage,
-			})
-			return Promise.reject(
-				makeError(
-					"Http",
-					string.format("OSM API returned HTTP %d: %s", response.StatusCode, response.StatusMessage),
-					response.StatusCode,
-					response.Body
-				)
-			)
-		end
-
-		local decodedOk, decoded = pcall(HttpService.JSONDecode, HttpService, response.Body)
-		if not decodedOk then
-			logRequestFlow("proxy.http.decode_error", {
-				url = url,
-				statusCode = response.StatusCode,
-				error = tostring(decoded),
-			})
-			return Promise.reject(
-				makeError(
-					"Decode",
-					"OSM API returned invalid JSON: " .. tostring(decoded),
-					response.StatusCode,
-					response.Body
-				)
-			)
-		end
-
-		logRequestFlow("proxy.http.success", {
-			url = url,
-			statusCode = response.StatusCode,
-			bodyBytes = #response.Body,
-		})
-
-		return decoded
-	end)
-end
-
-local function executeWithRetry(url: string, attempt: number)
-	return executeRequest(url):catch(function(errorValue)
-		if attempt >= MAX_ATTEMPTS or not isRetryable(errorValue) then
-			logRequestFlow("proxy.retry.stop", {
-				url = url,
-				attempt = attempt,
-				error = errorValue,
-			})
-			return Promise.reject(errorValue)
-		end
-
-		local retryDelay = getRetryDelay(errorValue, attempt)
-		logRequestFlow("proxy.retry.schedule", {
-			url = url,
-			attempt = attempt,
-			nextAttempt = attempt + 1,
-			delaySeconds = retryDelay,
-			error = errorValue,
-		})
-
-		return Promise.delay(retryDelay):andThen(function()
-			return executeWithRetry(url, attempt + 1)
-		end)
-	end)
-end
-
-local function evictCacheIfNeeded()
-	local now = os.clock()
-	local oldestKey: string? = nil
-	local oldestAccess = math.huge
-	local count = 0
-
-	for key, entry in pairs(responseCache) do
-		if entry.ExpiresAt <= now then
-			responseCache[key] = nil
-		else
-			count += 1
-			if entry.LastAccessedAt < oldestAccess then
-				oldestKey = key
-				oldestAccess = entry.LastAccessedAt
-			end
-		end
-	end
-
-	if count >= configuration.MaxCacheEntries and oldestKey ~= nil then
-		responseCache[oldestKey] = nil
-	end
-end
-
-local function requestJson(path: string, query: Query)
-	if configuration.BaseUrl == "" then
-		logRequestFlow("proxy.configuration_error", {
-			path = path,
-			message = "BaseUrl has not been configured.",
-		})
-		return Promise.reject(makeError("Configuration", "OSM API BaseUrl has not been configured."))
-	end
-
-	local url = buildUrl(path, query)
-	local now = os.clock()
-	local cached = responseCache[url]
-	if cached ~= nil and cached.ExpiresAt > now then
-		cached.LastAccessedAt = now
-		logRequestFlow("proxy.cache.hit", {
-			path = path,
-			url = url,
-		})
-		return Promise.resolve(cached.Value)
-	end
-
-	if cached ~= nil then
-		logRequestFlow("proxy.cache.expired", {
-			path = path,
-			url = url,
-		})
-		responseCache[url] = nil
-	end
-
-	if inFlightRequests[url] ~= nil then
-		logRequestFlow("proxy.inflight.join", {
-			path = path,
-			url = url,
-		})
-		return inFlightRequests[url]
-	end
-
-	logRequestFlow("proxy.cache.miss", {
-		path = path,
-		url = url,
-	})
-
-	local request = executeWithRetry(url, 1)
-	inFlightRequests[url] = request
-
-	request
-		:andThen(function(value)
-			logRequestFlow("proxy.cache.store", {
-				path = path,
-				url = url,
-				ttlSeconds = configuration.CacheTtl,
-			})
-			evictCacheIfNeeded()
-			local cachedAt = os.clock()
-			responseCache[url] = {
-				Value = value,
-				ExpiresAt = cachedAt + configuration.CacheTtl,
-				LastAccessedAt = cachedAt,
-			}
-		end, function()
-			-- The caller receives the original rejection. Handling it here prevents
-			-- this cache-observer chain from creating an unhandled rejection warning.
-		end)
-		:finally(function()
-			logRequestFlow("proxy.inflight.clear", {
-				path = path,
-				url = url,
-			})
-			inFlightRequests[url] = nil
-		end)
-
-	return request
-end
-
-local function getMapQuery(latitude: number, longitude: number, options: MapLoadOptions): Query
-	local layers = options.Layers or { "roads", "buildings", "water", "pois" }
-
-	return {
-		lat = latitude,
-		lon = longitude,
-		chunkSize = options.ChunkSize or 512,
-		detail = options.Detail or "full",
-		layers = table.concat(layers, ","),
-		debug = options.Debug,
-	}
-end
-
 local function validateMapOptions(options: MapLoadOptions): string?
 	if options.ChunkSize ~= nil then
 		local chunkSizeError = validatePositiveInteger(options.ChunkSize, "ChunkSize")
@@ -441,6 +156,10 @@ local function validateMapOptions(options: MapLoadOptions): string?
 
 	if options.Debug ~= nil and type(options.Debug) ~= "boolean" then
 		return "Debug must be a boolean."
+	end
+
+	if options.Language ~= nil and (type(options.Language) ~= "string" or options.Language == "") then
+		return "Language must be a non-empty string."
 	end
 
 	if options.Layers ~= nil then
@@ -458,121 +177,131 @@ local function validateMapOptions(options: MapLoadOptions): string?
 	return nil
 end
 
+local function applyStringOption(
+	source: Configuration,
+	target: { [string]: any },
+	publicName: string,
+	legacyName: string?,
+	targetName: string
+)
+	local value = (source :: any)[publicName]
+	if value == nil and legacyName ~= nil then
+		value = (source :: any)[legacyName]
+	end
+	if value ~= nil then
+		assert(type(value) == "string" and value ~= "", publicName .. " must be a non-empty string.")
+		target[targetName] = value
+	end
+end
+
+local function applyOptionalStringOption(
+	source: Configuration,
+	target: { [string]: any },
+	publicName: string,
+	legacyName: string?,
+	targetName: string
+)
+	local value = (source :: any)[publicName]
+	if value == nil and legacyName ~= nil then
+		value = (source :: any)[legacyName]
+	end
+	if value ~= nil then
+		assert(type(value) == "string", publicName .. " must be a string.")
+		target[targetName] = value
+	end
+end
+
+local function applyNonNegativeNumberOption(
+	source: Configuration,
+	target: { [string]: any },
+	publicName: string,
+	legacyName: string?,
+	targetName: string
+)
+	local value = (source :: any)[publicName]
+	if value == nil and legacyName ~= nil then
+		value = (source :: any)[legacyName]
+	end
+	if value ~= nil then
+		assert(isFiniteNumber(value) and value >= 0, publicName .. " must be a non-negative finite number.")
+		target[targetName] = value
+	end
+end
+
+local function applyPositiveIntegerOption(
+	source: Configuration,
+	target: { [string]: any },
+	publicName: string,
+	legacyName: string?,
+	targetName: string
+)
+	local value = (source :: any)[publicName]
+	if value == nil and legacyName ~= nil then
+		value = (source :: any)[legacyName]
+	end
+	if value ~= nil then
+		assert(validatePositiveInteger(value, publicName) == nil, publicName .. " must be a positive integer.")
+		target[targetName] = value
+	end
+end
+
 function OSMApiInterface.Configure(options: Configuration)
-	if options.BaseUrl ~= nil then
-		assert(type(options.BaseUrl) == "string" and options.BaseUrl ~= "", "BaseUrl must be a non-empty string.")
-		configuration.BaseUrl = options.BaseUrl
-	end
-
-	if options.Token ~= nil then
-		assert(type(options.Token) == "string", "Token must be a string.")
-		configuration.Token = options.Token
-	end
-
-	if options.CacheTtl ~= nil then
-		assert(
-			isFiniteNumber(options.CacheTtl) and options.CacheTtl >= 0,
-			"CacheTtl must be a non-negative finite number."
-		)
-		configuration.CacheTtl = options.CacheTtl
-	end
-
-	if options.MaxCacheEntries ~= nil then
-		assert(
-			validatePositiveInteger(options.MaxCacheEntries, "MaxCacheEntries") == nil,
-			"MaxCacheEntries must be a positive integer."
-		)
-		configuration.MaxCacheEntries = options.MaxCacheEntries
-	end
-
-	if options.UseDirectOSM ~= nil then
-		assert(type(options.UseDirectOSM) == "boolean", "UseDirectOSM must be a boolean.")
-		configuration.UseDirectOSM = options.UseDirectOSM
-	end
-
 	if options.DebugRequests ~= nil then
 		assert(type(options.DebugRequests) == "boolean", "DebugRequests must be a boolean.")
 		configuration.DebugRequests = options.DebugRequests
 	end
 
 	local directConfiguration = {}
-	if options.DirectOverpassUrl ~= nil then
-		assert(
-			type(options.DirectOverpassUrl) == "string" and options.DirectOverpassUrl ~= "",
-			"DirectOverpassUrl must be a non-empty string."
-		)
-		directConfiguration.OverpassUrl = options.DirectOverpassUrl
-	end
-	if options.DirectNominatimUrl ~= nil then
-		assert(
-			type(options.DirectNominatimUrl) == "string" and options.DirectNominatimUrl ~= "",
-			"DirectNominatimUrl must be a non-empty string."
-		)
-		directConfiguration.NominatimUrl = options.DirectNominatimUrl
-	end
-	if options.DirectNominatimUserAgent ~= nil then
-		assert(
-			type(options.DirectNominatimUserAgent) == "string" and options.DirectNominatimUserAgent ~= "",
-			"DirectNominatimUserAgent must be a non-empty string."
-		)
-		directConfiguration.NominatimUserAgent = options.DirectNominatimUserAgent
-	end
-	if options.DirectNominatimEmail ~= nil then
-		assert(type(options.DirectNominatimEmail) == "string", "DirectNominatimEmail must be a string.")
-		directConfiguration.NominatimEmail = options.DirectNominatimEmail
-	end
-	if options.DirectNominatimReferer ~= nil then
-		assert(type(options.DirectNominatimReferer) == "string", "DirectNominatimReferer must be a string.")
-		directConfiguration.NominatimReferer = options.DirectNominatimReferer
-	end
-	if options.DirectCacheTtl ~= nil then
-		assert(
-			isFiniteNumber(options.DirectCacheTtl) and options.DirectCacheTtl >= 0,
-			"DirectCacheTtl must be a non-negative finite number."
-		)
-		directConfiguration.CacheTtl = options.DirectCacheTtl
-	end
-	if options.DirectRawCacheTtl ~= nil then
-		assert(
-			isFiniteNumber(options.DirectRawCacheTtl) and options.DirectRawCacheTtl >= 0,
-			"DirectRawCacheTtl must be a non-negative finite number."
-		)
-		directConfiguration.RawCacheTtl = options.DirectRawCacheTtl
-	end
-	if options.DirectMaxCacheEntries ~= nil then
-		assert(
-			validatePositiveInteger(options.DirectMaxCacheEntries, "DirectMaxCacheEntries") == nil,
-			"DirectMaxCacheEntries must be a positive integer."
-		)
-		directConfiguration.MaxCacheEntries = options.DirectMaxCacheEntries
-	end
+	applyStringOption(options, directConfiguration, "OverpassUrl", "DirectOverpassUrl", "OverpassUrl")
+	applyStringOption(options, directConfiguration, "NominatimUrl", "DirectNominatimUrl", "NominatimUrl")
+	applyStringOption(
+		options,
+		directConfiguration,
+		"NominatimUserAgent",
+		"DirectNominatimUserAgent",
+		"NominatimUserAgent"
+	)
+	applyOptionalStringOption(
+		options,
+		directConfiguration,
+		"NominatimEmail",
+		"DirectNominatimEmail",
+		"NominatimEmail"
+	)
+	applyOptionalStringOption(
+		options,
+		directConfiguration,
+		"NominatimReferer",
+		"DirectNominatimReferer",
+		"NominatimReferer"
+	)
+	applyNonNegativeNumberOption(options, directConfiguration, "CacheTtl", "DirectCacheTtl", "CacheTtl")
+	applyNonNegativeNumberOption(options, directConfiguration, "RawCacheTtl", "DirectRawCacheTtl", "RawCacheTtl")
+	applyPositiveIntegerOption(options, directConfiguration, "MaxCacheEntries", "DirectMaxCacheEntries", "MaxCacheEntries")
+
 	if options.DebugRequests ~= nil then
 		directConfiguration.DebugRequests = options.DebugRequests
 	end
 
-	if next(directConfiguration) ~= nil then
-		OSMDirectApiInterface.Configure(directConfiguration)
-	end
-
 	logRequestFlow("configure", {
-		baseUrl = configuration.BaseUrl,
-		useDirectOSM = configuration.UseDirectOSM,
+		mode = "direct",
 		debugRequests = configuration.DebugRequests,
 	})
 
-	OSMApiInterface.ClearCache()
+	if next(directConfiguration) ~= nil then
+		OSMDirectApiInterface.Configure(directConfiguration)
+	end
 end
 
 function OSMApiInterface.ClearCache()
 	logRequestFlow("cache.clear")
-	table.clear(responseCache)
 	OSMDirectApiInterface.ClearCache()
 end
 
 function OSMApiInterface.Search(query: string, options: SearchOptions?)
 	logRequestFlow("search.received", {
 		query = query,
-		mode = if configuration.UseDirectOSM then "direct" else "proxy",
+		mode = "direct",
 	})
 
 	if type(query) ~= "string" or query:match("^%s*$") then
@@ -599,28 +328,13 @@ function OSMApiInterface.Search(query: string, options: SearchOptions?)
 		return rejectValidation("Search language must be a non-empty string.")
 	end
 
-	if configuration.UseDirectOSM then
-		logRequestFlow("search.dispatch", {
-			mode = "direct",
-			query = query,
-			limit = limit,
-			language = searchOptions.Language or "en",
-		})
-		return OSMDirectApiInterface.Search(query, searchOptions)
-	end
-
 	logRequestFlow("search.dispatch", {
-		mode = "proxy",
+		mode = "direct",
 		query = query,
 		limit = limit,
 		language = searchOptions.Language or "en",
 	})
-
-	return requestJson("search", {
-		q = query,
-		limit = limit,
-		language = searchOptions.Language or "en",
-	})
+	return OSMDirectApiInterface.Search(query, searchOptions)
 end
 
 function OSMApiInterface.Reverse(latitude: number, longitude: number, language: string?)
@@ -628,7 +342,7 @@ function OSMApiInterface.Reverse(latitude: number, longitude: number, language: 
 		lat = latitude,
 		lon = longitude,
 		language = language or "en",
-		mode = if configuration.UseDirectOSM then "direct" else "proxy",
+		mode = "direct",
 	})
 
 	local latitudeError = validateLatitude(latitude)
@@ -654,29 +368,17 @@ function OSMApiInterface.Reverse(latitude: number, longitude: number, language: 
 		return rejectValidation("Language must be a non-empty string.")
 	end
 
-	if configuration.UseDirectOSM then
-		logRequestFlow("reverse.dispatch", {
-			mode = "direct",
-		})
-		return OSMDirectApiInterface.Reverse(latitude, longitude, language)
-	end
-
 	logRequestFlow("reverse.dispatch", {
-		mode = "proxy",
+		mode = "direct",
 	})
-
-	return requestJson("reverse", {
-		lat = latitude,
-		lon = longitude,
-		language = language or "en",
-	})
+	return OSMDirectApiInterface.Reverse(latitude, longitude, language)
 end
 
 function OSMApiInterface.Initial(latitude: number, longitude: number, options: MapLoadOptions?)
 	logRequestFlow("initial.received", {
 		lat = latitude,
 		lon = longitude,
-		mode = if configuration.UseDirectOSM then "direct" else "proxy",
+		mode = "direct",
 		options = options or {},
 	})
 
@@ -705,25 +407,15 @@ function OSMApiInterface.Initial(latitude: number, longitude: number, options: M
 		return rejectValidation(optionsError)
 	end
 
-	if configuration.UseDirectOSM then
-		logRequestFlow("initial.dispatch", {
-			mode = "direct",
-			query = getMapQuery(latitude, longitude, mapOptions),
-		})
-		return OSMDirectApiInterface.Initial(latitude, longitude, mapOptions)
-	end
-
 	logRequestFlow("initial.dispatch", {
-		mode = "proxy",
-		query = getMapQuery(latitude, longitude, mapOptions),
+		mode = "direct",
 	})
-
-	return requestJson("initial", getMapQuery(latitude, longitude, mapOptions))
+	return OSMDirectApiInterface.Initial(latitude, longitude, mapOptions)
 end
 
 function OSMApiInterface.Chunk(options: ChunkOptions)
 	logRequestFlow("chunk.received", {
-		mode = if configuration.UseDirectOSM then "direct" else "proxy",
+		mode = "direct",
 		options = options,
 	})
 
@@ -772,28 +464,14 @@ function OSMApiInterface.Chunk(options: ChunkOptions)
 		return rejectValidation(optionsError)
 	end
 
-	local query = getMapQuery(options.OriginLat, options.OriginLon, options)
-	query.originLat = query.lat
-	query.originLon = query.lon
-	query.lat = nil
-	query.lon = nil
-	query.chunkX = options.ChunkX
-	query.chunkZ = options.ChunkZ
-
-	if configuration.UseDirectOSM then
-		logRequestFlow("chunk.dispatch", {
-			mode = "direct",
-			query = query,
-		})
-		return OSMDirectApiInterface.Chunk(options)
-	end
-
 	logRequestFlow("chunk.dispatch", {
-		mode = "proxy",
-		query = query,
+		mode = "direct",
+		originLat = options.OriginLat,
+		originLon = options.OriginLon,
+		chunkX = options.ChunkX,
+		chunkZ = options.ChunkZ,
 	})
-
-	return requestJson("chunk", query)
+	return OSMDirectApiInterface.Chunk(options)
 end
 
 -- Descriptive aliases for call sites that do not mirror the API route names.
