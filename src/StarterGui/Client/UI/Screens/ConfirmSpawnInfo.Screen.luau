@@ -3,8 +3,9 @@
 local GuiButtonEffects = require(script.Parent.Parent.Parent.ClientPackages.GuiButtonEffects)
 local UIRoot = require(script.Parent.Parent.UIRoot)
 local UIController = require(script.Parent.Parent.Parent.Controllers.UIController)
-local ConfirmSpawnUtils = require(script.Parent.Parent.Utils["ConfirmSpawnInfo.Screen.Utils"])
-local OsmApiReturnedDataUtils = require(script.Parent.Parent.Utils["OsmApiReturnedData.Utils"])
+local Packages = game:GetService("ReplicatedStorage").App.Shared.Packages
+local ConfirmSpawnUtils = require(Packages.OSMMap.ChunkPreviewRenderer)
+local OsmApiReturnedDataUtils = require(Packages.OSMMap.ReturnedDataSummary)
 local DefaultOsmApiReturnedData = require(game.ReplicatedStorage.App.OsmApiReturnedData)
 
 local ConfirmSpawnInfo = {}

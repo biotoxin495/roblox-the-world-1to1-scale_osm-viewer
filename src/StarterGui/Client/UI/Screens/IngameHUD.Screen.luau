@@ -7,8 +7,9 @@ local GuiButtonEffects = require(script.Parent.Parent.Parent.ClientPackages.GuiB
 local Notifications = require(script.Parent.Parent.Parent.ClientPackages.Notifications)
 
 local ClientOSMApiInterface = require(script.Parent.Parent.Parent.Controllers.ClientOSMApiInterface)
-local OSMWorldRenderer = require(script.Parent.Parent.Utils["OSMWorldRenderer.Utils"])
-local ConfirmSpawnInfoUtils = require(script.Parent.Parent.Utils["ConfirmSpawnInfo.Screen.Utils"])
+local Packages = game:GetService("ReplicatedStorage").App.Shared.Packages
+local OSMWorldRenderer = require(Packages.OSMMap.World3DRenderer)
+local ConfirmSpawnInfoUtils = require(Packages.OSMMap.ChunkPreviewRenderer)
 local DefaultOsmApiReturnedData = require(game.ReplicatedStorage.App.OsmApiReturnedData)
 
 local IngameHUD = {}

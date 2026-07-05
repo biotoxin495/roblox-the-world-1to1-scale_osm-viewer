@@ -10,13 +10,13 @@ local Configs = ReplicatedStorage.App.Shared.Config
 
 local UIRoot = require(script.Parent.Parent.UIRoot)
 local UIController = require(script.Parent.Parent.Parent.Controllers.UIController)
-local PickSpawnUtils = require(script.Parent.Parent.Utils["PickSpawn.Screen.Utils"])
 
 local CountriesSimplified = require(Configs.CountryConfig.CountriesSimplified)
 local LandSimplified = require(Configs.CountryConfig.LandSimplified)
 
 local Packages = ReplicatedStorage.App.Shared.Packages
 local Signal = require(Packages.Signal)
+local PickSpawnUtils = require(Packages.OSMMap.PickSpawnMapController)
 
 local Mouse = require(Packages.Mouse)
 

@@ -1,11 +1,15 @@
 --!strict
 
-local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local AssetService = game:GetService("AssetService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Packages = ReplicatedStorage.App.Shared.Packages
 local Signal = require(Packages.Signal)
+local MapSystem = Packages.MapSystem
+local EditableImageCanvas = require(MapSystem.EditableImageCanvas)
+local EquirectangularProjection = require(MapSystem.EquirectangularProjection)
+local PrimitiveRasterizer = require(MapSystem.PrimitiveRasterizer)
+local MapInteraction = require(script.Parent.MapInteraction)
+local SimplifiedWorldInterpreter = require(script.Parent.SimplifiedWorldInterpreter)
 
 local PickSpawnUtils = {}
 PickSpawnUtils.__index = PickSpawnUtils
@@ -28,16 +32,8 @@ export type SimplifiedMapData = {
 	Features: { any }?,
 	Meta: any?,
 }
-type ImageTile = {
-	Gui: ImageLabel,
-	Image: any,
-	Offset: Vector2,
-	Size: Vector2,
-}
-type RenderTarget = {
-	Tiles: { ImageTile },
-	Size: Vector2,
-}
+type ImageTile = EditableImageCanvas.ImageTile
+type RenderTarget = EditableImageCanvas.RenderTarget
 type LocationCandidate = {
 	Location: Location,
 	ScreenPosition: Vector2,
@@ -60,8 +56,6 @@ local WORLD_IMAGE_SIZE = Vector2.new(2046, 1023)
 local MAX_EDITABLE_IMAGE_SIZE = 1023
 local MAP_WATER = Color3.fromRGB(157, 203, 225)
 local MAP_LAND = Color3.fromRGB(203, 220, 187)
-local MAP_COUNTRY_FILL = Color3.fromRGB(203, 220, 187)
-local MAP_COASTLINE = Color3.fromRGB(151, 138, 121)
 local MAP_BORDER = Color3.fromRGB(151, 138, 121)
 local WORLD_IMAGE_BATCH_SIZE = 28
 
@@ -157,10 +151,6 @@ type MapControllerPrivate = MapController & {
 	outputMapScale: (self: MapControllerPrivate) -> (),
 }
 
-local function getTilesXYForZoom(zoom: number): (number, number)
-	return 2 ^ (zoom + 1), 2 ^ zoom
-end
-
 local function getLocationSeparationRadius(zoom: number): number
 	-- Keep the overview uncluttered, then reveal increasingly dense cities as
 	-- the player zooms in. The value is measured in on-screen pixels.
@@ -180,147 +170,16 @@ local function getMinimumCameraZoom(self: MapControllerPrivate): number
 	return self.MinZoom
 end
 
-local function createEditableImage(size: Vector2): any?
-	local ok, editableImage = pcall(function()
-		return (AssetService :: any):CreateEditableImage({
-			Size = size,
-		})
-	end)
-	if ok then
-		return editableImage
-	end
-
-	warn("Cannot create EditableImage for pick-spawn map: " .. tostring(editableImage))
-	return nil
-end
-
-local function setImageContent(imageLabel: ImageLabel, editableImage: any)
-	local ok, result = pcall(function()
-		return (Content :: any).fromObject(editableImage)
-	end)
-	if ok then
-		(imageLabel :: any).ImageContent = result
-		return
-	end
-
-	warn("Cannot bind EditableImage to pick-spawn map ImageLabel: " .. tostring(result))
-end
-
-local function drawImageRectangle(image: any, position: Vector2, size: Vector2, colour: Color3)
-	if not image or size.X <= 0 or size.Y <= 0 then
-		return
-	end
-
-	local ok = pcall(function()
-		image:DrawRectangle(position, size, colour, 0, Enum.ImageCombineType.Overwrite)
-	end)
-	if not ok then
-		pcall(function()
-			image:DrawRectangle(position, size, colour, 0)
-		end)
-	end
-end
-
-local function rectanglesOverlap(position: Vector2, size: Vector2, tile: ImageTile): boolean
-	return position.X < tile.Offset.X + tile.Size.X
-		and position.X + size.X > tile.Offset.X
-		and position.Y < tile.Offset.Y + tile.Size.Y
-		and position.Y + size.Y > tile.Offset.Y
-end
-
 local function drawTargetRectangle(target: RenderTarget, position: Vector2, size: Vector2, colour: Color3)
-	if size.X <= 0 or size.Y <= 0 then
-		return
-	end
-
-	for _, tile in ipairs(target.Tiles) do
-		if not rectanglesOverlap(position, size, tile) then
-			continue
-		end
-
-		local left = math.max(position.X, tile.Offset.X)
-		local top = math.max(position.Y, tile.Offset.Y)
-		local right = math.min(position.X + size.X, tile.Offset.X + tile.Size.X)
-		local bottom = math.min(position.Y + size.Y, tile.Offset.Y + tile.Size.Y)
-		drawImageRectangle(
-			tile.Image,
-			Vector2.new(left - tile.Offset.X, top - tile.Offset.Y),
-			Vector2.new(right - left, bottom - top),
-			colour
-		)
-	end
+	PrimitiveRasterizer.Rectangle(target, position, size, colour)
 end
 
 local function fillScreenPolygon(target: RenderTarget, polygon: { Vector2 }, colour: Color3, step: number?)
-	if #polygon < 3 then
-		return
-	end
-
-	local minY = math.huge
-	local maxY = -math.huge
-	for _, point in ipairs(polygon) do
-		minY = math.min(minY, point.Y)
-		maxY = math.max(maxY, point.Y)
-	end
-
-	local scanlineStep = step or 1
-	local startY = math.max(0, math.floor(minY / scanlineStep) * scanlineStep)
-	local endY = math.min(target.Size.Y, math.ceil(maxY / scanlineStep) * scanlineStep)
-	for y = startY, endY, scanlineStep do
-		local intersections = {} :: { number }
-		for index, point in ipairs(polygon) do
-			local nextPoint = polygon[index % #polygon + 1]
-			if (point.Y <= y and nextPoint.Y > y) or (nextPoint.Y <= y and point.Y > y) then
-				local progress = (y - point.Y) / (nextPoint.Y - point.Y)
-				table.insert(intersections, point.X + (nextPoint.X - point.X) * progress)
-			end
-		end
-
-		table.sort(intersections)
-		for index = 1, #intersections - 1, 2 do
-			local left = math.max(0, intersections[index])
-			local right = math.min(target.Size.X, intersections[index + 1])
-			if right > left then
-				drawTargetRectangle(target, Vector2.new(left, y), Vector2.new(right - left, scanlineStep), colour)
-			end
-		end
-	end
+	PrimitiveRasterizer.Polygon(target, polygon, colour, step)
 end
 
 local function drawSegment(target: RenderTarget, from: Vector2, to: Vector2, thickness: number, colour: Color3)
-	local delta = to - from
-	local length = delta.Magnitude
-	if length < 0.1 then
-		return
-	end
-
-	local halfThickness = math.max(0.5, thickness * 0.5)
-	local normal = Vector2.new(-delta.Y / length, delta.X / length) * halfThickness
-	fillScreenPolygon(target, {
-		from + normal,
-		to + normal,
-		to - normal,
-		from - normal,
-	}, colour, 1)
-end
-
-local function normalisedRingToPoints(ring: any, imageSize: Vector2): { Vector2 }
-	local points = {} :: { Vector2 }
-	if type(ring) ~= "table" then
-		return points
-	end
-
-	local index = 1
-	while index < #ring do
-		local x = tonumber(ring[index])
-		local y = tonumber(ring[index + 1])
-		if x and y then
-			table.insert(points, Vector2.new(x * imageSize.X, y * imageSize.Y))
-		end
-		index += 2
-	end
-
-	return points
+	PrimitiveRasterizer.Segment(target, from, to, thickness, colour)
 end
 
 function PickSpawnUtils.CreateMap(
@@ -397,8 +256,7 @@ function PickSpawnUtils.CreateMap(
 end
 
 function PickSpawnUtils.getWorldPixelSize(self: MapControllerPrivate, zoom: number): Vector2
-	local tilesX, tilesY = getTilesXYForZoom(zoom)
-	return Vector2.new(tilesX * self.TileSize, tilesY * self.TileSize)
+	return EquirectangularProjection.GetWorldPixelSize(self.TileSize, zoom)
 end
 
 function PickSpawnUtils.clampCenter(self: MapControllerPrivate, center: Vector2, zoom: number): Vector2
@@ -473,7 +331,7 @@ function PickSpawnUtils.rebuildWorldImage(self: MapControllerPrivate)
 				math.min(MAX_EDITABLE_IMAGE_SIZE, WORLD_IMAGE_SIZE.X - offset.X),
 				math.min(MAX_EDITABLE_IMAGE_SIZE, WORLD_IMAGE_SIZE.Y - offset.Y)
 			)
-			local editableImage = createEditableImage(tileSize)
+			local editableImage = EditableImageCanvas.CreateEditableImage(tileSize, "pick-spawn map")
 			if not editableImage then
 				self.WorldImageSignature = ""
 				self.WorldImageBuildState = "idle"
@@ -488,7 +346,7 @@ function PickSpawnUtils.rebuildWorldImage(self: MapControllerPrivate)
 			imageLabel.ScaleType = Enum.ScaleType.Stretch
 			imageLabel.ZIndex = self.MapLayer.ZIndex
 			imageLabel.Parent = self.MapLayer
-			setImageContent(imageLabel, editableImage)
+			EditableImageCanvas.SetImageContent(imageLabel, editableImage, "pick-spawn map")
 
 			table.insert(self.WorldImageTiles, {
 				Gui = imageLabel,
@@ -516,49 +374,27 @@ function PickSpawnUtils.rebuildWorldImage(self: MapControllerPrivate)
 		lineColour: Color3?,
 		lineThickness: number
 	)
-		local features = data.Features
-		if type(features) ~= "table" then
-			return
-		end
-
-		local processedRings = 0
-		for _, feature in ipairs(features) do
-			local polygons = if type(feature) == "table" then feature.Polygons else nil
-			if type(polygons) ~= "table" then
-				continue
-			end
-
-			for _, polygon in ipairs(polygons) do
-				if type(polygon) ~= "table" then
-					continue
+		SimplifiedWorldInterpreter.ForEachOperation(
+			data,
+			WORLD_IMAGE_SIZE,
+			{
+				FillColour = fillColour,
+				LineColour = lineColour,
+				LineThickness = lineThickness,
+			},
+			function(operation)
+				if operation.Kind == "Polygon" then
+					fillScreenPolygon(renderTarget, operation.Points, operation.Colour, operation.Step)
+				elseif operation.Kind == "Segment" then
+					drawSegment(renderTarget, operation.From, operation.To, operation.Thickness, operation.Colour)
 				end
-
-				for _, ring in ipairs(polygon) do
-					local points = normalisedRingToPoints(ring, WORLD_IMAGE_SIZE)
-					if #points < 2 then
-						continue
-					end
-					if fillColour and #points >= 3 then
-						fillScreenPolygon(renderTarget, points, fillColour, 2)
-					end
-					if lineColour then
-						for index, point in ipairs(points) do
-							local nextPoint = points[index % #points + 1]
-							drawSegment(renderTarget, point, nextPoint, lineThickness, lineColour)
-						end
-					end
-
-					processedRings += 1
-					if processedRings >= WORLD_IMAGE_BATCH_SIZE then
-						processedRings = 0
-						if not isBuildCurrent() then
-							return
-						end
-						task.wait()
-					end
-				end
-			end
-		end
+			end,
+			{
+				BatchSize = WORLD_IMAGE_BATCH_SIZE,
+				ShouldContinue = isBuildCurrent,
+				Yield = task.wait,
+			}
+		)
 	end
 
 	task.defer(function()
@@ -932,7 +768,7 @@ end
 
 function PickSpawnUtils.FocusLatLon(self: MapControllerPrivate, latitude: number, longitude: number)
 	-- The tile set uses a 2:1 equirectangular projection.
-	local mapPosition = Vector2.new(math.clamp((longitude + 180) / 360, 0, 1), math.clamp((90 - latitude) / 180, 0, 1))
+	local mapPosition = EquirectangularProjection.LatLonToMap(latitude, longitude)
 	self:animateCenterTo(self:clampCenter(mapPosition, self.Zoom))
 end
 
@@ -940,7 +776,7 @@ function PickSpawnUtils.SetViewLatLon(self: MapControllerPrivate, latitude: numb
 	self:cancelCameraAnimation(false)
 	self.Zoom = math.clamp(zoom, getMinimumCameraZoom(self), self.MaxZoom)
 
-	local mapPosition = Vector2.new(math.clamp((longitude + 180) / 360, 0, 1), math.clamp((90 - latitude) / 180, 0, 1))
+	local mapPosition = EquirectangularProjection.LatLonToMap(latitude, longitude)
 	self.Center = self:clampCenter(mapPosition, self.Zoom)
 	self:outputMapScale()
 	self:queueRender()
@@ -1018,136 +854,11 @@ function PickSpawnUtils.Start(self: MapControllerPrivate)
 	self.Started = true
 	self.ClipFrame.Active = true
 	self:outputMapScale()
-
-	local function cancelPointerInteraction()
-		local wasDragging = self.IsDragging
-		self.IsPointerDown = false
-		self.IsDragging = false
-		self.PointerDownPosition = nil
-		self.LastDragPosition = nil
-
-		if wasDragging then
-			self.MapDragEnded:Fire(false)
-		end
-	end
-
-	table.insert(
-		self.Connections,
-		self.ClipFrame.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				if not self.IsInputEnabled() then
-					return
-				end
-
-				if self.IsPointerDown then
-					return
-				end
-				self:cancelCameraAnimation(true)
-				self.IsPointerDown = true
-				self.IsDragging = false
-				self.PointerDownPosition = input.Position
-				self.LastDragPosition = input.Position
-			end
-		end)
-	)
-
-	table.insert(
-		self.Connections,
-		UserInputService.InputEnded:Connect(function(input: InputObject)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 and self.IsPointerDown then
-				local wasDragging = self.IsDragging
-				cancelPointerInteraction()
-
-				if not self.IsInputEnabled() then
-					return
-				end
-
-				if wasDragging then
-				elseif not self:isPointerOverPin(input.Position) then
-					local localScreenPosition = Vector2.new(input.Position.X, input.Position.Y)
-						- self.ClipFrame.AbsolutePosition
-					local mapPosition = self:screenToMap(localScreenPosition, self.Zoom)
-					mapPosition = Vector2.new(math.clamp(mapPosition.X, 0, 1), math.clamp(mapPosition.Y, 0, 1))
-
-					local latitude = 90 - mapPosition.Y * 180
-					local longitude = mapPosition.X * 360 - 180
-					self.MapPointSelected:Fire(mapPosition, latitude, longitude)
-				end
-			end
-		end)
-	)
-
-	table.insert(
-		self.Connections,
-		UserInputService.InputChanged:Connect(function(input: InputObject)
-			if
-				input.UserInputType == Enum.UserInputType.MouseMovement
-				and self.IsPointerDown
-				and self.PointerDownPosition
-			then
-				if not self.IsInputEnabled() then
-					cancelPointerInteraction()
-					return
-				end
-
-				if not self.IsDragging then
-					local totalDelta = input.Position - self.PointerDownPosition
-					if totalDelta.Magnitude < MAP_CLICK_DRAG_THRESHOLD then
-						return
-					end
-
-					self.IsDragging = true
-					self.MapDragStarted:Fire(true)
-					self:panByScreenDelta(totalDelta)
-				else
-					local delta = input.Position - (self.LastDragPosition or input.Position)
-					self:panByScreenDelta(delta)
-				end
-				self.LastDragPosition = input.Position
-			elseif input.UserInputType == Enum.UserInputType.MouseWheel and self.IsInputEnabled() then
-				local mousePosition = UserInputService:GetMouseLocation()
-				local clipPosition = self.ClipFrame.AbsolutePosition
-				local clipSize = self.ClipFrame.AbsoluteSize
-				local exclusionPosition = self.ZoomExclusionRegion.AbsolutePosition
-				local exclusionSize = self.ZoomExclusionRegion.AbsoluteSize
-				local inside = mousePosition.X >= clipPosition.X
-					and mousePosition.Y >= clipPosition.Y
-					and mousePosition.X <= clipPosition.X + clipSize.X
-					and mousePosition.Y <= clipPosition.Y + clipSize.Y
-				local overZoomExclusionRegion = mousePosition.X >= exclusionPosition.X
-					and mousePosition.Y >= exclusionPosition.Y
-					and mousePosition.X <= exclusionPosition.X + exclusionSize.X
-					and mousePosition.Y <= exclusionPosition.Y + exclusionSize.Y
-				if inside and not overZoomExclusionRegion then
-					self:zoomBy((if input.Position.Z > 0 then 1 else -1) * WHEEL_ZOOM_STEP, mousePosition)
-				end
-			end
-		end)
-	)
-
-	table.insert(
-		self.Connections,
-		self.ZoomInButton.MouseButton1Click:Connect(function()
-			if self.IsInputEnabled() then
-				self:zoomBy(BUTTON_ZOOM_STEP)
-			end
-		end)
-	)
-	table.insert(
-		self.Connections,
-		self.ZoomOutButton.MouseButton1Click:Connect(function()
-			if self.IsInputEnabled() then
-				self:zoomBy(-BUTTON_ZOOM_STEP)
-			end
-		end)
-	)
-	table.insert(
-		self.Connections,
-		self.ClipFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-			self:queueRender()
-		end)
-	)
-
+	MapInteraction.Bind(self, {
+		ClickDragThreshold = MAP_CLICK_DRAG_THRESHOLD,
+		ButtonZoomStep = BUTTON_ZOOM_STEP,
+		WheelZoomStep = WHEEL_ZOOM_STEP,
+	})
 	self:queueRender()
 end
 
